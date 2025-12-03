@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tetris</title>
+    <meta charset="UTF-8">
+    <style>
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            overflow: hidden;
+        }
+
+        body { 
+            background: #8B008B;
+            background-image: url("tetrisbackground.png");
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        canvas { 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); 
+            margin-bottom: 10px; 
+            background: transparent;
+        }
+
+        #controls { 
+            color: white; 
+            margin-bottom: 5px; 
+            font-family: monospace; 
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.3); 
+            display: flex;
+            gap: 10px;
+            border: 2px solid white;
+        }
+
+        #controls div:last-child {
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="292" height="572" id="game"></canvas>
+    
+    <div id="controls">
+        Volume: <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5">
+        <button id="nextBGM">次の曲へ</button>
+        <button id="resetButton">リセット</button>
+        <button id="pauseButton">ポーズ</button>
+        <div style="margin-top: 10px;">
+            **操作方法:**<br>
+            ← →: 移動<br>
+            ↑: 回転<br>
+            ↓: ソフトドロップ<br>
+            Space: ハードドロップ<br>
+            P: ポーズ/再開<br>
+        </div>
+    </div>
+
+    <audio id="bgm" loop autoplay></audio>
+
+<script>
+    const bgm = document.getElementById('bgm');
+    const bgmList = ["bgm1.mp3", "bgm2.mp3", "bgm3.mp3"];
+    let currentBGMIndex = 0;
+
+    function playBGM(index){
+        if (bgmList.length === 0) return;
+        bgm.src = bgmList[index];
+        bgm.play().catch(err => console.log("BGM再生エラー:", err));
+    }
+
+    document.getElementById('nextBGM').addEventListener('click', () => {
+        currentBGMIndex = (currentBGMIndex + 1) % bgmList.length;
+        playBGM(currentBGMIndex);
+    });
+
+    document.getElementById('volume').addEventListener('input', e => {
+        bgm.volume = e.target.value;
+    });
+
+    if (bgmList.length > 0) playBGM(currentBGMIndex);
+
+    const canvas = document.getElementById('game');
+    const context = canvas.getContext('2d');
+    // 🌟 修正2: ブロックサイズを 28px に変更
+    const GRID_SIZE = 28; 
+    const COLUMNS = 10;
+    const ROWS = 20;
+    const HIDDEN_ROWS = 0; 
+    const TOTAL_ROWS = ROWS + 2; 
+
+    let INITIAL_SPEED = 35;
+    let loopCount = 0;
+    let animationFrameId = null;
+    let gameOver = false;
+    let linesCleared = 0;
+    let paused = false;
+
+    const playfield = [];
+    const tetrominos = {
+        'I':[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+        'J':[[1,0,0],[1,1,1],[0,0,0]],
+        'L':[[0,0,1],[1,1,1],[0,0,0]],
+        'O':[[1,1],[1,1]],
+        'S':[[0,1,1],[1,1,0],[0,0,0]],
+        'Z':[[1,1,0],[0,1,1],[0,0,0]],
+        'T':[[0,1,0],[1,1,1],[0,0,0]]
+    };
+    const colors = {'I':'cyan','O':'yellow','T':'purple','S':'green','Z':'red','J':'blue','L':'orange'};
+
+    const tetrominoSequence = [];
+    let currentTetromino = null;
+
+    function initPlayfield() {
+        for(let r = 0; r < TOTAL_ROWS; r++){
+            playfield[r] = [];
+            for(let c = 0; c < COLUMNS; c++) playfield[r][c] = 0;
+        }
+    }
+
+    function resetGame(){
+        cancelAnimationFrame(animationFrameId);
+        gameOver = false;
+        paused = false;
+        loopCount = 0;
+        linesCleared = 0;
+        tetrominoSequence.length = 0;
+        initPlayfield();
+        currentTetromino = getNextTetromino();
+        animationFrameId = requestAnimationFrame(loop);
+        document.getElementById('pauseButton').textContent = 'ポーズ';
+    }
+
+    function getRandomInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function generateSequence(){
+        const seq = ['I','J','L','O','S','T','Z'];
+        while(seq.length){
+            tetrominoSequence.push(seq.splice(getRandomInt(0, seq.length-1), 1)[0]);
+        }
+    }
+
+    function getNextTetromino(){
+        if(tetrominoSequence.length === 0) generateSequence();
+        const name = tetrominoSequence.pop();
+        const matrix = tetrominos[name];
+        const col = Math.floor(COLUMNS/2) - Math.ceil(matrix[0].length/2);
+        const row = 0; 
+        return {name, matrix, row, col};
+    }
+
+    function rotate(matrix){
+        const N = matrix.length-1;
+        return matrix.map((row,i)=>row.map((val,j)=>matrix[N-j][i]));
+    }
+
+    function isValidMove(matrix, rowOffset, colOffset){
+        for(let r=0;r<matrix.length;r++){
+            for(let c=0;c<matrix[r].length;c++){
+                if(matrix[r][c]){
+                    const nextRow=rowOffset+r, nextCol=colOffset+c;
+                    if(nextCol<0||nextCol>=COLUMNS) return false;
+                    if(nextRow>=TOTAL_ROWS) return false; 
+                    if(nextRow>=0 && playfield[nextRow][nextCol]) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function placeTetromino(){
+        for(let r=0;r<currentTetromino.matrix.length;r++){
+            for(let c=0;c<currentTetromino.matrix[r].length;c++){
+                if(currentTetromino.matrix[r][c]){
+                    const pr=currentTetromino.row+r, pc=currentTetromino.col+c;
+                    
+                    if(pr < 2) return showGameOver(); 
+                    playfield[pr][pc]=currentTetromino.name;
+                }
+            }
+        }
+        
+        for(let r=TOTAL_ROWS-1;r>=0;){
+            if(playfield[r].every(cell=>!!cell)){
+                linesCleared++;
+                for(let row=r;row>0;row--){ 
+                    for(let c=0;c<COLUMNS;c++){
+                        playfield[row][c]=playfield[row-1][c];
+                    }
+                }
+                for(let c=0;c<COLUMNS;c++) playfield[0][c]=0;
+            } else r--;
+        }
+
+        currentTetromino=getNextTetromino();
+    }
+
+    function showGameOver(){
+        cancelAnimationFrame(animationFrameId);
+        gameOver=true;
+        context.fillStyle='black';
+        context.globalAlpha=0.75;
+        // canvas.heightは572pxなので、中央は286px
+        context.fillRect(0, canvas.height/2-30, canvas.width, 60); 
+        context.globalAlpha=1;
+        context.fillStyle='white';
+        context.font='24px monospace';
+        context.textAlign='center';
+        context.textBaseline='middle';
+        context.fillText('ゲームオーバー！！', canvas.width/2, canvas.height/2);
+    }
+
+    function loop(){
+        animationFrameId=requestAnimationFrame(loop);
+        if(paused) return;
+
+        const BORDER_WIDTH = 6;
+        const BLOCK_DRAW_OFFSET = BORDER_WIDTH; 
+        const VISIBLE_START_ROW = 2; // 2行目から表示を開始
+
+        // 1. 背景を黒で塗りつぶし
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 2. ゲームエリアの白い枠線を描画
+        context.strokeStyle = "white";
+        context.lineWidth = BORDER_WIDTH; 
+        
+        // 枠線の描画領域 (292x572)
+        context.strokeRect(
+            BORDER_WIDTH / 2, 
+            BORDER_WIDTH / 2, 
+            COLUMNS * GRID_SIZE + BORDER_WIDTH, // 280 + 6 = 286
+            ROWS * GRID_SIZE + BORDER_WIDTH     // 560 + 6 = 566
+        );
+
+        // 3. 固定されたブロックの描画
+        for(let r=VISIBLE_START_ROW; r < TOTAL_ROWS; r++){
+            for(let c=0;c<COLUMNS;c++){
+                const block=playfield[r][c];
+                if(block){
+                    context.fillStyle=colors[block];
+                    context.strokeStyle='#222';
+                    context.lineWidth=1; 
+                    
+                    const drawX = c * GRID_SIZE + BLOCK_DRAW_OFFSET;
+                    // 描画Y座標を2行分上にシフト
+                    const drawY = (r - VISIBLE_START_ROW) * GRID_SIZE + BLOCK_DRAW_OFFSET;
+                    
+                    context.fillRect(drawX, drawY, GRID_SIZE, GRID_SIZE);
+                    context.strokeRect(drawX, drawY, GRID_SIZE, GRID_SIZE);
+                }
+            }
+        }
+        
+        // 4. 現在のテトロミノの描画と落下処理
+        if(currentTetromino){
+            const speed = Math.max(5, INITIAL_SPEED - Math.floor(linesCleared/5));
+            if(!gameOver && ++loopCount>speed){
+                currentTetromino.row++;
+                loopCount=0;
+                if(!isValidMove(currentTetromino.matrix,currentTetromino.row,currentTetromino.col)){
+                    currentTetromino.row--;
+                    placeTetromino();
+                }
+            }
+
+            context.fillStyle=colors[currentTetromino.name];
+            context.strokeStyle='#222';
+            context.lineWidth=1; 
+            for(let r=0;r<currentTetromino.matrix.length;r++){
+                for(let c=0;c<currentTetromino.matrix[r].length;c++){
+                    // 表示行(2行目以降)のブロックのみ描画
+                    if(currentTetromino.matrix[r][c] && currentTetromino.row + r >= VISIBLE_START_ROW){ 
+                        const drawX = (currentTetromino.col + c) * GRID_SIZE + BLOCK_DRAW_OFFSET;
+                        // 描画Y座標を2行分上にシフト
+                        const drawY = (currentTetromino.row + r - VISIBLE_START_ROW) * GRID_SIZE + BLOCK_DRAW_OFFSET; 
+                        
+                        context.fillRect(drawX, drawY, GRID_SIZE, GRID_SIZE);
+                        context.strokeRect(drawX, drawY, GRID_SIZE, GRID_SIZE);
+                    }
+                }
+            }
+        }
+    }
+
+    initPlayfield();
+    currentTetromino=getNextTetromino();
+    animationFrameId=requestAnimationFrame(loop);
+
+    document.getElementById('pauseButton').addEventListener('click', () => {
+        if(gameOver) return;
+        paused = !paused;
+        document.getElementById('pauseButton').textContent = paused ? '再開' : 'ポーズ';
+    });
+
+    document.addEventListener('keydown', e=>{
+        if(gameOver) return;
+
+        if(e.key.toLowerCase() === 'p'){
+            paused = !paused;
+            document.getElementById('pauseButton').textContent = paused ? '再開' : 'ポーズ';
+            return;
+        }
+
+        if(paused) return;
+
+        const KEY_LEFT=37, KEY_RIGHT=39, KEY_UP=38, KEY_DOWN=40, KEY_SPACE=32;
+        let newCol=currentTetromino.col, newRow=currentTetromino.row, newMatrix=currentTetromino.matrix;
+
+        if(e.which===KEY_LEFT||e.which===KEY_RIGHT){
+            newCol=e.which===KEY_LEFT?currentTetromino.col-1:currentTetromino.col+1;
+            if(isValidMove(newMatrix,newRow,newCol)) currentTetromino.col=newCol;
+        } else if(e.which===KEY_UP){
+            newMatrix=rotate(currentTetromino.matrix);
+            if(isValidMove(newMatrix,newRow,newCol)) currentTetromino.matrix=newMatrix;
+        } else if(e.which===KEY_DOWN){
+            newRow=currentTetromino.row+1;
+            if(!isValidMove(newMatrix,newRow,newCol)){
+                currentTetromino.row=newRow-1;
+                placeTetromino();
+                return;
+            }
+            currentTetromino.row=newRow;
+        } else if(e.which===KEY_SPACE){
+            while(isValidMove(newMatrix,currentTetromino.row+1,newCol)) currentTetromino.row++;
+            placeTetromino();
+        }
+    });
+
+    document.getElementById('resetButton').addEventListener('click', resetGame);
+
+</script>
+</body>
+</html>
