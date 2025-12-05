@@ -1,33 +1,90 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Homepages</title>
-    <style>
-      body {
+<head>
+  <meta charset="UTF-8" />
+  <title>Noct's Homepages</title>
+  <style>
+    body {
       color: #FFF8DC;
       background-image: url("background.png");
       background-position: top;
       background-color: #380C64;
     }
 
-      .Maintitle {
-        text-align: center;
+    .Maintitle {
+      text-align: center;
+      border: solid;
+      border-color: #40DB9D;
+      border-width: thick;
+      padding: 20px;
     }
 
-      .list {
-        text-align: center;
+    .list {
+      text-align: center;
+      font-size: 25px;
     }
-    </style>
-  </head>
-  <body>
-    <div class="Maintitle">
-      <h1>WELCOME!!</h1>
-      <p>This page is a site for showcasing things made by noct and various other content.</p>
+
+    .Tetris {
+      border: solid;
+      border-width: thick;
+      color: #47B8BC;
+      font-size: 35px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      gap: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .text-area {
+      text-align: left;
+      font-size: 30px
+    }
+    
+    .Tetris img {
+      width: 300px;
+      height: auto;
+    }
+
+    .atag {
+      color: #B0E0E6;
+      font-size: 40px;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .atag:hover {
+      color: #410A79;
+      letter-spacing: 2px;
+      text-shadow: 0px 0px 6px #B0E0E6;
+    }
+
+    .creater {
+      font-size: 15px;
+      color: #B0E0E6;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="Maintitle">
+    <h1>WELCOME!!</h1>
+    <p>This page is a site for showcasing things made by noct and various other content.</p>
+  </div>
+  <div class="list">
+    <h1>I create program list</h1>
+    <div class="Tetris">
+      <div class="text-area">
+        <p>Tetris!! Create By noct</p>
+        <a class="atag" href="tetris.html">▶ PLAY NOW</a>
+        <p class="creater">created by noct</p>
+      </div>
+      <img src="tetrisimage.png" alt="Tetris image">
     </div>
-    <div class="list">
-      <h1>Im create program list</h1>
-      <a href="tetris.html">Tetris Play</a>
-    </div>
-  </body>
+  </div>
+</body>
 </html>
