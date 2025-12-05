@@ -41,6 +41,21 @@
             margin-top: 10px;
             display: block;
         }
+        
+        a {
+            color: #B0E0E6;
+            font-size: 25px;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        a:hover {
+            color: #410A79;
+            letter-spacing: 2px;
+            text-shadow: 0px 0px 6px #B0E0E6;
+        }
+
     </style>
 </head>
 <body>
@@ -87,7 +102,6 @@
 
     const canvas = document.getElementById('game');
     const context = canvas.getContext('2d');
-    // 🌟 修正2: ブロックサイズを 28px に変更
     const GRID_SIZE = 28; 
     const COLUMNS = 10;
     const ROWS = 20;
@@ -204,7 +218,6 @@
         gameOver=true;
         context.fillStyle='black';
         context.globalAlpha=0.75;
-        // canvas.heightは572pxなので、中央は286px
         context.fillRect(0, canvas.height/2-30, canvas.width, 60); 
         context.globalAlpha=1;
         context.fillStyle='white';
@@ -220,25 +233,21 @@
 
         const BORDER_WIDTH = 6;
         const BLOCK_DRAW_OFFSET = BORDER_WIDTH; 
-        const VISIBLE_START_ROW = 2; // 2行目から表示を開始
+        const VISIBLE_START_ROW = 2;
 
-        // 1. 背景を黒で塗りつぶし
         context.fillStyle = "#000000";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 2. ゲームエリアの白い枠線を描画
         context.strokeStyle = "white";
         context.lineWidth = BORDER_WIDTH; 
         
-        // 枠線の描画領域 (292x572)
         context.strokeRect(
             BORDER_WIDTH / 2, 
             BORDER_WIDTH / 2, 
-            COLUMNS * GRID_SIZE + BORDER_WIDTH, // 280 + 6 = 286
-            ROWS * GRID_SIZE + BORDER_WIDTH     // 560 + 6 = 566
+            COLUMNS * GRID_SIZE + BORDER_WIDTH,
+            ROWS * GRID_SIZE + BORDER_WIDTH
         );
 
-        // 3. 固定されたブロックの描画
         for(let r=VISIBLE_START_ROW; r < TOTAL_ROWS; r++){
             for(let c=0;c<COLUMNS;c++){
                 const block=playfield[r][c];
@@ -257,7 +266,6 @@
             }
         }
         
-        // 4. 現在のテトロミノの描画と落下処理
         if(currentTetromino){
             const speed = Math.max(5, INITIAL_SPEED - Math.floor(linesCleared/5));
             if(!gameOver && ++loopCount>speed){
@@ -274,10 +282,8 @@
             context.lineWidth=1; 
             for(let r=0;r<currentTetromino.matrix.length;r++){
                 for(let c=0;c<currentTetromino.matrix[r].length;c++){
-                    // 表示行(2行目以降)のブロックのみ描画
                     if(currentTetromino.matrix[r][c] && currentTetromino.row + r >= VISIBLE_START_ROW){ 
                         const drawX = (currentTetromino.col + c) * GRID_SIZE + BLOCK_DRAW_OFFSET;
-                        // 描画Y座標を2行分上にシフト
                         const drawY = (currentTetromino.row + r - VISIBLE_START_ROW) * GRID_SIZE + BLOCK_DRAW_OFFSET; 
                         
                         context.fillRect(drawX, drawY, GRID_SIZE, GRID_SIZE);
