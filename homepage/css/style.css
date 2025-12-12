@@ -1,7 +1,11 @@
 body {
+  margin: 0;
+  font-family: sans-serif;
   color: #FFF8DC;
   background-image: url("haikei/background.png");
+  background-repeat: no-repeat;
   background-position: top;
+  background-size: cover;
   background-color: #380C64;
 }
 
@@ -62,16 +66,19 @@ body {
   margin-top: 10px;
 }
 
-/* three.js */
 #webgl {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  display: block;
-  pointer-events: none;
   z-index: 0;
+}
+
+#html-content {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .debug-hide {
