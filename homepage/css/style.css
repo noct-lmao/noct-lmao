@@ -1,0 +1,83 @@
+body {
+  color: #FFF8DC;
+  background-image: url("haikei/background.png");
+  background-position: top;
+  background-color: #380C64;
+}
+
+.Maintitle {
+  text-align:center;
+  border: solid;
+  border-color: #40DB9D;
+  border-width: thick;
+  padding: 20px;
+}
+
+.list {
+  text-align: center;
+  font-size: 25px;
+}
+
+.Tetris {
+  border: solid;
+  border-width: thick;
+  color: #47B9BC;
+  font-size: 35px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.text-area {
+  text-align: left;
+  font-size: 30px;
+}
+
+.Tetris img {
+  width: 300px;
+  height: auto;
+}
+
+.atag {
+  color: #B0E0E6;
+  font-size: 40px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.atag:hover {
+  color: #410A79;
+  letter-spacing: 2px;
+  text-shadow: 0px 0px 6px #B0E0E6;
+}
+
+.creater {
+  font-size: 15px;
+  color: #B0E0E6;
+  margin-top: 10px;
+}
+
+/* three.js */
+#webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.debug-hide {
+  display: none;
+}
+
+#d-button-press {
+  color: #3BB879;
+}
