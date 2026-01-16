@@ -18,6 +18,21 @@
       overflow-x: hidden;
     }
 
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
     /* ヘッダー */
     header {
       position: fixed;
@@ -27,6 +42,7 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(103, 6, 118, 0.3);
       z-index: 1000;
+      transform: translateY(-100%);
     }
 
     nav {
@@ -44,6 +60,7 @@
       gap: 0.5rem;
       font-size: 1.25rem;
       font-weight: bold;
+      opacity: 0;
     }
 
     .logo svg {
@@ -56,10 +73,31 @@
       list-style: none;
     }
 
+    .nav-links li {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
     .nav-links a {
       color: #fff;
       text-decoration: none;
       transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #670676;
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
     }
 
     .nav-links a:hover {
@@ -77,8 +115,16 @@
 
     /* ヒーローセクション */
     #home {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 8rem 1.5rem 5rem;
       text-align: center;
+    }
+
+    .hero-content {
+      opacity: 0;
     }
 
     .hero-icon {
@@ -90,11 +136,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 0 60px rgba(103, 6, 118, 0.6);
+      transform: scale(0);
     }
 
     h1 {
       font-size: 3.5rem;
       margin-bottom: 1.5rem;
+      opacity: 0;
     }
 
     .gradient-text {
@@ -110,10 +159,35 @@
       color: #9ca3af;
       max-width: 600px;
       margin: 0 auto;
+      opacity: 0;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+
+    .scroll-indicator::before {
+      content: '';
+      display: block;
+      width: 2px;
+      height: 40px;
+      background: linear-gradient(to bottom, #670676, transparent);
+      margin: 0 auto 10px;
+      animation: scrollAnimation 2s infinite;
+    }
+
+    @keyframes scrollAnimation {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(10px); opacity: 0.5; }
     }
 
     /* プロジェクトセクション */
     #projects {
+      min-height: 100vh;
       padding: 5rem 1.5rem;
       background: linear-gradient(to bottom, #000, rgba(103, 6, 118, 0.1));
     }
@@ -131,6 +205,7 @@
       border-bottom: 4px solid #670676;
       display: inline-block;
       width: 100%;
+      opacity: 0;
     }
 
     .projects-grid {
@@ -145,12 +220,14 @@
       border-radius: 12px;
       padding: 2rem;
       transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(50px);
     }
 
     .project-card:hover {
       border-color: #670676;
-      box-shadow: 0 8px 32px rgba(103, 6, 118, 0.2);
-      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(103, 6, 118, 0.4);
+      transform: translateY(-8px) scale(1.02);
     }
 
     .project-icon {
@@ -185,11 +262,32 @@
       color: #fff;
       text-decoration: none;
       border-radius: 8px;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .view-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .view-btn:hover::before {
+      width: 300px;
+      height: 300px;
     }
 
     .view-btn:hover {
       background: rgba(103, 6, 118, 0.8);
+      transform: scale(1.05);
     }
 
     .add-project {
@@ -200,11 +298,12 @@
       align-items: center;
       justify-content: center;
       min-height: 250px;
-      transition: border-color 0.3s;
+      transition: all 0.3s;
     }
 
     .add-project:hover {
       border-color: rgba(103, 6, 118, 0.6);
+      background: linear-gradient(135deg, rgba(17, 17, 17, 0.7), rgba(0, 0, 0, 0.7));
     }
 
     .add-project svg {
@@ -219,6 +318,9 @@
 
     /* Aboutセクション */
     #about {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
       padding: 5rem 1.5rem;
     }
 
@@ -229,6 +331,8 @@
       border: 1px solid rgba(103, 6, 118, 0.3);
       border-radius: 12px;
       padding: 2rem;
+      opacity: 0;
+      transform: translateX(-100px);
     }
 
     .about-content p {
@@ -243,6 +347,7 @@
       padding: 2rem 1.5rem;
       border-top: 1px solid rgba(103, 6, 118, 0.3);
       text-align: center;
+      opacity: 0;
     }
 
     .social-links {
@@ -254,15 +359,28 @@
 
     .social-links a {
       color: #9ca3af;
-      transition: color 0.3s;
+      transition: all 0.3s;
+      display: inline-block;
     }
 
     .social-links a:hover {
       color: #670676;
+      transform: translateY(-5px) rotate(360deg);
     }
 
     footer p {
       color: #6b7280;
+    }
+
+    /* パーティクル */
+    .particle {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: #670676;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
     }
 
     /* レスポンシブ */
@@ -298,74 +416,237 @@
   </style>
 </head>
 <body>
-  <!-- ヘッダー -->
-  <header>
-    <nav>
-      <div class="logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="16 18 22 12 16 6"></polyline>
-          <polyline points="8 6 2 12 8 18"></polyline>
-        </svg>
-        <span>Portfolio</span>
+  <div id="canvas-container"></div>
+  
+  <div class="content-wrapper">
+    <!-- ヘッダー -->
+    <header id="header">
+      <nav>
+        <div class="logo" id="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span>Portfolio</span>
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- ヒーローセクション -->
+    <section id="home">
+      <div class="hero-content">
+        <div class="hero-icon" id="heroIcon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <h1 id="heroTitle">
+          Welcome to My
+          <span class="gradient-text">Portfolio</span>
+        </h1>
+        <p class="subtitle" id="heroSubtitle">Web開発とゲーム開発のプロジェクトを紹介します</p>
+        <div class="scroll-indicator" id="scrollIndicator">
+          <span style="color: #670676;">Scroll</span>
+        </div>
       </div>
-      <button class="menu-toggle" id="menuToggle">☰</button>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#about">About</a></li>
-      </ul>
-    </nav>
-  </header>
+    </section>
 
-  <!-- ヒーローセクション -->
-  <section id="home">
-    <div class="hero-icon">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-        <polyline points="16 18 22 12 16 6"></polyline>
-        <polyline points="8 6 2 12 8 18"></polyline>
-      </svg>
-    </div>
-    <h1>
-      Welcome to My
-      <span class="gradient-text">Portfolio</span>
-    </h1>
-    <p class="subtitle">Web開発とゲーム開発のプロジェクトを紹介します</p>
-  </section>
-
-  <!-- プロジェクトセクション -->
-  <section id="projects">
-    <div class="container">
-      <h2>Projects</h2>
-      <div class="projects-grid" id="projectsGrid">
-        <!-- プロジェクトはJSで追加 -->
+    <!-- プロジェクトセクション -->
+    <section id="projects">
+      <div class="container">
+        <h2 id="projectsTitle">Projects</h2>
+        <div class="projects-grid" id="projectsGrid"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Aboutセクション -->
-  <section id="about">
-    <div class="container">
-      <h2>About</h2>
-      <div class="about-content">
-        <p>このポートフォリオサイトでは、様々なWebアプリケーションやゲームプロジェクトを公開しています。</p>
-        <p>Vanilla JavaScript + CSSで構築され、GitHub Pagesでホスティングされています。</p>
+    <!-- Aboutセクション -->
+    <section id="about">
+      <div class="container">
+        <h2 id="aboutTitle">About</h2>
+        <div class="about-content" id="aboutContent">
+          <p>このポートフォリオサイトでは、様々なWebアプリケーションやゲームプロジェクトを公開しています。</p>
+          <p>Three.js、GSAP、Anime.jsを使用した、インタラクティブで没入感のあるポートフォリオサイトです。</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- フッター -->
-  <footer>
-    <div class="social-links">
-      <a href="#" aria-label="GitHub">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-      </a>
-    </div>
-    <p>© 2026 Portfolio. Built with Vanilla JS</p>
-  </footer>
+    <!-- フッター -->
+    <footer id="footer">
+      <div class="social-links">
+        <a href="#" aria-label="GitHub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+        </a>
+      </div>
+      <p>© 2026 Portfolio. Built with Three.js, GSAP & Anime.js</p>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
   <script>
+    // Three.js背景アニメーション
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+    
+    // パーティクルシステム
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1000;
+    const posArray = new Float32Array(particlesCount * 3);
+    
+    for(let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 100;
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      color: 0x670676,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    
+    camera.position.z = 5;
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    document.addEventListener('mousemove', function(e) {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0005;
+      
+      particlesMesh.rotation.x += mouseY * 0.0001;
+      particlesMesh.rotation.y += mouseX * 0.0001;
+      
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.addEventListener('resize', function() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // GSAP + ScrollTrigger登録
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ヘッダーアニメーション
+    gsap.to('#header', {
+      y: 0,
+      duration: 1,
+      ease: 'power3.out',
+      delay: 0.5
+    });
+
+    gsap.to('#logo', {
+      opacity: 1,
+      duration: 0.8,
+      delay: 1
+    });
+
+    gsap.to('#navLinks li', {
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      delay: 1.2
+    });
+
+    // ヒーローセクションアニメーション
+    const tl = gsap.timeline({ delay: 0.5 });
+    
+    tl.to('#heroIcon', {
+      scale: 1,
+      duration: 1,
+      ease: 'elastic.out(1, 0.5)'
+    })
+    .to('#heroTitle', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power3.out'
+    }, '-=0.5')
+    .to('#heroSubtitle', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power3.out'
+    }, '-=0.5')
+    .to('#scrollIndicator', {
+      opacity: 1,
+      duration: 0.5
+    });
+
+    // プロジェクトセクションのスクロールアニメーション
+    gsap.to('#projectsTitle', {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: '#projects',
+        start: 'top 80%',
+        end: 'top 50%',
+        scrub: 1
+      }
+    });
+
+    // Aboutセクションのアニメーション
+    gsap.to('#aboutTitle', {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: '#about',
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
+    gsap.to('#aboutContent', {
+      opacity: 1,
+      x: 0,
+      duration: 1,
+      scrollTrigger: {
+        trigger: '#about',
+        start: 'top 70%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
+    // フッターアニメーション
+    gsap.to('#footer', {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: '#footer',
+        start: 'top 90%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
     // メニュートグル
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
@@ -388,7 +669,7 @@
     // プロジェクトカードを生成
     const projectsGrid = document.getElementById('projectsGrid');
     
-    projects.forEach(function(project) {
+    projects.forEach(function(project, index) {
       const card = document.createElement('div');
       card.className = 'project-card';
       
@@ -415,6 +696,32 @@
         '<p>' + project.description + '</p>' +
         actionHTML;
       projectsGrid.appendChild(card);
+
+      // Anime.jsでカードアニメーション
+      anime({
+        targets: card,
+        opacity: [0, 1],
+        translateY: [50, 0],
+        duration: 1000,
+        delay: index * 200,
+        easing: 'easeOutExpo',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 90%'
+        }
+      });
+
+      // GSAPでスクロールトリガー
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
     });
 
     // 新規プロジェクト追加用カード
@@ -427,14 +734,49 @@
       '<p>新しいプロジェクトを<br>追加予定</p>';
     projectsGrid.appendChild(addCard);
 
+    gsap.to(addCard, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      scrollTrigger: {
+        trigger: addCard,
+        start: 'top 85%',
+        toggleActions: 'play none none reverse'
+      }
+    });
+
     // スムーススクロール
     document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
+          gsap.to(window, {
+            duration: 1,
+            scrollTo: target,
+            ease: 'power3.inOut'
+          });
           navLinks.classList.remove('active');
+        }
+      });
+    });
+
+    // マウス追従パーティクル効果
+    document.addEventListener('mousemove', function(e) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = e.clientX + 'px';
+      particle.style.top = e.clientY + 'px';
+      document.body.appendChild(particle);
+
+      anime({
+        targets: particle,
+        opacity: [0.8, 0],
+        scale: [1, 2],
+        duration: 1000,
+        easing: 'easeOutExpo',
+        complete: function() {
+          particle.remove();
         }
       });
     });
