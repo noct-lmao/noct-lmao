@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>???</title>
+  <meta charset="UTF-8">
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+  }
+
+  body {
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #three-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .game-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .left-panel,   .right-panel {
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    border: 3px solid #660675;
+    box-shadow: 
+      0 0 30px rgba(102, 6, 117, 0.6),
+      inset 0 0 20px rgba(102, 6, 117, 0.2);
+  }
+
+  .reset-btn {
+    margin-top: 20px;
+    background: #660675;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
+    transition: all 0.3s;
+    width: 100%;
+  }
+
+  .reset-btn:hover {
+    background: #8800aa;
+    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
+    transform: scale(1.05);
+  }
+
+  .reset-btn:active {
+    transform: scale(0.95);
+  }
+
+  .score-display {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 10px #660675;
+  }
+
+  .score-number {
+    display: block;
+    font-size: 48px;
+    font-weight: bold;
+    color: #660675;
+    text-shadow: 
+      0 0 20px #660675,
+      0 0 40px #660675;
+  }
+
+  canvas {
+    border: 3px solid #660675;
+    border-radius: 10px;
+    box-shadow: 
+      0 0 40px rgba(102, 6, 117, 0.8),
+      inset 0 0 30px rgba(0, 0, 0, 0.9);
+    background: #000000;
+  }
+
+  .controls {
+    margin-top: 20px;
+    color: #660675;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 0 0 10px #660675;
+  }
+
+  .controls div {
+    margin: 5px 0;
+  }
+
+  .game-title {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 72px;
+    font-weight: bold;
+    color: #660675;
+    text-shadow: 
+      0 0 20px #660675,
+      0 0 40px #660675,
+      0 0 60px #660675;
+    z-index: 2;
+    letter-spacing: 10px;
+  }
+
+  .particle {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    background: #660675;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 0 10px #660675;
+  }
+
+  @keyframes pulse {
+    0%, 100% { 
+      box-shadow: 
+        0 0 30px rgba(102, 6, 117, 0.6),
+        inset 0 0 20px rgba(102, 6, 117, 0.2);
+    }
+    50% { 
+      box-shadow: 
+        0 0 50px rgba(102, 6, 117, 1),
+        inset 0 0 30px rgba(102, 6, 117, 0.4);
+    }
+  }
+
+  .left-panel, .right-panel {
+    animation: pulse 2s infinite;
+  }
+
+  .music-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #660675;
+    border-radius: 15px;
+    padding: 15px 20px;
+    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
+    cursor: move;
+    user-select: none;
+  }
+
+  .music-controls:active {
+    cursor: grabbing;
+  }
+
+  .drag-handle {
+    text-align: center;
+    padding: 5px;
+    margin: -15px -20px 10px -20px;
+    background: #660675;
+    border-radius: 13px 13px 0 0;
+    cursor: grab;
+    font-size: 12px;
+    color: white;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .music-controls button {
+    background: #660675;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px;
+    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
+    transition: all 0.3s;
+  }
+
+  .music-controls button:hover {
+    background: #8800aa;
+    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
+    transform: scale(1.05);
+  }
+
+  .music-controls input[type="range"] {
+    width: 150px;
+    margin: 10px 5px;
+    accent-color: #660675;
+  }
+
+  .music-label {
+    color: #660675;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #660675;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .volume-container {
+    margin-top: 10px;
+  }
+
+  .music-status {
+    color: white;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+  }
+
+  .playlist {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 5px;
+  }
+
+  .playlist-item {
+    background: rgba(102, 6, 117, 0.3);
+    border: 1px solid #660675;
+    border-radius: 5px;
+    padding: 8px;
+    margin: 5px 0;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .playlist-item:hover {
+    background: rgba(102, 6, 117, 0.6);
+    transform: translateX(5px);
+  }
+
+  .playlist-item.active {
+    background: #660675;
+    box-shadow: 0 0 15px rgba(102, 6, 117, 0.8);
+  }
+
+  .playlist-item .delete-btn {
+    background: rgba(255, 0, 0, 0.5);
+    border: none;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  .playlist-item .delete-btn:hover {
+    background: rgba(255, 0, 0, 0.8);
+  }
+
+  .playlist::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .playlist::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+  }
+
+  .playlist::-webkit-scrollbar-thumb {
+    background: #660675;
+    border-radius: 4px;
+  }
+
+  .playlist::-webkit-scrollbar-thumb:hover {
+    background: #8800aa;
+  }
+
+  .audio-visualizer {
+    margin: 15px 0;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #660675;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(102, 6, 117, 0.4);
+  }
+
+  #visualizerCanvas {
+    width: 100%;
+    height: 80px;
+    border-radius: 5px;
+  }
+  </style>
+</head>
+<body>
+<div class="music-controls" id="musicControls">
+  <div class="drag-handle">⋮⋮ DRAG ME ⋮⋮</div>
+  <div class="music-label">🎵 MUSIC PLAYER</div>
+  <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
+  <button id="uploadBtn">📁 ADD MUSIC</button>
+  <button id="playBtn">▶ PLAY</button>
+  <button id="pauseBtn">⏸ PAUSE</button>
+  <button id="nextBtn">⏭ NEXT</button>
+  
+  <div class="audio-visualizer">
+    <canvas id="visualizerCanvas"></canvas>
+  </div>
+  
+  <div class="volume-container">
+    <label class="music-label" for="volumeSlider">VOLUME</label>
+    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+  </div>
+  <div class="music-status" id="musicStatus">No tracks</div>
+  <div class="playlist" id="playlist"></div>
+</div>
+
+<audio id="bgMusic" loop></audio>
+<div id="three-bg"></div>
+<h1 class="game-title">TETRIS</h1>
+
+<div class="game-container">
+  <div class="left-panel">
+    <div class="score-display">
+      SCORE
+      <span class="score-number" id="score">0</span>
+    </div>
+    <div class="score-display">
+      LINES
+      <span class="score-number" id="lines">0</span>
+    </div>
+  </div>
+
+  <div>
+    <canvas width="320" height="640" id="game"></canvas>
+    <div class="controls">
+      <div>← → : Move</div>
+      <div>↑ : Rotate</div>
+      <div>↓ : Soft Drop</div>
+      <div>SPACE : Hard Drop</div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="score-display">
+      LEVEL
+      <span class="score-number" id="level">1</span>
+    </div>
+    <button class="reset-btn" id="resetBtn">🔄 RESET GAME</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<script>
+// Background Music Player
+const audio = document.getElementById('bgMusic');
+const uploadBtn = document.getElementById('uploadBtn');
+const musicFile = document.getElementById('musicFile');
+const playBtn = document.getElementById('playBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const nextBtn = document.getElementById('nextBtn');
+const volumeSlider = document.getElementById('volumeSlider');
+const musicStatus = document.getElementById('musicStatus');
+const playlistDiv = document.getElementById('playlist');
+
+// Audio Visualizer Setup
+const visualizerCanvas = document.getElementById('visualizerCanvas');
+const canvasCtx = visualizerCanvas.getContext('2d');
+let audioContext, analyser, dataArray, bufferLength, source;
+
+function setupAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    
+    source = audioContext.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    
+    drawVisualizer();
+  }
+}
+
+function drawVisualizer() {
+  requestAnimationFrame(drawVisualizer);
+  
+  analyser.getByteFrequencyData(dataArray);
+  
+  const width = visualizerCanvas.width;
+  const height = visualizerCanvas.height;
+  
+  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  canvasCtx.fillRect(0, 0, width, height);
+  
+  const barWidth = (width / bufferLength) * 2.5;
+  let barHeight;
+  let x = 0;
+  
+  for (let i = 0; i < bufferLength; i++) {
+    barHeight = (dataArray[i] / 255) * height;
+    
+    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
+    gradient.addColorStop(0, '#660675');
+    gradient.addColorStop(0.5, '#8800aa');
+    gradient.addColorStop(1, '#aa00dd');
+    
+    canvasCtx.fillStyle = gradient;
+    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+    
+    // Glow effect
+    canvasCtx.shadowBlur = 10;
+    canvasCtx.shadowColor = '#660675';
+    
+    x += barWidth + 1;
+  }
+  
+  canvasCtx.shadowBlur = 0;
+}
+
+// Set canvas size
+function resizeCanvas() {
+  const rect = visualizerCanvas.getBoundingClientRect();
+  visualizerCanvas.width = rect.width;
+  visualizerCanvas.height = rect.height;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let playlist = [];
+let currentTrackIndex = -1;
+
+// 既存のMP3ファイルのURLをここに追加してください
+const defaultPlaylist = [
+  { name: 'shakethat', url:'music/ShakeThat.mp3'}
+  // 例: { name: '曲名1', url: 'music/song1.mp3' },
+  // 例: { name: '曲名2', url: 'https://example.com/song2.mp3' },
+  // 追加したい曲のURLをここに書いてください
+];
+
+// 初期プレイリストを読み込み
+if (defaultPlaylist.length > 0) {
+  playlist = [...defaultPlaylist];
+  currentTrackIndex = 0;
+  loadTrack(0);
+  updatePlaylist();
+}
+
+// Upload button click
+uploadBtn.addEventListener('click', () => {
+  musicFile.click();
+});
+
+// File selection (multiple files)
+musicFile.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  
+  files.forEach(file => {
+    const url = URL.createObjectURL(file);
+    playlist.push({
+      name: file.name,
+      url: url
+    });
+  });
+  
+  updatePlaylist();
+  
+  if (currentTrackIndex === -1 && playlist.length > 0) {
+    currentTrackIndex = 0;
+    loadTrack(0);
+  }
+  
+  anime({
+    targets: '.music-controls',
+    scale: [1, 1.1, 1],
+    duration: 300
+  });
+});
+
+// Update playlist display
+function updatePlaylist() {
+  playlistDiv.innerHTML = '';
+  
+  playlist.forEach((track, index) => {
+    const item = document.createElement('div');
+    item.className = 'playlist-item';
+    if (index === currentTrackIndex) {
+      item.classList.add('active');
+    }
+    
+    const name = document.createElement('span');
+    name.textContent = `${index + 1}. ${track.name}`;
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = '✕';
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteTrack(index);
+    };
+    
+    item.appendChild(name);
+    item.appendChild(deleteBtn);
+    
+    item.onclick = () => {
+      loadTrack(index);
+      audio.play();
+    };
+    
+    playlistDiv.appendChild(item);
+  });
+  
+  if (playlist.length === 0) {
+    musicStatus.textContent = 'No tracks';
+  }
+}
+
+// Load a track
+function loadTrack(index) {
+  if (index >= 0 && index < playlist.length) {
+    currentTrackIndex = index;
+    audio.src = playlist[index].url;
+    musicStatus.textContent = `${index + 1}/${playlist.length}: ${playlist[index].name}`;
+    updatePlaylist();
+  }
+}
+
+// Delete a track
+function deleteTrack(index) {
+  playlist.splice(index, 1);
+  
+  if (index === currentTrackIndex) {
+    if (playlist.length > 0) {
+      currentTrackIndex = Math.min(index, playlist.length - 1);
+      loadTrack(currentTrackIndex);
+    } else {
+      currentTrackIndex = -1;
+      audio.src = '';
+      musicStatus.textContent = 'No tracks';
+    }
+  } else if (index < currentTrackIndex) {
+    currentTrackIndex--;
+  }
+  
+  updatePlaylist();
+}
+
+// Play button
+playBtn.addEventListener('click', () => {
+  if (audio.src) {
+    setupAudioContext(); // Initialize audio context on first play
+    audio.play();
+    musicStatus.textContent = `♪ Playing: ${playlist[currentTrackIndex].name}`;
+    
+    anime({
+      targets: '#playBtn',
+      scale: [1, 1.2, 1],
+      duration: 200
+    });
+  } else {
+    musicStatus.textContent = 'Please add music first';
+  }
+});
+
+// Pause button
+pauseBtn.addEventListener('click', () => {
+  audio.pause();
+  musicStatus.textContent = 'Paused';
+  
+  anime({
+    targets: '#pauseBtn',
+    scale: [1, 1.2, 1],
+    duration: 200
+  });
+});
+
+// Next button
+nextBtn.addEventListener('click', () => {
+  if (playlist.length > 0) {
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    loadTrack(currentTrackIndex);
+    audio.play();
+    
+    anime({
+      targets: '#nextBtn',
+      scale: [1, 1.2, 1],
+      duration: 200
+    });
+  }
+});
+
+// Auto play next track when current ends
+audio.addEventListener('ended', () => {
+  if (playlist.length > 0) {
+    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    loadTrack(currentTrackIndex);
+    audio.play();
+  }
+});
+
+// Volume control
+volumeSlider.addEventListener('input', (e) => {
+  audio.volume = e.target.value / 100;
+});
+
+// Set initial volume
+audio.volume = 0.5;
+
+// Draggable Music Controls
+(function() {
+  const musicControls = document.getElementById('musicControls');
+  let isDragging = false;
+  let currentX, currentY, initialX, initialY;
+  let xOffset = 0, yOffset = 0;
+
+  musicControls.addEventListener('mousedown', dragStart);
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('mouseup', dragEnd);
+
+  // Touch events for mobile
+  musicControls.addEventListener('touchstart', dragStart);
+  document.addEventListener('touchmove', drag);
+  document.addEventListener('touchend', dragEnd);
+
+  function dragStart(e) {
+    // Don't drag when clicking buttons or slider
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+      return;
+    }
+
+    if (e.type === 'touchstart') {
+      initialX = e.touches[0].clientX - xOffset;
+      initialY = e.touches[0].clientY - yOffset;
+    } else {
+      initialX = e.clientX - xOffset;
+      initialY = e.clientY - yOffset;
+    }
+
+    isDragging = true;
+  }
+
+  function drag(e) {
+    if (isDragging) {
+      e.preventDefault();
+
+      if (e.type === 'touchmove') {
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+
+      xOffset = currentX;
+      yOffset = currentY;
+
+      setTranslate(currentX, currentY, musicControls);
+    }
+  }
+
+  function dragEnd(e) {
+    initialX = currentX;
+    initialY = currentY;
+    isDragging = false;
+  }
+
+  function setTranslate(xPos, yPos, el) {
+    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+  }
+})();
+
+// Three.js Background
+function initThreeBackground() {
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.getElementById('three-bg').appendChild(renderer.domElement);
+
+  // Create floating cubes in purple
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const cubes = [];
+  
+  for (let i = 0; i < 50; i++) {
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x660675,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3
+    });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.x = (Math.random() - 0.5) * 50;
+    cube.position.y = (Math.random() - 0.5) * 50;
+    cube.position.z = (Math.random() - 0.5) * 50;
+    cube.rotation.x = Math.random() * Math.PI;
+    cube.rotation.y = Math.random() * Math.PI;
+    cubes.push(cube);
+    scene.add(cube);
+  }
+
+  camera.position.z = 20;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    cubes.forEach(cube => {
+      cube.rotation.x += 0.001;
+      cube.rotation.y += 0.001;
+    });
+    
+    renderer.render(scene, camera);
+  }
+  
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+initThreeBackground();
+
+// Animate title
+gsap.fromTo('.game-title', 
+  { y: -100, opacity: 0 },
+  { y: 0, opacity: 1, duration: 1.5, ease: 'bounce.out' }
+);
+
+// Animate panels
+gsap.fromTo('.left-panel', 
+  { x: -200, opacity: 0 },
+  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
+);
+
+gsap.fromTo('.right-panel', 
+  { x: 200, opacity: 0 },
+  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
+);
+
+// Create floating particles
+function createParticles() {
+  for (let i = 0; i < 30; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * window.innerWidth + 'px';
+    particle.style.top = Math.random() * window.innerHeight + 'px';
+    document.body.appendChild(particle);
+
+    anime({
+      targets: particle,
+      translateY: [0, -1000],
+      opacity: [0, 1, 0],
+      duration: Math.random() * 3000 + 2000,
+      delay: Math.random() * 1000,
+      loop: true,
+      easing: 'linear'
+    });
+  }
+}
+
+createParticles();
+
+// Tetris Game Code
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateSequence() {
+  const sequence = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
+  while (sequence.length) {
+    const rand = getRandomInt(0, sequence.length - 1);
+    const name = sequence.splice(rand, 1)[0];
+    tetrominoSequence.push(name);
+  }
+}
+
+function getNextTetromino() {
+  if (tetrominoSequence.length === 0) {
+    generateSequence();
+  }
+  const name = tetrominoSequence.pop();
+  const matrix = tetrominos[name];
+  const col = playfield[0].length / 2 - Math.ceil(matrix[0].length / 2);
+  const row = name === 'I' ? -1 : -2;
+  return { name, matrix, row, col };
+}
+
+function rotate(matrix) {
+  const N = matrix.length - 1;
+  return matrix.map((row, i) =>
+    row.map((val, j) => matrix[N - j][i])
+  );
+}
+
+function isValidMove(matrix, cellRow, cellCol) {
+  for (let row = 0; row < matrix.length; row++) {
+    for (let col = 0; col < matrix[row].length; col++) {
+      if (matrix[row][col] && (
+          cellCol + col < 0 ||
+          cellCol + col >= playfield[0].length ||
+          cellRow + row >= playfield.length ||
+          playfield[cellRow + row][cellCol + col])
+        ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function placeTetromino() {
+  for (let row = 0; row < tetromino.matrix.length; row++) {
+    for (let col = 0; col < tetromino.matrix[row].length; col++) {
+      if (tetromino.matrix[row][col]) {
+        if (tetromino.row + row < 0) {
+          return showGameOver();
+        }
+        playfield[tetromino.row + row][tetromino.col + col] = tetromino.name;
+      }
+    }
+  }
+
+  let linesCleared = 0;
+  for (let row = playfield.length - 1; row >= 0; ) {
+    if (playfield[row].every(cell => !!cell)) {
+      linesCleared++;
+      
+      // Line clear animation
+      anime({
+        targets: '.game-container',
+        scale: [1, 1.05, 1],
+        duration: 200,
+        easing: 'easeInOutQuad'
+      });
+
+      for (let r = row; r >= 0; r--) {
+        for (let c = 0; c < playfield[r].length; c++) {
+          playfield[r][c] = playfield[r-1][c];
+        }
+      }
+    } else {
+      row--;
+    }
+  }
+
+  if (linesCleared > 0) {
+    score += linesCleared * 100;
+    lines += linesCleared;
+    level = Math.floor(lines / 10) + 1;
+    
+    // Animate score
+    anime({
+      targets: '#score',
+      innerHTML: [score - linesCleared * 100, score],
+      round: 1,
+      duration: 500,
+      easing: 'easeOutExpo'
+    });
+    
+    document.getElementById('lines').textContent = lines;
+    document.getElementById('level').textContent = level;
+  }
+
+  tetromino = getNextTetromino();
+}
+
+function showGameOver() {
+  cancelAnimationFrame(rAF);
+  gameOver = true;
+
+  context.fillStyle = 'black';
+  context.globalAlpha = 0.9;
+  context.fillRect(0, canvas.height / 2 - 50, canvas.width, 100);
+  context.globalAlpha = 1;
+  context.fillStyle = '#660675';
+  context.font = '36px monospace';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.shadowBlur = 20;
+  context.shadowColor = '#660675';
+  context.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
+  context.shadowBlur = 0;
+
+  // Game over animation
+  gsap.to('.game-container', {
+    scale: 0.95,
+    duration: 0.5,
+    yoyo: true,
+    repeat: 3
+  });
+}
+
+const canvas = document.getElementById('game');
+const context = canvas.getContext('2d');
+const grid = 32;
+const tetrominoSequence = [];
+const playfield = [];
+
+for (let row = -2; row < 20; row++) {
+  playfield[row] = [];
+  for (let col = 0; col < 10; col++) {
+    playfield[row][col] = 0;
+  }
+}
+
+const tetrominos = {
+  'I': [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+  'J': [[1,0,0],[1,1,1],[0,0,0]],
+  'L': [[0,0,1],[1,1,1],[0,0,0]],
+  'O': [[1,1],[1,1]],
+  'S': [[0,1,1],[1,1,0],[0,0,0]],
+  'Z': [[1,1,0],[0,1,1],[0,0,0]],
+  'T': [[0,1,0],[1,1,1],[0,0,0]]
+};
+
+const colors = {
+  'I': '#660675',
+  'O': '#660675',
+  'T': '#660675',
+  'S': '#660675',
+  'Z': '#660675',
+  'J': '#660675',
+  'L': '#660675'
+};
+
+let count = 0;
+let tetromino = getNextTetromino();
+let rAF = null;
+let gameOver = false;
+let score = 0;
+let lines = 0;
+let level = 1;
+
+// Reset Game Function
+function resetGame() {
+  // Stop current game loop
+  if (rAF) {
+    cancelAnimationFrame(rAF);
+  }
+  
+  // Clear playfield
+  for (let row = -2; row < 20; row++) {
+    for (let col = 0; col < 10; col++) {
+      playfield[row][col] = 0;
+    }
+  }
+  
+  // Reset variables
+  count = 0;
+  gameOver = false;
+  score = 0;
+  lines = 0;
+  level = 1;
+  tetrominoSequence.length = 0;
+  
+  // Update display
+  document.getElementById('score').textContent = '0';
+  document.getElementById('lines').textContent = '0';
+  document.getElementById('level').textContent = '1';
+  
+  // Get new tetromino
+  tetromino = getNextTetromino();
+  
+  // Restart game loop
+  rAF = requestAnimationFrame(loop);
+  
+  // Reset animation
+  anime({
+    targets: '.game-container',
+    scale: [0.95, 1.05, 1],
+    duration: 500,
+    easing: 'easeOutElastic(1, .5)'
+  });
+}
+
+// Reset button event
+document.getElementById('resetBtn').addEventListener('click', () => {
+  resetGame();
+  
+  anime({
+    targets: '#resetBtn',
+    rotate: [0, 360],
+    duration: 500,
+    easing: 'easeInOutQuad'
+  });
+});
+
+function loop() {
+  rAF = requestAnimationFrame(loop);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw playfield with purple glow
+  for (let row = 0; row < 20; row++) {
+    for (let col = 0; col < 10; col++) {
+      if (playfield[row][col]) {
+        const name = playfield[row][col];
+        context.fillStyle = colors[name];
+        context.shadowBlur = 20;
+        context.shadowColor = '#660675';
+        context.fillRect(col * grid, row * grid, grid-1, grid-1);
+        context.shadowBlur = 0;
+      }
+    }
+  }
+
+  // Draw active tetromino
+  if (tetromino) {
+    const dropSpeed = Math.max(35 - level * 2, 10);
+    
+    if (++count > dropSpeed) {
+      tetromino.row++;
+      count = 0;
+
+      if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
+        tetromino.row--;
+        placeTetromino();
+      }
+    }
+
+    context.fillStyle = colors[tetromino.name];
+    context.shadowBlur = 30;
+    context.shadowColor = '#660675';
+
+    for (let row = 0; row < tetromino.matrix.length; row++) {
+      for (let col = 0; col < tetromino.matrix[row].length; col++) {
+        if (tetromino.matrix[row][col]) {
+          context.fillRect((tetromino.col + col) * grid, (tetromino.row + row) * grid, grid-1, grid-1);
+        }
+      }
+    }
+    context.shadowBlur = 0;
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (gameOver) return;
+
+  // 左右の矢印キー (移動)
+  if (e.which === 37 || e.which === 39) {
+    const col = e.which === 37 ? tetromino.col - 1 : tetromino.col + 1;
+    if (isValidMove(tetromino.matrix, tetromino.row, col)) {
+      tetromino.col = col;
+    }
+  }
+
+  // 上矢印キー (回転)
+  if (e.which === 38) {
+    e.preventDefault(); // ページスクロール防止
+    const matrix = rotate(tetromino.matrix);
+    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+      tetromino.matrix = matrix;
+      // 回転アニメーション
+      anime({
+        targets: canvas,
+        rotate: [0, 5, 0],
+        duration: 100
+      });
+    }
+  }
+
+  // 下矢印キー (1マス下へ)
+  if (e.which === 40) {
+    e.preventDefault(); // ページスクロール防止
+    const row = tetromino.row + 1;
+    if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
+      tetromino.row = row - 1;
+      placeTetromino();
+      return;
+    }
+    tetromino.row = row;
+  }
+
+  // スペースキー (一番下まで落とす)
+  if (e.which === 32) {
+    e.preventDefault(); // ページスクロール防止
+    
+    // 一番下まで落とす
+    while (isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col)) {
+      tetromino.row++;
+    }
+    
+    // 落下アニメーション
+    anime({
+      targets: canvas,
+      translateY: [0, 10, 0],
+      duration: 150,
+      easing: 'easeOutBounce'
+    });
+    
+    placeTetromino();
+  }
+});
+
+rAF = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
