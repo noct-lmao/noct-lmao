@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo & Memo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(103, 6, 118, 0.3);
+      padding: 1.5rem 2rem;
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.75rem;
+      font-weight: bold;
+    }
+
+    .lang-switcher {
+      background: rgba(103, 6, 118, 0.2);
+      border: 1px solid rgba(103, 6, 118, 0.3);
+      color: #670676;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .lang-switcher:hover {
+      background: rgba(103, 6, 118, 0.4);
+      border-color: #670676;
+      transform: scale(1.05);
+    }
+
+    .logo svg {
+      color: #670676;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, #670676, #8800aa, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    main {
+      flex: 1;
+      padding: 3rem 1.5rem;
+    }
+
+    .mode-switcher {
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .mode-btn {
+      background: rgba(103, 6, 118, 0.2);
+      border: 2px solid rgba(103, 6, 118, 0.3);
+      border-radius: 12px;
+      padding: 1rem 2rem;
+      color: #9ca3af;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-btn:hover {
+      border-color: #670676;
+      transform: translateY(-2px);
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #670676, #8800aa);
+      border-color: #670676;
+      color: #fff;
+      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+    }
+
+    .content-area {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .todo-container, .memo-container {
+      background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
+      border: 1px solid rgba(103, 6, 118, 0.3);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 32px rgba(103, 6, 118, 0.4);
+      display: none;
+    }
+
+    .todo-container.active, .memo-container.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      background: linear-gradient(90deg, #670676, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .input-section {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    #todoInput {
+      flex: 1;
+      background: rgba(103, 6, 118, 0.1);
+      border: 2px solid rgba(103, 6, 118, 0.3);
+      border-radius: 8px;
+      padding: 0.875rem 1.25rem;
+      color: #fff;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    #todoInput:focus {
+      outline: none;
+      border-color: #670676;
+      background: rgba(103, 6, 118, 0.2);
+      box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
+    }
+
+    #todoInput::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    #addTodoBtn {
+      background: linear-gradient(135deg, #670676, #8800aa);
+      border: none;
+      border-radius: 8px;
+      padding: 0.875rem 2rem;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #addTodoBtn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    #addTodoBtn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    #addTodoBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(103, 6, 118, 0.3);
+      padding-bottom: 0.75rem;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+
+    .filter-btn.active {
+      background: rgba(103, 6, 118, 0.3);
+      color: #a855f7;
+    }
+
+    .filter-btn:hover {
+      color: #670676;
+    }
+
+    .todo-list {
+      list-style: none;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .todo-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .todo-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    .todo-list::-webkit-scrollbar-thumb {
+      background: #670676;
+      border-radius: 4px;
+    }
+
+    .todo-list::-webkit-scrollbar-thumb:hover {
+      background: #8800aa;
+    }
+
+    .todo-item {
+      background: linear-gradient(135deg, rgba(103, 6, 118, 0.1), rgba(0, 0, 0, 0.3));
+      border: 1px solid rgba(103, 6, 118, 0.2);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.3s;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideIn 0.3s forwards;
+    }
+
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .todo-item:hover {
+      border-color: #670676;
+      box-shadow: 0 4px 16px rgba(103, 6, 118, 0.3);
+      transform: translateX(5px);
+    }
+
+    .todo-item.completed {
+      opacity: 0.6;
+    }
+
+    .todo-item.completed .todo-text {
+      text-decoration: line-through;
+      color: #6b7280;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border: 2px solid #670676;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .checkbox:hover {
+      background: rgba(103, 6, 118, 0.2);
+    }
+
+    .checkbox.checked {
+      background: #670676;
+      box-shadow: 0 0 15px rgba(103, 6, 118, 0.6);
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .todo-text {
+      flex: 1;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    .delete-btn {
+      background: rgba(220, 38, 38, 0.2);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: rgba(220, 38, 38, 0.4);
+      border-color: #ef4444;
+      transform: scale(1.05);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6b7280;
+    }
+
+    .empty-state svg {
+      color: rgba(103, 6, 118, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .stats {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(103, 6, 118, 0.3);
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #670676, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+
+    .memo-input-section {
+      margin-bottom: 2rem;
+    }
+
+    #memoTitle {
+      width: 100%;
+      background: rgba(103, 6, 118, 0.1);
+      border: 2px solid rgba(103, 6, 118, 0.3);
+      border-radius: 8px;
+      padding: 0.875rem 1.25rem;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    #memoContent {
+      width: 100%;
+      min-height: 150px;
+      background: rgba(103, 6, 118, 0.1);
+      border: 2px solid rgba(103, 6, 118, 0.3);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      color: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s;
+    }
+
+    #memoTitle:focus, #memoContent:focus {
+      outline: none;
+      border-color: #670676;
+      background: rgba(103, 6, 118, 0.2);
+      box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
+    }
+
+    #memoTitle::placeholder, #memoContent::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    #addMemoBtn {
+      background: linear-gradient(135deg, #670676, #8800aa);
+      border: none;
+      border-radius: 8px;
+      padding: 0.875rem 2rem;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    #addMemoBtn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+    }
+
+    .memo-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .memo-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .memo-list::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    .memo-list::-webkit-scrollbar-thumb {
+      background: #670676;
+      border-radius: 4px;
+    }
+
+    .memo-item {
+      background: linear-gradient(135deg, rgba(103, 6, 118, 0.15), rgba(0, 0, 0, 0.4));
+      border: 1px solid rgba(103, 6, 118, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: memoSlideIn 0.3s forwards;
+      position: relative;
+    }
+
+    @keyframes memoSlideIn {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .memo-item:hover {
+      border-color: #670676;
+      box-shadow: 0 8px 24px rgba(103, 6, 118, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .memo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .memo-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #a855f7;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .memo-delete {
+      background: rgba(220, 38, 38, 0.2);
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.3s;
+      margin-left: 0.5rem;
+    }
+
+    .memo-delete:hover {
+      background: rgba(220, 38, 38, 0.4);
+      transform: scale(1.1);
+    }
+
+    .memo-content {
+      color: #d1d5db;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.75rem;
+    }
+
+    .memo-date {
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-align: right;
+    }
+
+    .particle {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: #670676;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .music-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #670676;
+      border-radius: 12px;
+      padding: 10px 15px;
+      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+      cursor: move;
+      user-select: none;
+    }
+
+    .music-controls:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle {
+      text-align: center;
+      padding: 4px;
+      margin: -10px -15px 8px -15px;
+      background: #670676;
+      border-radius: 10px 10px 0 0;
+      cursor: grab;
+      font-size: 11px;
+      color: white;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .music-controls button {
+      background: #670676;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      margin: 3px;
+      box-shadow: 0 0 15px rgba(103, 6, 118, 0.5);
+      transition: all 0.3s;
+    }
+
+    .music-controls button:hover {
+      background: #8800aa;
+      box-shadow: 0 0 25px rgba(103, 6, 118, 0.9);
+      transform: scale(1.05);
+    }
+
+    .music-controls input[type="range"] {
+      width: 120px;
+      margin: 6px 3px;
+      accent-color: #670676;
+    }
+
+    .music-label {
+      color: #670676;
+      font-size: 11px;
+      font-weight: bold;
+      text-shadow: 0 0 10px #670676;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .volume-container {
+      margin-top: 10px;
+    }
+
+    .music-status {
+      color: white;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: center;
+    }
+
+    .playlist {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 6px;
+      padding: 3px;
+    }
+
+    .playlist-item {
+      background: rgba(103, 6, 118, 0.3);
+      border: 1px solid #670676;
+      border-radius: 4px;
+      padding: 5px;
+      margin: 3px 0;
+      color: white;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .playlist-item:hover {
+      background: rgba(103, 6, 118, 0.6);
+      transform: translateX(5px);
+    }
+
+    .playlist-item.active {
+      background: #670676;
+      box-shadow: 0 0 15px rgba(103, 6, 118, 0.8);
+    }
+
+    .playlist-item .delete-btn-music {
+      background: rgba(255, 0, 0, 0.5);
+      border: none;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 9px;
+    }
+
+    .playlist-item .delete-btn-music:hover {
+      background: rgba(255, 0, 0, 0.8);
+    }
+
+    .playlist::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .playlist::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+
+    .playlist::-webkit-scrollbar-thumb {
+      background: #670676;
+      border-radius: 4px;
+    }
+
+    .playlist::-webkit-scrollbar-thumb:hover {
+      background: #8800aa;
+    }
+
+    #youtubeUrl::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    #youtubePlayer {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 240px;
+      height: 160px;
+      z-index: 1001;
+      border: 2px solid #670676;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+    }
+
+    .audio-visualizer {
+      margin: 15px 0;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #670676;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 0 20px rgba(103, 6, 118, 0.4);
+    }
+
+    #visualizerCanvas {
+      width: 100%;
+      height: 80px;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .mode-switcher {
+        flex-direction: column;
+      }
+
+      .todo-container, .memo-container {
+        padding: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .input-section {
+        flex-direction: column;
+      }
+
+      .memo-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="music-controls" id="musicControls">
+    <div class="drag-handle">⋮⋮ DRAG ME ⋮⋮</div>
+    <div class="music-label">🎵 MUSIC PLAYER</div>
+    <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
+    <button id="uploadBtn">📁 ADD MUSIC</button>
+    <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
+    <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
+    <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube: No spectrum</div>
+    <button id="playBtn">▶ PLAY</button>
+    <button id="pauseBtn">⏸ PAUSE</button>
+    <button id="nextBtn">⏭ NEXT</button>
+    
+    <div class="audio-visualizer">
+      <canvas id="visualizerCanvas"></canvas>
+    </div>
+    
+    <div class="volume-container">
+      <label class="music-label" for="volumeSlider">VOLUME</label>
+      <input type="range" id="volumeSlider" min="0" max="100" value="50">
+    </div>
+    <div class="music-status" id="musicStatus">No tracks</div>
+    <div class="playlist" id="musicPlaylist"></div>
+  </div>
+
+  <audio id="bgMusic" loop></audio>
+  <div id="youtubePlayer"></div>
+  
+  <div id="canvas-container"></div>
+  
+  <div class="content-wrapper">
+    <header>
+      <nav>
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span data-lang-key="app-title">タスク管理</span>
+        </div>
+        <button class="lang-switcher" id="langSwitcher">EN</button>
+      </nav>
+    </header>
+
+    <main>
+      <div class="mode-switcher">
+        <button class="mode-btn active" data-mode="todo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          <span data-lang-key="mode-todo">Todoリスト</span>
+        </button>
+        <button class="mode-btn" data-mode="memo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span data-lang-key="mode-memo">メモ</span>
+        </button>
+      </div>
+
+      <div class="content-area">
+        <div class="todo-container active">
+          <h1 data-lang-key="todo-title">タスク</h1>
+          
+          <div class="input-section">
+            <input type="text" id="todoInput" data-lang-key="todo-placeholder" placeholder="何をする必要がありますか？">
+            <button id="addTodoBtn" data-lang-key="todo-add-btn">タスク追加</button>
+          </div>
+
+          <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all" data-lang-key="filter-all">すべて</button>
+            <button class="filter-btn" data-filter="active" data-lang-key="filter-active">未完了</button>
+            <button class="filter-btn" data-filter="completed" data-lang-key="filter-completed">完了済み</button>
+          </div>
+
+          <ul class="todo-list" id="todoList"></ul>
+
+          <div class="stats">
+            <div class="stat-item">
+              <div class="stat-value" id="totalTasks">0</div>
+              <div class="stat-label" data-lang-key="stat-total">合計</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="activeTasks">0</div>
+              <div class="stat-label" data-lang-key="stat-active">未完了</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="completedTasks">0</div>
+              <div class="stat-label" data-lang-key="stat-completed">完了済み</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="memo-container">
+          <h1 data-lang-key="memo-title">メモ</h1>
+          
+          <div class="memo-input-section">
+            <input type="text" id="memoTitle" data-lang-key="memo-title-placeholder" placeholder="メモタイトル...">
+            <textarea id="memoContent" data-lang-key="memo-content-placeholder" placeholder="メモをここに書いてください..."></textarea>
+            <button id="addMemoBtn" data-lang-key="memo-save-btn">メモを保存</button>
+          </div>
+
+          <div class="memo-list" id="memoList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    // YouTube IFrame API
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+    // Music Player Variables
+    const audio = document.getElementById('bgMusic');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const musicFile = document.getElementById('musicFile');
+    const addYoutubeBtn = document.getElementById('addYoutubeBtn');
+    const youtubeUrl = document.getElementById('youtubeUrl');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const musicStatus = document.getElementById('musicStatus');
+    const musicPlaylistDiv = document.getElementById('musicPlaylist');
+    const youtubePlayerDiv = document.getElementById('youtubePlayer');
+
+    let youtubePlayer = null;
+    let isYoutubeReady = false;
+    let youtubeReadyCheckInterval = null;
+    let isPlayingYouTube = false;
+
+    const visualizerCanvas = document.getElementById('visualizerCanvas');
+    const canvasCtx = visualizerCanvas.getContext('2d');
+    let audioContext, analyser, dataArray, bufferLength, source;
+
+    function setupAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        
+        source = audioContext.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        drawVisualizer();
+      }
+    }
+
+    let randomDataArray = new Uint8Array(128);
+    function drawRandomVisualizer() {
+      if (!isPlayingYouTube) return;
+      
+      for (let i = 0; i < randomDataArray.length; i++) {
+        randomDataArray[i] = Math.random() * 255;
+      }
+      
+      const width = visualizerCanvas.width;
+      const height = visualizerCanvas.height;
+      
+      canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      canvasCtx.fillRect(0, 0, width, height);
+      
+      const barWidth = (width / randomDataArray.length) * 2.5;
+      let barHeight, x = 0;
+      
+      for (let i = 0; i < randomDataArray.length; i++) {
+        barHeight = (randomDataArray[i] / 255) * height;
+        
+        const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
+        gradient.addColorStop(0, '#660675');
+        gradient.addColorStop(0.5, '#8800aa');
+        gradient.addColorStop(1, '#aa00dd');
+        
+        canvasCtx.fillStyle = gradient;
+        canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+        canvasCtx.shadowBlur = 10;
+        canvasCtx.shadowColor = '#660675';
+        x += barWidth + 1;
+      }
+    }
+
+    function drawVisualizer() {
+      requestAnimationFrame(drawVisualizer);
+      
+      if (isPlayingYouTube) {
+        drawRandomVisualizer();
+        return;
+      }
+      
+      if (!analyser || !dataArray) return;
+      analyser.getByteFrequencyData(dataArray);
+      
+      const width = visualizerCanvas.width;
+      const height = visualizerCanvas.height;
+      
+      canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      canvasCtx.fillRect(0, 0, width, height);
+      
+      const barWidth = (width / bufferLength) * 2.5;
+      let barHeight, x = 0;
+      
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = (dataArray[i] / 255) * height;
+        
+        const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
+        gradient.addColorStop(0, '#660675');
+        gradient.addColorStop(0.5, '#8800aa');
+        gradient.addColorStop(1, '#aa00dd');
+        
+        canvasCtx.fillStyle = gradient;
+        canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+        canvasCtx.shadowBlur = 10;
+        canvasCtx.shadowColor = '#660675';
+        x += barWidth + 1;
+      }
+      canvasCtx.shadowBlur = 0;
+    }
+
+    function resizeCanvas() {
+      const rect = visualizerCanvas.getBoundingClientRect();
+      visualizerCanvas.width = rect.width;
+      visualizerCanvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    window.onYouTubeIframeAPIReady = function() {
+      isYoutubeReady = true;
+      if (youtubeReadyCheckInterval) {
+        clearInterval(youtubeReadyCheckInterval);
+        youtubeReadyCheckInterval = null;
+      }
+    };
+
+    function isYouTubeUrl(url) {
+      if (!url) return false;
+      return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(url);
+    }
+
+    function extractVideoId(url) {
+      if (!url) return null;
+      const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
+      return (match && match[7].length === 11) ? match[7] : null;
+    }
+
+    function loadYouTubePlayer(url) {
+      if (typeof YT === 'undefined' || !YT.Player) {
+        musicStatus.textContent = '⏳ YouTube API loading...';
+        if (!youtubeReadyCheckInterval) {
+          youtubeReadyCheckInterval = setInterval(function() {
+            if (typeof YT !== 'undefined' && YT.Player) {
+              clearInterval(youtubeReadyCheckInterval);
+              youtubeReadyCheckInterval = null;
+              isYoutubeReady = true;
+              loadYouTubePlayer(url);
+            }
+          }, 100);
+        }
+        return;
+      }
+
+      const videoId = extractVideoId(url);
+      if (!videoId) {
+        musicStatus.textContent = 'Invalid YouTube URL';
+        return;
+      }
+
+      if (youtubePlayer) {
+        youtubePlayer.loadVideoById(videoId);
+      } else {
+        try {
+          youtubePlayer = new YT.Player('youtubePlayer', {
+            height: '160',
+            width: '240',
+            videoId: videoId,
+            playerVars: { 'autoplay': 0, 'controls': 1, 'rel': 0, 'modestbranding': 1 },
+            events: {
+              'onReady': function(e) { e.target.setVolume(volumeSlider.value); },
+              'onStateChange': function(e) {
+                if (e.data === YT.PlayerState.ENDED && musicPlaylist.length > 0) {
+                  currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
+                  loadMusicTrack(currentMusicTrack);
+                  if (youtubePlayer) youtubePlayer.playVideo();
+                }
+              }
+            }
+          });
+          youtubePlayerDiv.style.display = 'block';
+        } catch (error) {
+          musicStatus.textContent = 'Error loading player';
+        }
+      }
+    }
+
+    let musicPlaylist = [
+    { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio' }
+    ];
+    let currentMusicTrack = -1;
+
+    uploadBtn.addEventListener('click', function() { musicFile.click(); });
+
+    musicFile.addEventListener('change', function(e) {
+      Array.from(e.target.files).forEach(function(file) {
+        musicPlaylist.push({ name: file.name, url: URL.createObjectURL(file), type: 'audio' });
+      });
+      updateMusicPlaylist();
+      if (currentMusicTrack === -1 && musicPlaylist.length > 0) {
+        currentMusicTrack = 0;
+        loadMusicTrack(0);
+      }
+    });
+
+    function addYouTubeTrack() {
+      const url = youtubeUrl.value.trim();
+      if (!url) {
+        musicStatus.textContent = 'Enter YouTube URL';
+        return;
+      }
+      if (!isYouTubeUrl(url)) {
+        musicStatus.textContent = 'Invalid URL';
+        return;
+      }
+      const videoId = extractVideoId(url);
+      if (!videoId) {
+        musicStatus.textContent = 'Could not extract ID';
+        return;
+      }
+      musicPlaylist.push({ name: 'YouTube: ' + videoId, url: url, type: 'youtube', videoId: videoId });
+      youtubeUrl.value = '';
+      updateMusicPlaylist();
+      if (currentMusicTrack === -1) {
+        currentMusicTrack = musicPlaylist.length - 1;
+        loadMusicTrack(currentMusicTrack);
+      }
+    }
+
+    addYoutubeBtn.addEventListener('click', addYouTubeTrack);
+    youtubeUrl.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') addYouTubeTrack();
+    });
+
+    function updateMusicPlaylist() {
+      musicPlaylistDiv.innerHTML = '';
+      musicPlaylist.forEach(function(track, index) {
+        const item = document.createElement('div');
+        item.className = 'playlist-item';
+        if (index === currentMusicTrack) item.classList.add('active');
+        
+        const name = document.createElement('span');
+        name.textContent = (index + 1) + '. ' + track.name;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn-music';
+        deleteBtn.textContent = '✕';
+        deleteBtn.onclick = function(e) {
+          e.stopPropagation();
+          deleteMusicTrack(index);
+        };
+        
+        item.appendChild(name);
+        item.appendChild(deleteBtn);
+        
+        item.onclick = function() {
+          loadMusicTrack(index);
+          const t = musicPlaylist[index];
+          if (t.type === 'youtube' || isYouTubeUrl(t.url)) {
+            if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
+          } else {
+            audio.play();
+          }
+        };
+        
+        musicPlaylistDiv.appendChild(item);
+      });
+      
+      if (musicPlaylist.length === 0) musicStatus.textContent = 'No tracks';
+    }
+
+    function loadMusicTrack(index) {
+      if (index >= 0 && index < musicPlaylist.length) {
+        currentMusicTrack = index;
+        const track = musicPlaylist[index];
+        
+        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+          isPlayingYouTube = true;
+          if (audio.src) {
+            audio.pause();
+            audio.src = '';
+          }
+          if (isYoutubeReady) {
+            loadYouTubePlayer(track.url);
+          } else {
+            if (youtubeReadyCheckInterval) clearInterval(youtubeReadyCheckInterval);
+            youtubeReadyCheckInterval = setInterval(function() {
+              if (isYoutubeReady) {
+                clearInterval(youtubeReadyCheckInterval);
+                youtubeReadyCheckInterval = null;
+                loadYouTubePlayer(track.url);
+              }
+            }, 100);
+          }
+          musicStatus.textContent = (index + 1) + '/' + musicPlaylist.length + ': ' + track.name;
+        } else {
+          isPlayingYouTube = false;
+          if (youtubePlayer) {
+            youtubePlayer.stopVideo();
+            youtubePlayerDiv.style.display = 'none';
+          }
+          audio.src = track.url;
+          musicStatus.textContent = (index + 1) + '/' + musicPlaylist.length + ': ' + track.name;
+        }
+        updateMusicPlaylist();
+      }
+    }
+
+    function deleteMusicTrack(index) {
+      musicPlaylist.splice(index, 1);
+      if (index === currentMusicTrack) {
+        if (musicPlaylist.length > 0) {
+          currentMusicTrack = Math.min(index, musicPlaylist.length - 1);
+          loadMusicTrack(currentMusicTrack);
+        } else {
+          currentMusicTrack = -1;
+          audio.src = '';
+          musicStatus.textContent = 'No tracks';
+        }
+      } else if (index < currentMusicTrack) {
+        currentMusicTrack--;
+      }
+      updateMusicPlaylist();
+    }
+
+    playBtn.addEventListener('click', function() {
+      if (currentMusicTrack >= 0 && currentMusicTrack < musicPlaylist.length) {
+        const track = musicPlaylist[currentMusicTrack];
+        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+          if (youtubePlayer) {
+            youtubePlayer.playVideo();
+            musicStatus.textContent = '♪ Playing: ' + track.name;
+          } else if (isYoutubeReady) {
+            loadYouTubePlayer(track.url);
+            setTimeout(function() { if (youtubePlayer) youtubePlayer.playVideo(); }, 500);
+          } else {
+            musicStatus.textContent = '⏳ Loading...';
+          }
+        } else {
+          if (audio.src) {
+            setupAudioContext();
+            audio.play();
+            musicStatus.textContent = '♪ Playing: ' + track.name;
+          } else {
+            musicStatus.textContent = 'Add music first';
+          }
+        }
+      } else {
+        musicStatus.textContent = 'Add music first';
+      }
+    });
+
+    pauseBtn.addEventListener('click', function() {
+      if (currentMusicTrack >= 0) {
+        const track = musicPlaylist[currentMusicTrack];
+        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+          if (youtubePlayer) {
+            youtubePlayer.pauseVideo();
+            musicStatus.textContent = 'Paused';
+          }
+        } else {
+          audio.pause();
+          musicStatus.textContent = 'Paused';
+        }
+      }
+    });
+
+    nextBtn.addEventListener('click', function() {
+      if (musicPlaylist.length > 0) {
+        currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
+        loadMusicTrack(currentMusicTrack);
+        const track = musicPlaylist[currentMusicTrack];
+        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+          if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
+        } else {
+          audio.play();
+        }
+      }
+    });
+
+    audio.addEventListener('ended', function() {
+      if (musicPlaylist.length > 0) {
+        currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
+        loadMusicTrack(currentMusicTrack);
+        const track = musicPlaylist[currentMusicTrack];
+        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+          if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
+        } else {
+          audio.play();
+        }
+      }
+    });
+
+    volumeSlider.addEventListener('input', function(e) {
+      const volume = e.target.value;
+      audio.volume = volume / 100;
+      if (youtubePlayer) youtubePlayer.setVolume(volume);
+    });
+    audio.volume = 0.5;
+
+    // Draggable music controls
+    (function() {
+      const mc = document.getElementById('musicControls');
+      let isDragging = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+      mc.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+      mc.addEventListener('touchstart', dragStart);
+      document.addEventListener('touchmove', drag);
+      document.addEventListener('touchend', dragEnd);
+
+      function dragStart(e) {
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+        if (e.type === 'touchstart') {
+          initialX = e.touches[0].clientX - xOffset;
+          initialY = e.touches[0].clientY - yOffset;
+        } else {
+          initialX = e.clientX - xOffset;
+          initialY = e.clientY - yOffset;
+        }
+        isDragging = true;
+      }
+
+      function drag(e) {
+        if (isDragging) {
+          e.preventDefault();
+          if (e.type === 'touchmove') {
+            currentX = e.touches[0].clientX - initialX;
+            currentY = e.touches[0].clientY - initialY;
+          } else {
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+          }
+          xOffset = currentX;
+          yOffset = currentY;
+          mc.style.transform = 'translate(' + xOffset + 'px, ' + yOffset + 'px)';
+        }
+      }
+
+      function dragEnd(e) {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+      }
+    })();
+
+    // Language translations
+    const translations = {
+      ja: {
+        'app-title': 'タスク管理',
+        'mode-todo': 'Todoリスト',
+        'mode-memo': 'メモ',
+        'todo-title': 'タスク',
+        'todo-placeholder': '何をする必要がありますか？',
+        'todo-add-btn': 'タスク追加',
+        'filter-all': 'すべて',
+        'filter-active': '未完了',
+        'filter-completed': '完了済み',
+        'stat-total': '合計',
+        'stat-active': '未完了',
+        'stat-completed': '完了済み',
+        'memo-title': 'メモ',
+        'memo-title-placeholder': 'メモタイトル...',
+        'memo-content-placeholder': 'メモをここに書いてください...',
+        'memo-save-btn': 'メモを保存',
+        'no-tasks': 'タスクが見つかりません',
+        'no-memos': 'まだメモがありません',
+        'delete-btn': '削除',
+        'untitled': '無題'
+      },
+      en: {
+        'app-title': 'Task Manager',
+        'mode-todo': 'Todo List',
+        'mode-memo': 'Memo',
+        'todo-title': 'My Tasks',
+        'todo-placeholder': 'What needs to be done?',
+        'todo-add-btn': 'Add Task',
+        'filter-all': 'All',
+        'filter-active': 'Active',
+        'filter-completed': 'Completed',
+        'stat-total': 'Total',
+        'stat-active': 'Active',
+        'stat-completed': 'Completed',
+        'memo-title': 'My Memos',
+        'memo-title-placeholder': 'Memo Title...',
+        'memo-content-placeholder': 'Write your memo here...',
+        'memo-save-btn': 'Save Memo',
+        'no-tasks': 'No tasks found',
+        'no-memos': 'No memos yet',
+        'delete-btn': 'Delete',
+        'untitled': 'Untitled'
+      }
+    };
+
+    let currentLang = 'ja';
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      
+      document.querySelectorAll('[data-lang-key]').forEach(function(element) {
+        const key = element.getAttribute('data-lang-key');
+        if (translations[lang][key]) {
+          if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            element.placeholder = translations[lang][key];
+          } else {
+            element.textContent = translations[lang][key];
+          }
+        }
+      });
+
+      document.getElementById('langSwitcher').textContent = lang === 'ja' ? 'EN' : 'JA';
+      
+      try {
+        localStorage.setItem('language', lang);
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+      
+      renderTodos();
+      renderMemos();
+    }
+
+    function loadLanguage() {
+      try {
+        const stored = localStorage.getItem('language');
+        if (stored) {
+          currentLang = stored;
+          switchLanguage(currentLang);
+        }
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+    }
+
+    document.getElementById('langSwitcher').addEventListener('click', function() {
+      switchLanguage(currentLang === 'ja' ? 'en' : 'ja');
+    });
+
+    // Three.js Background
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+    
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1000;
+    const posArray = new Float32Array(particlesCount * 3);
+    
+    for(let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 100;
+    }
+    
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.05,
+      color: 0x670676,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    
+    camera.position.z = 5;
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    document.addEventListener('mousemove', function(e) {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.rotation.y += 0.0005;
+      particlesMesh.rotation.x += mouseY * 0.0001;
+      particlesMesh.rotation.y += mouseX * 0.0001;
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    window.addEventListener('resize', function() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Mouse particle effect
+    let particleTimeout;
+    document.addEventListener('mousemove', function(e) {
+      if (particleTimeout) return;
+      particleTimeout = setTimeout(function() { particleTimeout = null; }, 32);
+      
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = e.clientX + 'px';
+      particle.style.top = e.clientY + 'px';
+      document.body.appendChild(particle);
+
+      let opacity = 0.8;
+      let scale = 1;
+      const interval = setInterval(function() {
+        opacity -= 0.02;
+        scale += 0.02;
+        particle.style.opacity = opacity;
+        particle.style.transform = 'scale(' + scale + ')';
+        if (opacity <= 0) {
+          clearInterval(interval);
+          particle.remove();
+        }
+      }, 16);
+    });
+
+    // Mode Switcher
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const todoContainer = document.querySelector('.todo-container');
+    const memoContainer = document.querySelector('.memo-container');
+
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const mode = this.dataset.mode;
+        if (mode === 'todo') {
+          todoContainer.classList.add('active');
+          memoContainer.classList.remove('active');
+        } else {
+          todoContainer.classList.remove('active');
+          memoContainer.classList.add('active');
+        }
+      });
+    });
+
+    // Todo List Logic
+    let todos = [];
+    let currentFilter = 'all';
+
+    const todoInput = document.getElementById('todoInput');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const todoList = document.getElementById('todoList');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    function saveTodos() {
+      try {
+        localStorage.setItem('todos', JSON.stringify(todos));
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+    }
+
+    function loadTodos() {
+      try {
+        const stored = localStorage.getItem('todos');
+        if (stored) {
+          todos = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+    }
+
+    function addTodo() {
+      const text = todoInput.value.trim();
+      if (!text) return;
+
+      const todo = {
+        id: Date.now(),
+        text: text,
+        completed: false
+      };
+
+      todos.push(todo);
+      todoInput.value = '';
+      saveTodos();
+      renderTodos();
+    }
+
+    window.toggleTodo = function(id) {
+      const todo = todos.find(t => t.id === id);
+      if (todo) {
+        todo.completed = !todo.completed;
+        saveTodos();
+        renderTodos();
+      }
+    };
+
+    window.deleteTodo = function(id) {
+      todos = todos.filter(t => t.id !== id);
+      saveTodos();
+      renderTodos();
+    };
+
+    function renderTodos() {
+      const filteredTodos = todos.filter(todo => {
+        if (currentFilter === 'active') return !todo.completed;
+        if (currentFilter === 'completed') return todo.completed;
+        return true;
+      });
+
+      if (filteredTodos.length === 0) {
+        todoList.innerHTML = `
+          <div class="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <p>${translations[currentLang]['no-tasks']}</p>
+          </div>
+        `;
+      } else {
+        todoList.innerHTML = filteredTodos.map(todo => `
+          <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+            <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+            <div class="todo-text">${todo.text}</div>
+            <button class="delete-btn" onclick="deleteTodo(${todo.id})">${translations[currentLang]['delete-btn']}</button>
+          </li>
+        `).join('');
+      }
+
+      updateStats();
+    }
+
+    function updateStats() {
+      const total = todos.length;
+      const active = todos.filter(t => !t.completed).length;
+      const completed = todos.filter(t => t.completed).length;
+
+      document.getElementById('totalTasks').textContent = total;
+      document.getElementById('activeTasks').textContent = active;
+      document.getElementById('completedTasks').textContent = completed;
+    }
+
+    addTodoBtn.addEventListener('click', addTodo);
+    todoInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') addTodo();
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.filter;
+        renderTodos();
+      });
+    });
+
+    // Memo Logic
+    let memos = [];
+
+    const memoTitle = document.getElementById('memoTitle');
+    const memoContent = document.getElementById('memoContent');
+    const addMemoBtn = document.getElementById('addMemoBtn');
+    const memoList = document.getElementById('memoList');
+
+    function saveMemos() {
+      try {
+        localStorage.setItem('memos', JSON.stringify(memos));
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+    }
+
+    function loadMemos() {
+      try {
+        const stored = localStorage.getItem('memos');
+        if (stored) {
+          memos = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.log('LocalStorage not available');
+      }
+    }
+
+    function addMemo() {
+      const title = memoTitle.value.trim();
+      const content = memoContent.value.trim();
+      
+      if (!title && !content) return;
+
+      const memo = {
+        id: Date.now(),
+        title: title || translations[currentLang]['untitled'],
+        content: content,
+        date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US')
+      };
+
+      memos.unshift(memo);
+      memoTitle.value = '';
+      memoContent.value = '';
+      saveMemos();
+      renderMemos();
+    }
+
+    window.deleteMemo = function(id) {
+      memos = memos.filter(m => m.id !== id);
+      saveMemos();
+      renderMemos();
+    };
+
+    function renderMemos() {
+      if (memos.length === 0) {
+        memoList.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <p>${translations[currentLang]['no-memos']}</p>
+          </div>
+        `;
+      } else {
+        memoList.innerHTML = memos.map(memo => `
+          <div class="memo-item">
+            <div class="memo-header">
+              <div class="memo-title">${memo.title}</div>
+              <button class="memo-delete" onclick="deleteMemo(${memo.id})">✕</button>
+            </div>
+            <div class="memo-content">${memo.content}</div>
+            <div class="memo-date">${memo.date}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    addMemoBtn.addEventListener('click', addMemo);
+    memoTitle.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        memoContent.focus();
+      }
+    });
+    memoContent.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        addMemo();
+      }
+    });
+
+    loadTodos();
+    renderTodos();
+    loadMemos();
+    renderMemos();
+    loadLanguage();
+
+    // 音楽プレイリスト初期化（最後に実行）
+    if (musicPlaylist.length > 0) {
+      currentMusicTrack = 0;
+      loadMusicTrack(0);
+      updateMusicPlaylist();
+    }
+  </script>
+</body>
+</html>
