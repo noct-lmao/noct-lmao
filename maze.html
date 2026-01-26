@@ -302,6 +302,23 @@
     background: #8800aa;
   }
 
+  #youtubeUrl::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  #youtubePlayer {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 240px;
+    height: 160px;
+    z-index: 1001;
+    border: 2px solid #670676;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
+  }
+
   .audio-visualizer {
     margin: 15px 0;
     background: rgba(0, 0, 0, 0.8);
@@ -361,6 +378,9 @@
   <div class="music-label">🎵 MUSIC PLAYER</div>
   <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
   <button id="uploadBtn">📁 ADD MUSIC</button>
+  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
+  <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
+  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTubeで追加した曲はオーディオスペクトラム非対応です。</div>
   <button id="playBtn">▶ PLAY</button>
   <button id="pauseBtn">⏸ PAUSE</button>
   <button id="nextBtn">⏭ NEXT</button>
@@ -378,6 +398,7 @@
 </div>
 
 <audio id="bgMusic" loop></audio>
+<div id="youtubePlayer"></div>
 
 <div class="game-container">
   <div class="left-panel">
@@ -412,6 +433,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+  // YouTube IFrame APIを動的に読み込む
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+</script>
 
 <script>
 // Three.js Background
@@ -508,12 +536,20 @@ createParticles();
 const audio = document.getElementById('bgMusic');
 const uploadBtn = document.getElementById('uploadBtn');
 const musicFile = document.getElementById('musicFile');
+const addYoutubeBtn = document.getElementById('addYoutubeBtn');
+const youtubeUrl = document.getElementById('youtubeUrl');
 const playBtn = document.getElementById('playBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const nextBtn = document.getElementById('nextBtn');
 const volumeSlider = document.getElementById('volumeSlider');
 const musicStatus = document.getElementById('musicStatus');
 const playlistDiv = document.getElementById('playlist');
+const youtubePlayerDiv = document.getElementById('youtubePlayer');
+
+let youtubePlayer = null;
+let isYoutubeReady = false;
+let youtubeReadyCheckInterval = null;
+let isPlayingYouTube = false;
 
 const visualizerCanvas = document.getElementById('visualizerCanvas');
 const canvasCtx = visualizerCanvas.getContext('2d');
@@ -535,10 +571,17 @@ function setupAudioContext() {
   }
 }
 
-function drawVisualizer() {
-  requestAnimationFrame(drawVisualizer);
+// YouTube再生用のランダムアニメーション
+let randomDataArray = new Uint8Array(128);
+function drawRandomVisualizer() {
+  if (!isPlayingYouTube) {
+    return;
+  }
   
-  analyser.getByteFrequencyData(dataArray);
+  // ランダムな値を生成（実際の音声データの代わり）
+  for (let i = 0; i < randomDataArray.length; i++) {
+    randomDataArray[i] = Math.random() * 255;
+  }
   
   const width = visualizerCanvas.width;
   const height = visualizerCanvas.height;
@@ -546,12 +589,12 @@ function drawVisualizer() {
   canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
   canvasCtx.fillRect(0, 0, width, height);
   
-  const barWidth = (width / bufferLength) * 2.5;
+  const barWidth = (width / randomDataArray.length) * 2.5;
   let barHeight;
   let x = 0;
   
-  for (let i = 0; i < bufferLength; i++) {
-    barHeight = (dataArray[i] / 255) * height;
+  for (let i = 0; i < randomDataArray.length; i++) {
+    barHeight = (randomDataArray[i] / 255) * height;
     
     const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
     gradient.addColorStop(0, '#660675');
@@ -566,8 +609,6 @@ function drawVisualizer() {
     
     x += barWidth + 1;
   }
-  
-  canvasCtx.shadowBlur = 0;
 }
 
 function resizeCanvas() {
@@ -579,11 +620,130 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+// YouTube IFrame API の準備（グローバル関数として定義）
+window.onYouTubeIframeAPIReady = function() {
+  console.log('YouTube API is ready');
+  isYoutubeReady = true;
+  if (youtubeReadyCheckInterval) {
+    clearInterval(youtubeReadyCheckInterval);
+    youtubeReadyCheckInterval = null;
+  }
+  if (playlist.length > 0 && currentTrackIndex >= 0) {
+    const currentTrack = playlist[currentTrackIndex];
+    if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
+      loadYouTubePlayer(currentTrack.url);
+    }
+  }
+};
+
+// 既にAPIが読み込まれている場合のチェック
+function checkYouTubeAPI() {
+  if (typeof YT !== 'undefined' && YT.Player) {
+    console.log('YouTube API already loaded');
+    isYoutubeReady = true;
+    if (playlist.length > 0 && currentTrackIndex >= 0) {
+      const currentTrack = playlist[currentTrackIndex];
+      if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
+        loadYouTubePlayer(currentTrack.url);
+      }
+    }
+  }
+}
+
+// ページ読み込み後にチェック
+window.addEventListener('load', function() {
+  setTimeout(checkYouTubeAPI, 1000);
+});
+
+// YouTube URLかどうかを判定
+function isYouTubeUrl(url) {
+  if (!url) return false;
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+  return youtubeRegex.test(url);
+}
+
+// YouTubeのURLから動画IDを抽出
+function extractVideoId(url) {
+  if (!url) return null;
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[7].length === 11) ? match[7] : null;
+}
+
+// YouTubeプレーヤーを読み込む
+function loadYouTubePlayer(url) {
+  if (typeof YT === 'undefined' || !YT.Player) {
+    console.error('YouTube API is not loaded');
+    musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
+    if (!youtubeReadyCheckInterval) {
+      youtubeReadyCheckInterval = setInterval(function() {
+        if (typeof YT !== 'undefined' && YT.Player) {
+          clearInterval(youtubeReadyCheckInterval);
+          youtubeReadyCheckInterval = null;
+          isYoutubeReady = true;
+          loadYouTubePlayer(url);
+        }
+      }, 100);
+    }
+    return;
+  }
+
+  const videoId = extractVideoId(url);
+  if (!videoId) {
+    musicStatus.textContent = 'Invalid YouTube URL';
+    return;
+  }
+
+  if (youtubePlayer) {
+    youtubePlayer.loadVideoById(videoId);
+  } else {
+    try {
+      youtubePlayer = new YT.Player('youtubePlayer', {
+        height: '160',
+        width: '240',
+        videoId: videoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 1,
+          'rel': 0,
+          'modestbranding': 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+      youtubePlayerDiv.style.display = 'block';
+    } catch (error) {
+      console.error('Error creating YouTube player:', error);
+      musicStatus.textContent = 'Error loading YouTube player';
+    }
+  }
+}
+
+function onPlayerReady(event) {
+  if (volumeSlider) {
+    event.target.setVolume(volumeSlider.value);
+  }
+}
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    if (playlist.length > 0) {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+      if (youtubePlayer) {
+        youtubePlayer.playVideo();
+      }
+    }
+  }
+}
+
 let playlist = [];
 let currentTrackIndex = -1;
 
 const defaultPlaylist = [
-    { name: 'shakethat', url: 'music/ShakeThat.mp3' }
+    { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio' }
 ];
 
 if (defaultPlaylist.length > 0) {
@@ -604,7 +764,8 @@ musicFile.addEventListener('change', (e) => {
     const url = URL.createObjectURL(file);
     playlist.push({
       name: file.name,
-      url: url
+      url: url,
+      type: 'audio'
     });
   });
   
@@ -620,6 +781,54 @@ musicFile.addEventListener('change', (e) => {
     scale: [1, 1.1, 1],
     duration: 300
   });
+});
+
+function addYouTubeTrack() {
+  const url = youtubeUrl.value.trim();
+  if (!url) {
+    musicStatus.textContent = 'Please enter a YouTube URL';
+    return;
+  }
+
+  if (!isYouTubeUrl(url)) {
+    musicStatus.textContent = 'Invalid YouTube URL';
+    return;
+  }
+
+  const videoId = extractVideoId(url);
+  if (!videoId) {
+    musicStatus.textContent = 'Could not extract video ID';
+    return;
+  }
+
+  playlist.push({
+    name: 'YouTube: ' + videoId,
+    url: url,
+    type: 'youtube',
+    videoId: videoId
+  });
+
+  youtubeUrl.value = '';
+  updatePlaylist();
+
+  if (currentTrackIndex === -1 && playlist.length > 0) {
+    currentTrackIndex = playlist.length - 1;
+    loadTrack(currentTrackIndex);
+  }
+
+  anime({
+    targets: '.music-controls',
+    scale: [1, 1.1, 1],
+    duration: 300
+  });
+}
+
+addYoutubeBtn.addEventListener('click', addYouTubeTrack);
+
+youtubeUrl.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    addYouTubeTrack();
+  }
 });
 
 function updatePlaylist() {
@@ -648,7 +857,16 @@ function updatePlaylist() {
     
     item.onclick = () => {
       loadTrack(index);
-      audio.play();
+      const track = playlist[index];
+      if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+        if (youtubePlayer) {
+          setTimeout(function() {
+            youtubePlayer.playVideo();
+          }, 500);
+        }
+      } else {
+        audio.play();
+      }
     };
     
     playlistDiv.appendChild(item);
@@ -662,8 +880,42 @@ function updatePlaylist() {
 function loadTrack(index) {
   if (index >= 0 && index < playlist.length) {
     currentTrackIndex = index;
-    audio.src = playlist[index].url;
-    musicStatus.textContent = `${index + 1}/${playlist.length}: ${playlist[index].name}`;
+    const track = playlist[index];
+    
+    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+      isPlayingYouTube = true;
+      if (audio.src) {
+        audio.pause();
+        audio.src = '';
+      }
+      
+      if (isYoutubeReady) {
+        loadYouTubePlayer(track.url);
+      } else {
+        if (youtubeReadyCheckInterval) {
+          clearInterval(youtubeReadyCheckInterval);
+          youtubeReadyCheckInterval = null;
+        }
+        youtubeReadyCheckInterval = setInterval(function() {
+          if (isYoutubeReady) {
+            clearInterval(youtubeReadyCheckInterval);
+            youtubeReadyCheckInterval = null;
+            loadYouTubePlayer(track.url);
+          }
+        }, 100);
+      }
+      
+      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+    } else {
+      isPlayingYouTube = false;
+      if (youtubePlayer) {
+        youtubePlayer.stopVideo();
+        youtubePlayerDiv.style.display = 'none';
+      }
+      audio.src = track.url;
+      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+    }
+    
     updatePlaylist();
   }
 }
@@ -688,10 +940,33 @@ function deleteTrack(index) {
 }
 
 playBtn.addEventListener('click', () => {
-  if (audio.src) {
-    setupAudioContext();
-    audio.play();
-    musicStatus.textContent = `♪ Playing: ${playlist[currentTrackIndex].name}`;
+  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
+    const track = playlist[currentTrackIndex];
+    
+    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+      if (youtubePlayer) {
+        youtubePlayer.playVideo();
+        musicStatus.textContent = `♪ Playing: ${track.name}`;
+      } else if (isYoutubeReady) {
+        loadYouTubePlayer(track.url);
+        setTimeout(function() {
+          if (youtubePlayer) {
+            youtubePlayer.playVideo();
+          }
+        }, 500);
+      } else {
+        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
+      }
+    } else {
+      if (audio.src) {
+        setupAudioContext();
+        audio.play();
+        musicStatus.textContent = `♪ Playing: ${track.name}`;
+      } else {
+        musicStatus.textContent = 'Please add music first';
+        return;
+      }
+    }
     
     anime({
       targets: '#playBtn',
@@ -704,8 +979,21 @@ playBtn.addEventListener('click', () => {
 });
 
 pauseBtn.addEventListener('click', () => {
-  audio.pause();
-  musicStatus.textContent = 'Paused';
+  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
+    const track = playlist[currentTrackIndex];
+    
+    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+      if (youtubePlayer) {
+        youtubePlayer.pauseVideo();
+        musicStatus.textContent = 'Paused';
+      } else {
+        musicStatus.textContent = '⏳ YouTube player is not ready yet';
+      }
+    } else {
+      audio.pause();
+      musicStatus.textContent = 'Paused';
+    }
+  }
   
   anime({
     targets: '#pauseBtn',
@@ -718,7 +1006,27 @@ nextBtn.addEventListener('click', () => {
   if (playlist.length > 0) {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     loadTrack(currentTrackIndex);
-    audio.play();
+    
+    const track = playlist[currentTrackIndex];
+    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+      if (youtubePlayer) {
+        setTimeout(function() {
+          youtubePlayer.playVideo();
+        }, 500);
+      } else if (isYoutubeReady) {
+        setTimeout(function() {
+          if (youtubePlayer) {
+            youtubePlayer.playVideo();
+          } else {
+            musicStatus.textContent = '⏳ Loading YouTube player...';
+          }
+        }, 1000);
+      } else {
+        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
+      }
+    } else {
+      audio.play();
+    }
     
     anime({
       targets: '#nextBtn',
@@ -730,14 +1038,35 @@ nextBtn.addEventListener('click', () => {
 
 audio.addEventListener('ended', () => {
   if (playlist.length > 0) {
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+    const nextIndex = (currentTrackIndex + 1) % playlist.length;
+    currentTrackIndex = nextIndex;
     loadTrack(currentTrackIndex);
-    audio.play();
+    
+    const track = playlist[currentTrackIndex];
+    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
+      if (youtubePlayer) {
+        setTimeout(function() {
+          youtubePlayer.playVideo();
+        }, 500);
+      } else if (isYoutubeReady) {
+        setTimeout(function() {
+          if (youtubePlayer) {
+            youtubePlayer.playVideo();
+          }
+        }, 1000);
+      }
+    } else {
+      audio.play();
+    }
   }
 });
 
 volumeSlider.addEventListener('input', (e) => {
-  audio.volume = e.target.value / 100;
+  const volume = e.target.value;
+  audio.volume = volume / 100;
+  if (youtubePlayer) {
+    youtubePlayer.setVolume(volume);
+  }
 });
 
 audio.volume = 0.5;

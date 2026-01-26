@@ -171,6 +171,27 @@
       background-clip: text;
     }
 
+    #welcomeText {
+      background: linear-gradient(135deg, #670676, #8800aa, #a855f7, #c084fc);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
     .scroll-indicator {
       position: relative;
       margin-top: 5rem;
@@ -393,8 +414,8 @@
       z-index: 10;
       background: rgba(0, 0, 0, 0.9);
       border: 2px solid #670676;
-      border-radius: 15px;
-      padding: 15px 20px;
+      border-radius: 12px;
+      padding: 10px 15px;
       box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
       cursor: move;
       user-select: none;
@@ -406,12 +427,12 @@
 
     .drag-handle {
       text-align: center;
-      padding: 5px;
-      margin: -15px -20px 10px -20px;
+      padding: 4px;
+      margin: -10px -15px 8px -15px;
       background: #670676;
-      border-radius: 13px 13px 0 0;
+      border-radius: 10px 10px 0 0;
       cursor: grab;
-      font-size: 12px;
+      font-size: 11px;
       color: white;
     }
 
@@ -423,13 +444,13 @@
       background: #670676;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: bold;
-      margin: 5px;
+      margin: 3px;
       box-shadow: 0 0 15px rgba(103, 6, 118, 0.5);
       transition: all 0.3s;
     }
@@ -441,18 +462,18 @@
     }
 
     .music-controls input[type="range"] {
-      width: 150px;
-      margin: 10px 5px;
+      width: 120px;
+      margin: 6px 3px;
       accent-color: #670676;
     }
 
     .music-label {
       color: #670676;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: bold;
       text-shadow: 0 0 10px #670676;
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 3px;
     }
 
     .volume-container {
@@ -467,20 +488,20 @@
     }
 
     .playlist {
-      max-height: 200px;
+      max-height: 150px;
       overflow-y: auto;
-      margin-top: 10px;
-      padding: 5px;
+      margin-top: 6px;
+      padding: 3px;
     }
 
     .playlist-item {
       background: rgba(103, 6, 118, 0.3);
       border: 1px solid #670676;
-      border-radius: 5px;
-      padding: 8px;
-      margin: 5px 0;
+      border-radius: 4px;
+      padding: 5px;
+      margin: 3px 0;
       color: white;
-      font-size: 12px;
+      font-size: 10px;
       cursor: pointer;
       transition: all 0.3s;
       display: flex;
@@ -502,10 +523,10 @@
       background: rgba(255, 0, 0, 0.5);
       border: none;
       color: white;
-      padding: 2px 8px;
-      border-radius: 3px;
+      padding: 2px 6px;
+      border-radius: 2px;
       cursor: pointer;
-      font-size: 10px;
+      font-size: 9px;
     }
 
     .playlist-item .delete-btn:hover {
@@ -539,8 +560,8 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 300px;
-      height: 200px;
+      width: 240px;
+      height: 160px;
       z-index: 1001;
       border: 2px solid #670676;
       border-radius: 8px;
@@ -599,8 +620,9 @@
     <div class="music-label">🎵 MUSIC PLAYER</div>
     <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
     <button id="uploadBtn">📁 ADD MUSIC</button>
-    <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 8px; margin: 5px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 5px; color: white; font-size: 12px;">
+    <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
     <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
+    <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);" data-lang-key="youtube-visualizer-note">※YouTubeで追加した曲はオーディオスペクトラム非対応です。</div>
     <button id="playBtn">▶ PLAY</button>
     <button id="pauseBtn">⏸ PAUSE</button>
     <button id="nextBtn">⏭ NEXT</button>
@@ -692,9 +714,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
+    // YouTube IFrame APIを動的に読み込む
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
     const audio = document.getElementById('bgMusic');
     const uploadBtn = document.getElementById('uploadBtn');
     const musicFile = document.getElementById('musicFile');
@@ -710,6 +737,8 @@
 
     let youtubePlayer = null;
     let isYoutubeReady = false;
+    let youtubeReadyCheckInterval = null;
+    let isPlayingYouTube = false;
 
     const visualizerCanvas = document.getElementById('visualizerCanvas');
     const canvasCtx = visualizerCanvas.getContext('2d');
@@ -731,8 +760,56 @@
       }
     }
 
+    // YouTube再生用のランダムアニメーション
+    let randomDataArray = new Uint8Array(128);
+    function drawRandomVisualizer() {
+      if (!isPlayingYouTube) {
+        return;
+      }
+      
+      // ランダムな値を生成（実際の音声データの代わり）
+      for (let i = 0; i < randomDataArray.length; i++) {
+        randomDataArray[i] = Math.random() * 255;
+      }
+      
+      const width = visualizerCanvas.width;
+      const height = visualizerCanvas.height;
+      
+      canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      canvasCtx.fillRect(0, 0, width, height);
+      
+      const barWidth = (width / randomDataArray.length) * 2.5;
+      let barHeight;
+      let x = 0;
+      
+      for (let i = 0; i < randomDataArray.length; i++) {
+        barHeight = (randomDataArray[i] / 255) * height;
+        
+        const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
+        gradient.addColorStop(0, '#660675');
+        gradient.addColorStop(0.5, '#8800aa');
+        gradient.addColorStop(1, '#aa00dd');
+        
+        canvasCtx.fillStyle = gradient;
+        canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+        
+        canvasCtx.shadowBlur = 10;
+        canvasCtx.shadowColor = '#660675';
+        
+        x += barWidth + 1;
+      }
+    }
+
     function drawVisualizer() {
       requestAnimationFrame(drawVisualizer);
+      
+      // YouTube再生中はランダムアニメーションを使用
+      if (isPlayingYouTube) {
+        drawRandomVisualizer();
+        return;
+      }
+      
+      if (!analyser || !dataArray) return;
       
       analyser.getByteFrequencyData(dataArray);
       
@@ -777,7 +854,12 @@
 
     // YouTube IFrame API の準備（グローバル関数として定義）
     window.onYouTubeIframeAPIReady = function() {
+      console.log('YouTube API is ready');
       isYoutubeReady = true;
+      if (youtubeReadyCheckInterval) {
+        clearInterval(youtubeReadyCheckInterval);
+        youtubeReadyCheckInterval = null;
+      }
       if (playlist.length > 0 && currentTrackIndex >= 0) {
         const currentTrack = playlist[currentTrackIndex];
         if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
@@ -785,6 +867,25 @@
         }
       }
     };
+
+    // 既にAPIが読み込まれている場合のチェック
+    function checkYouTubeAPI() {
+      if (typeof YT !== 'undefined' && YT.Player) {
+        console.log('YouTube API already loaded');
+        isYoutubeReady = true;
+        if (playlist.length > 0 && currentTrackIndex >= 0) {
+          const currentTrack = playlist[currentTrackIndex];
+          if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
+            loadYouTubePlayer(currentTrack.url);
+          }
+        }
+      }
+    }
+
+    // ページ読み込み後にチェック
+    window.addEventListener('load', function() {
+      setTimeout(checkYouTubeAPI, 1000);
+    });
 
     // YouTube URLかどうかを判定
     function isYouTubeUrl(url) {
@@ -803,6 +904,22 @@
 
     // YouTubeプレーヤーを読み込む
     function loadYouTubePlayer(url) {
+      if (typeof YT === 'undefined' || !YT.Player) {
+        console.error('YouTube API is not loaded');
+        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
+        if (!youtubeReadyCheckInterval) {
+          youtubeReadyCheckInterval = setInterval(function() {
+            if (typeof YT !== 'undefined' && YT.Player) {
+              clearInterval(youtubeReadyCheckInterval);
+              youtubeReadyCheckInterval = null;
+              isYoutubeReady = true;
+              loadYouTubePlayer(url);
+            }
+          }, 100);
+        }
+        return;
+      }
+
       const videoId = extractVideoId(url);
       if (!videoId) {
         musicStatus.textContent = 'Invalid YouTube URL';
@@ -812,22 +929,27 @@
       if (youtubePlayer) {
         youtubePlayer.loadVideoById(videoId);
       } else {
-        youtubePlayer = new YT.Player('youtubePlayer', {
-          height: '200',
-          width: '300',
-          videoId: videoId,
-          playerVars: {
-            'autoplay': 0,
-            'controls': 1,
-            'rel': 0,
-            'modestbranding': 1
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-        youtubePlayerDiv.style.display = 'block';
+        try {
+          youtubePlayer = new YT.Player('youtubePlayer', {
+            height: '160',
+            width: '240',
+            videoId: videoId,
+            playerVars: {
+              'autoplay': 0,
+              'controls': 1,
+              'rel': 0,
+              'modestbranding': 1
+            },
+            events: {
+              'onReady': onPlayerReady,
+              'onStateChange': onPlayerStateChange
+            }
+          });
+          youtubePlayerDiv.style.display = 'block';
+        } catch (error) {
+          console.error('Error creating YouTube player:', error);
+          musicStatus.textContent = 'Error loading YouTube player';
+        }
       }
     }
 
@@ -839,7 +961,6 @@
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
-        // 次の曲に自動再生
         if (playlist.length > 0) {
           currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
           loadTrack(currentTrackIndex);
@@ -912,7 +1033,6 @@
         return;
       }
 
-      // YouTubeのタイトルを取得（簡易版としてURLを使用）
       playlist.push({
         name: 'YouTube: ' + videoId,
         url: url,
@@ -971,14 +1091,12 @@
           loadTrack(index);
           const track = playlist[index];
           if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-            // YouTubeの場合
             if (youtubePlayer) {
               setTimeout(function() {
                 youtubePlayer.playVideo();
               }, 500);
             }
           } else {
-            // MP3ファイルの場合
             audio.play();
           }
         };
@@ -997,7 +1115,7 @@
         const track = playlist[index];
         
         if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          // YouTubeの場合
+          isPlayingYouTube = true;
           if (audio.src) {
             audio.pause();
             audio.src = '';
@@ -1006,10 +1124,14 @@
           if (isYoutubeReady) {
             loadYouTubePlayer(track.url);
           } else {
-            // APIがまだ読み込まれていない場合、準備完了を待つ
-            const checkReady = setInterval(function() {
+            if (youtubeReadyCheckInterval) {
+              clearInterval(youtubeReadyCheckInterval);
+              youtubeReadyCheckInterval = null;
+            }
+            youtubeReadyCheckInterval = setInterval(function() {
               if (isYoutubeReady) {
-                clearInterval(checkReady);
+                clearInterval(youtubeReadyCheckInterval);
+                youtubeReadyCheckInterval = null;
                 loadYouTubePlayer(track.url);
               }
             }, 100);
@@ -1017,7 +1139,7 @@
           
           musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
         } else {
-          // MP3ファイルの場合
+          isPlayingYouTube = false;
           if (youtubePlayer) {
             youtubePlayer.stopVideo();
             youtubePlayerDiv.style.display = 'none';
@@ -1054,7 +1176,6 @@
         const track = playlist[currentTrackIndex];
         
         if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          // YouTubeの場合
           if (youtubePlayer) {
             youtubePlayer.playVideo();
             musicStatus.textContent = '♪ Playing: ' + track.name;
@@ -1065,9 +1186,10 @@
                 youtubePlayer.playVideo();
               }
             }, 500);
+          } else {
+            musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
           }
         } else {
-          // MP3ファイルの場合
           if (audio.src) {
             setupAudioContext();
             audio.play();
@@ -1093,16 +1215,16 @@
         const track = playlist[currentTrackIndex];
         
         if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          // YouTubeの場合
           if (youtubePlayer) {
             youtubePlayer.pauseVideo();
+            musicStatus.textContent = 'Paused';
+          } else {
+            musicStatus.textContent = '⏳ YouTube player is not ready yet';
           }
         } else {
-          // MP3ファイルの場合
           audio.pause();
+          musicStatus.textContent = 'Paused';
         }
-        
-        musicStatus.textContent = 'Paused';
       }
       
       anime({
@@ -1119,14 +1241,22 @@
         
         const track = playlist[currentTrackIndex];
         if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          // YouTubeの場合
           if (youtubePlayer) {
             setTimeout(function() {
               youtubePlayer.playVideo();
             }, 500);
+          } else if (isYoutubeReady) {
+            setTimeout(function() {
+              if (youtubePlayer) {
+                youtubePlayer.playVideo();
+              } else {
+                musicStatus.textContent = '⏳ Loading YouTube player...';
+              }
+            }, 1000);
+          } else {
+            musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
           }
         } else {
-          // MP3ファイルの場合
           audio.play();
         }
         
@@ -1146,14 +1276,18 @@
         
         const track = playlist[currentTrackIndex];
         if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          // YouTubeの場合
           if (youtubePlayer) {
             setTimeout(function() {
               youtubePlayer.playVideo();
             }, 500);
+          } else if (isYoutubeReady) {
+            setTimeout(function() {
+              if (youtubePlayer) {
+                youtubePlayer.playVideo();
+              }
+            }, 1000);
           }
         } else {
-          // MP3ファイルの場合
           audio.play();
         }
       }
@@ -1240,7 +1374,8 @@
         'about-title': 'このサイトについて',
         'about-text': 'noctが気ままに制作した作品をアップロードする場所です。',
         'coming-soon': 'Coming Soon',
-        'add-project-text': 'Coming Soon'
+        'add-project-text': 'Coming Soon',
+        'youtube-visualizer-note': '※YouTubeで追加した曲はオーディオスペクトラム非対応です。'
       },
       en: {
         'nav-home': 'Home',
@@ -1252,7 +1387,8 @@
         'about-title': 'About',
         'about-text': 'This site is where noct casually uploads works they\'ve created.',
         'coming-soon': 'Coming Soon',
-        'add-project-text': 'Coming Soon'
+        'add-project-text': 'Coming Soon',
+        'youtube-visualizer-note': '※Songs added via YouTube do not support audio spectrum visualization.'
       }
     };
 
