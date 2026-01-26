@@ -165,8 +165,8 @@
     z-index: 10;
     background: rgba(0, 0, 0, 0.9);
     border: 2px solid #660675;
-    border-radius: 15px;
-    padding: 15px 20px;
+    border-radius: 12px;
+    padding: 10px 15px;
     box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
     cursor: move;
     user-select: none;
@@ -178,12 +178,12 @@
 
   .drag-handle {
     text-align: center;
-    padding: 5px;
-    margin: -15px -20px 10px -20px;
+    padding: 4px;
+    margin: -10px -15px 8px -15px;
     background: #660675;
-    border-radius: 13px 13px 0 0;
+    border-radius: 10px 10px 0 0;
     cursor: grab;
-    font-size: 12px;
+    font-size: 11px;
     color: white;
   }
 
@@ -195,13 +195,13 @@
     background: #660675;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    font-size: 16px;
+    font-size: 11px;
     font-weight: bold;
-    margin: 5px;
+    margin: 3px;
     box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
     transition: all 0.3s;
   }
@@ -213,18 +213,18 @@
   }
 
   .music-controls input[type="range"] {
-    width: 150px;
-    margin: 10px 5px;
+    width: 120px;
+    margin: 6px 3px;
     accent-color: #660675;
   }
 
   .music-label {
     color: #660675;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: bold;
     text-shadow: 0 0 10px #660675;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
   }
 
   .volume-container {
@@ -239,20 +239,20 @@
   }
 
   .playlist {
-    max-height: 200px;
+    max-height: 150px;
     overflow-y: auto;
-    margin-top: 10px;
-    padding: 5px;
+    margin-top: 6px;
+    padding: 3px;
   }
 
   .playlist-item {
     background: rgba(102, 6, 117, 0.3);
     border: 1px solid #660675;
-    border-radius: 5px;
-    padding: 8px;
-    margin: 5px 0;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 3px 0;
     color: white;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -274,14 +274,29 @@
     background: rgba(255, 0, 0, 0.5);
     border: none;
     color: white;
-    padding: 2px 8px;
-    border-radius: 3px;
+    padding: 2px 6px;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .playlist-item .delete-btn:hover {
     background: rgba(255, 0, 0, 0.8);
+  }
+
+  .audio-visualizer {
+    margin: 15px 0;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #660675;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 20px rgba(102, 6, 117, 0.4);
+  }
+
+  #visualizerCanvas {
+    width: 100%;
+    height: 80px;
+    border-radius: 5px;
   }
 
   .playlist::-webkit-scrollbar {
@@ -300,38 +315,6 @@
 
   .playlist::-webkit-scrollbar-thumb:hover {
     background: #8800aa;
-  }
-
-  #youtubeUrl::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  #youtubePlayer {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 240px;
-    height: 160px;
-    z-index: 1001;
-    border: 2px solid #670676;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-  }
-
-  .audio-visualizer {
-    margin: 15px 0;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #660675;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 0 20px rgba(102, 6, 117, 0.4);
-  }
-
-  #visualizerCanvas {
-    width: 100%;
-    height: 80px;
-    border-radius: 5px;
   }
 
   .win-message {
@@ -361,6 +344,23 @@
     font-size: 24px;
     margin-bottom: 20px;
   }
+
+  #youtubeUrl::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  }
+
+  #youtubePlayer {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 240px;
+    height: 160px;
+    z-index: 1001;
+    border: 2px solid #660675;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
+  }
   </style>
 </head>
 <body>
@@ -378,9 +378,9 @@
   <div class="music-label">🎵 MUSIC PLAYER</div>
   <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
   <button id="uploadBtn">📁 ADD MUSIC</button>
-  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
+  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(102, 6, 117, 0.2); border: 1px solid #660675; border-radius: 4px; color: white; font-size: 10px;">
   <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
-  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTubeで追加した曲はオーディオスペクトラム非対応です。</div>
+  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube songs don't support audio spectrum.</div>
   <button id="playBtn">▶ PLAY</button>
   <button id="pauseBtn">⏸ PAUSE</button>
   <button id="nextBtn">⏭ NEXT</button>
@@ -398,7 +398,8 @@
 </div>
 
 <audio id="bgMusic" loop></audio>
-<div id="youtubePlayer"></div>
+
+<div id="youtubePlayer" ></div>
 
 <div class="game-container">
   <div class="left-panel">
@@ -433,13 +434,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script>
-  // YouTube IFrame APIを動的に読み込む
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-</script>
 
 <script>
 // Three.js Background
@@ -532,7 +526,12 @@ function createParticles() {
 
 createParticles();
 
-// Music Player
+// YouTube IFrame APIを動的に読み込む
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
 const audio = document.getElementById('bgMusic');
 const uploadBtn = document.getElementById('uploadBtn');
 const musicFile = document.getElementById('musicFile');
@@ -578,7 +577,6 @@ function drawRandomVisualizer() {
     return;
   }
   
-  // ランダムな値を生成（実際の音声データの代わり）
   for (let i = 0; i < randomDataArray.length; i++) {
     randomDataArray[i] = Math.random() * 255;
   }
@@ -611,6 +609,48 @@ function drawRandomVisualizer() {
   }
 }
 
+function drawVisualizer() {
+  requestAnimationFrame(drawVisualizer);
+  
+  if (isPlayingYouTube) {
+    drawRandomVisualizer();
+    return;
+  }
+  
+  if (!analyser || !dataArray) return;
+  
+  analyser.getByteFrequencyData(dataArray);
+  
+  const width = visualizerCanvas.width;
+  const height = visualizerCanvas.height;
+  
+  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  canvasCtx.fillRect(0, 0, width, height);
+  
+  const barWidth = (width / bufferLength) * 2.5;
+  let barHeight;
+  let x = 0;
+  
+  for (let i = 0; i < bufferLength; i++) {
+    barHeight = (dataArray[i] / 255) * height;
+    
+    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
+    gradient.addColorStop(0, '#660675');
+    gradient.addColorStop(0.5, '#8800aa');
+    gradient.addColorStop(1, '#aa00dd');
+    
+    canvasCtx.fillStyle = gradient;
+    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
+    
+    canvasCtx.shadowBlur = 10;
+    canvasCtx.shadowColor = '#660675';
+    
+    x += barWidth + 1;
+  }
+  
+  canvasCtx.shadowBlur = 0;
+}
+
 function resizeCanvas() {
   const rect = visualizerCanvas.getBoundingClientRect();
   visualizerCanvas.width = rect.width;
@@ -620,7 +660,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// YouTube IFrame API の準備（グローバル関数として定義）
+// YouTube IFrame API の準備
 window.onYouTubeIframeAPIReady = function() {
   console.log('YouTube API is ready');
   isYoutubeReady = true;
@@ -636,7 +676,6 @@ window.onYouTubeIframeAPIReady = function() {
   }
 };
 
-// 既にAPIが読み込まれている場合のチェック
 function checkYouTubeAPI() {
   if (typeof YT !== 'undefined' && YT.Player) {
     console.log('YouTube API already loaded');
@@ -650,19 +689,16 @@ function checkYouTubeAPI() {
   }
 }
 
-// ページ読み込み後にチェック
 window.addEventListener('load', function() {
   setTimeout(checkYouTubeAPI, 1000);
 });
 
-// YouTube URLかどうかを判定
 function isYouTubeUrl(url) {
   if (!url) return false;
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
   return youtubeRegex.test(url);
 }
 
-// YouTubeのURLから動画IDを抽出
 function extractVideoId(url) {
   if (!url) return null;
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -670,7 +706,6 @@ function extractVideoId(url) {
   return (match && match[7].length === 11) ? match[7] : null;
 }
 
-// YouTubeプレーヤーを読み込む
 function loadYouTubePlayer(url) {
   if (typeof YT === 'undefined' || !YT.Player) {
     console.error('YouTube API is not loaded');
@@ -743,7 +778,7 @@ let playlist = [];
 let currentTrackIndex = -1;
 
 const defaultPlaylist = [
-    { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio' }
+  { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio'}
 ];
 
 if (defaultPlaylist.length > 0) {
@@ -753,14 +788,14 @@ if (defaultPlaylist.length > 0) {
   updatePlaylist();
 }
 
-uploadBtn.addEventListener('click', () => {
+uploadBtn.addEventListener('click', function() {
   musicFile.click();
 });
 
-musicFile.addEventListener('change', (e) => {
+musicFile.addEventListener('change', function(e) {
   const files = Array.from(e.target.files);
   
-  files.forEach(file => {
+  files.forEach(function(file) {
     const url = URL.createObjectURL(file);
     playlist.push({
       name: file.name,
@@ -834,7 +869,7 @@ youtubeUrl.addEventListener('keypress', function(e) {
 function updatePlaylist() {
   playlistDiv.innerHTML = '';
   
-  playlist.forEach((track, index) => {
+  playlist.forEach(function(track, index) {
     const item = document.createElement('div');
     item.className = 'playlist-item';
     if (index === currentTrackIndex) {
@@ -842,12 +877,12 @@ function updatePlaylist() {
     }
     
     const name = document.createElement('span');
-    name.textContent = `${index + 1}. ${track.name}`;
+    name.textContent = (index + 1) + '. ' + track.name;
     
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-btn';
     deleteBtn.textContent = '✕';
-    deleteBtn.onclick = (e) => {
+    deleteBtn.onclick = function(e) {
       e.stopPropagation();
       deleteTrack(index);
     };
@@ -855,7 +890,7 @@ function updatePlaylist() {
     item.appendChild(name);
     item.appendChild(deleteBtn);
     
-    item.onclick = () => {
+    item.onclick = function() {
       loadTrack(index);
       const track = playlist[index];
       if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
@@ -905,7 +940,7 @@ function loadTrack(index) {
         }, 100);
       }
       
-      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
     } else {
       isPlayingYouTube = false;
       if (youtubePlayer) {
@@ -913,7 +948,7 @@ function loadTrack(index) {
         youtubePlayerDiv.style.display = 'none';
       }
       audio.src = track.url;
-      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
     }
     
     updatePlaylist();
@@ -939,14 +974,14 @@ function deleteTrack(index) {
   updatePlaylist();
 }
 
-playBtn.addEventListener('click', () => {
+playBtn.addEventListener('click', function() {
   if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
     const track = playlist[currentTrackIndex];
     
     if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
       if (youtubePlayer) {
         youtubePlayer.playVideo();
-        musicStatus.textContent = `♪ Playing: ${track.name}`;
+        musicStatus.textContent = '♪ Playing: ' + track.name;
       } else if (isYoutubeReady) {
         loadYouTubePlayer(track.url);
         setTimeout(function() {
@@ -961,7 +996,7 @@ playBtn.addEventListener('click', () => {
       if (audio.src) {
         setupAudioContext();
         audio.play();
-        musicStatus.textContent = `♪ Playing: ${track.name}`;
+        musicStatus.textContent = '♪ Playing: ' + track.name;
       } else {
         musicStatus.textContent = 'Please add music first';
         return;
@@ -978,7 +1013,7 @@ playBtn.addEventListener('click', () => {
   }
 });
 
-pauseBtn.addEventListener('click', () => {
+pauseBtn.addEventListener('click', function() {
   if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
     const track = playlist[currentTrackIndex];
     
@@ -1002,7 +1037,7 @@ pauseBtn.addEventListener('click', () => {
   });
 });
 
-nextBtn.addEventListener('click', () => {
+nextBtn.addEventListener('click', function() {
   if (playlist.length > 0) {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     loadTrack(currentTrackIndex);
@@ -1036,7 +1071,7 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
-audio.addEventListener('ended', () => {
+audio.addEventListener('ended', function() {
   if (playlist.length > 0) {
     const nextIndex = (currentTrackIndex + 1) % playlist.length;
     currentTrackIndex = nextIndex;
@@ -1061,7 +1096,7 @@ audio.addEventListener('ended', () => {
   }
 });
 
-volumeSlider.addEventListener('input', (e) => {
+volumeSlider.addEventListener('input', function(e) {
   const volume = e.target.value;
   audio.volume = volume / 100;
   if (youtubePlayer) {
@@ -1128,7 +1163,7 @@ audio.volume = 0.5;
   }
 
   function setTranslate(xPos, yPos, el) {
-    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    el.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
   }
 })();
 

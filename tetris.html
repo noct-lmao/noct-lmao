@@ -168,8 +168,8 @@
     z-index: 10;
     background: rgba(0, 0, 0, 0.9);
     border: 2px solid #660675;
-    border-radius: 15px;
-    padding: 15px 20px;
+    border-radius: 12px;
+    padding: 10px 15px;
     box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
     cursor: move;
     user-select: none;
@@ -181,12 +181,12 @@
 
   .drag-handle {
     text-align: center;
-    padding: 5px;
-    margin: -15px -20px 10px -20px;
+    padding: 4px;
+    margin: -10px -15px 8px -15px;
     background: #660675;
-    border-radius: 13px 13px 0 0;
+    border-radius: 10px 10px 0 0;
     cursor: grab;
-    font-size: 12px;
+    font-size: 11px;
     color: white;
   }
 
@@ -198,13 +198,13 @@
     background: #660675;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    font-size: 16px;
+    font-size: 11px;
     font-weight: bold;
-    margin: 5px;
+    margin: 3px;
     box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
     transition: all 0.3s;
   }
@@ -216,18 +216,18 @@
   }
 
   .music-controls input[type="range"] {
-    width: 150px;
-    margin: 10px 5px;
+    width: 120px;
+    margin: 6px 3px;
     accent-color: #660675;
   }
 
   .music-label {
     color: #660675;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: bold;
     text-shadow: 0 0 10px #660675;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
   }
 
   .volume-container {
@@ -242,20 +242,20 @@
   }
 
   .playlist {
-    max-height: 200px;
+    max-height: 150px;
     overflow-y: auto;
-    margin-top: 10px;
-    padding: 5px;
+    margin-top: 6px;
+    padding: 3px;
   }
 
   .playlist-item {
     background: rgba(102, 6, 117, 0.3);
     border: 1px solid #660675;
-    border-radius: 5px;
-    padding: 8px;
-    margin: 5px 0;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 3px 0;
     color: white;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -277,10 +277,10 @@
     background: rgba(255, 0, 0, 0.5);
     border: none;
     color: white;
-    padding: 2px 8px;
-    border-radius: 3px;
+    padding: 2px 6px;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .playlist-item .delete-btn:hover {
@@ -305,23 +305,6 @@
     background: #8800aa;
   }
 
-  #youtubeUrl::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  #youtubePlayer {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 240px;
-    height: 160px;
-    z-index: 1001;
-    border: 2px solid #670676;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-  }
-
   .audio-visualizer {
     margin: 15px 0;
     background: rgba(0, 0, 0, 0.8);
@@ -334,9 +317,41 @@
   #visualizerCanvas {
     width: 100%;
     height: 80px;
-    border-radius: 5px;
+  border-radius: 5px;
   }
-  </style>
+
+  #youtubeUrl::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  #youtubePlayer {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 240px;
+    height: 160px;
+    z-index: 1001;
+    border: 2px solid #660675;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
+  }
+
+#addYoutubeBtn {
+  margin-top: 5px;
+  background: #660675;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
+  transition: all 0.3s;
+}
+</style>
 </head>
 <body>
 <div class="music-controls" id="musicControls">
@@ -344,9 +359,9 @@
   <div class="music-label">🎵 MUSIC PLAYER</div>
   <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
   <button id="uploadBtn">📁 ADD MUSIC</button>
-  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
+  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(102, 6, 117, 0.2); border: 1px solid #660675; border-radius: 4px; color: white; font-size: 10px;">
   <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
-  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTubeで追加した曲はオーディオスペクトラム非対応です。</div>
+  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube songs don't support audio spectrum.</div>
   <button id="playBtn">▶ PLAY</button>
   <button id="pauseBtn">⏸ PAUSE</button>
   <button id="nextBtn">⏭ NEXT</button>
@@ -354,7 +369,7 @@
   <div class="audio-visualizer">
     <canvas id="visualizerCanvas"></canvas>
   </div>
-  
+
   <div class="volume-container">
     <label class="music-label" for="volumeSlider">VOLUME</label>
     <input type="range" id="volumeSlider" min="0" max="100" value="50">
@@ -402,21 +417,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script>
-  // YouTube IFrame APIを動的に読み込む
-  var tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  var firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-</script>
 
 <script>
+//Youtube Iframe APIを動的に読み込む
+var tag = document.createElement ('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
 // Background Music Player
 const audio = document.getElementById('bgMusic');
 const uploadBtn = document.getElementById('uploadBtn');
 const musicFile = document.getElementById('musicFile');
 const addYoutubeBtn = document.getElementById('addYoutubeBtn');
-const youtubeUrl = document.getElementById('youtubeUrl');
+const youtubeUrl = document.getElementById('youtubeUrl')
 const playBtn = document.getElementById('playBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -451,31 +465,29 @@ function setupAudioContext() {
   }
 }
 
-// YouTube再生用のランダムアニメーション
 let randomDataArray = new Uint8Array(128);
 function drawRandomVisualizer() {
   if (!isPlayingYouTube) {
     return;
   }
-  
-  // ランダムな値を生成（実際の音声データの代わり）
+
   for (let i = 0; i < randomDataArray.length; i++) {
-    randomDataArray[i] = Math.random() * 255;
+    randomDataArray[i] =  Math.random() * 255;
   }
-  
+
   const width = visualizerCanvas.width;
   const height = visualizerCanvas.height;
-  
+
   canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  canvasCtx.fillRect(0, 0, width, height);
-  
+  canvasCtx.fillRect (0, 0, width, height);
+
   const barWidth = (width / randomDataArray.length) * 2.5;
   let barHeight;
   let x = 0;
-  
+
   for (let i = 0; i < randomDataArray.length; i++) {
     barHeight = (randomDataArray[i] / 255) * height;
-    
+
     const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
     gradient.addColorStop(0, '#660675');
     gradient.addColorStop(0.5, '#8800aa');
@@ -493,15 +505,14 @@ function drawRandomVisualizer() {
 
 function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
-  
-  // YouTube再生中はランダムアニメーションを使用
+
   if (isPlayingYouTube) {
     drawRandomVisualizer();
     return;
   }
   
   if (!analyser || !dataArray) return;
-  
+
   analyser.getByteFrequencyData(dataArray);
   
   const width = visualizerCanvas.width;
@@ -545,12 +556,125 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+window.onYouTubeIframeAPIReady = function() {
+  console.log('YouTube API is ready');
+  isYoutubeReady = true;
+  if (youtubeReadyCheckInterval) {
+    clearInterval(youtubeReadyCheckInterval);
+    youtubeReadyCheckInterval = null;
+  }
+  if (playlist.length > 0 && currentTrackIndex >= 0) {
+    const currentTrack = playlist[currentTrackIndex];
+    if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
+      loadYouTubePlayer(currentTrack.url);
+    }
+  }
+};
+
+function checkYouTubeAPI() {
+  if (typeof YT !== 'undefined' && YT.Player) {
+    console.log('YouTube API already loaded');
+    isYoutubeReady = true;
+    if (playlist.length > 0 && currentTrackIndex >= 0) {
+      const currentTrack = playlist[currentTrackIndex];
+      if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
+        loadYouTubePlayer(currentTrack.url);
+      }
+    }
+  }
+}
+
+window.addEventListener('load', function() {
+  setTimeout(checkYouTubeAPI, 1000);
+});
+
+function isYouTubeUrl(url) {
+  if (!url) return false;
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+  return youtubeRegex.test(url);
+}
+
+function extractVideoId(url) {
+  if (!url) return null;
+  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[7].length === 11) ? match[7] : null;
+}
+
+function loadYouTubePlayer(url) {
+  if (typeof YT === 'undefined' || !YT.Player) {
+    console.error('YouTube API is not loaded');
+    musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
+    if (!youtubeReadyCheckInterval) {
+      youtubeReadyCheckInterval = setInterval(function() {
+        if (typeof YT !== 'undefined' && YT.Player) {
+          clearInterval(youtubeReadyCheckInterval);
+          youtubeReadyCheckInterval = null;
+          isYoutubeReady = true;
+          loadYouTubePlayer(url);
+        }
+      }, 100);
+    }
+    return;
+  }
+
+  const videoId = extractVideoId(url);
+  if (!videoId) {
+    musicStatus.textContent = 'Invalid YouTube URL';
+    return;
+  }
+
+  if (youtubePlayer) {
+    youtubePlayer.loadVideoById(videoId);
+  } else {
+    try {
+      youtubePlayer = new YT.Player('youtubePlayer', {
+        height: '160',
+        width: '240',
+        videoId: videoId,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 1,
+          'rel': 0,
+          'modestbranding': 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+      youtubePlayerDiv.style.display = 'block';
+    } catch (error) {
+      console.error('Error creating YouTube player:', error);
+      musicStatus.textContent = 'Error loading YouTube player';
+    }
+  }
+}
+
+function onPlayerReady(event) {
+  if (volumeSlider) {
+    event.target.setVolume(volumeSlider.value);
+  }
+}
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    if (playlist.length > 0) {
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+      if (youtubePlayer) {
+        youtubePlayer.playVideo();
+      }
+    }
+  }
+}
+
 let playlist = [];
 let currentTrackIndex = -1;
 
 // 既存のMP3ファイルのURLをここに追加してください
 const defaultPlaylist = [
-  { name: 'shakethat', url:'music/ShakeThat.mp3', type: 'audio'}
+  { name: 'shakethat', url:'music/ShakeThat.mp3'}
   // 例: { name: '曲名1', url: 'music/song1.mp3' },
   // 例: { name: '曲名2', url: 'https://example.com/song2.mp3' },
   // 追加したい曲のURLをここに書いてください
@@ -669,7 +793,7 @@ function updatePlaylist() {
     item.appendChild(name);
     item.appendChild(deleteBtn);
     
-    item.onclick = () => {
+    item.onclick = function() {
       loadTrack(index);
       const track = playlist[index];
       if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
@@ -720,7 +844,7 @@ function loadTrack(index) {
         }, 100);
       }
       
-      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
     } else {
       isPlayingYouTube = false;
       if (youtubePlayer) {
@@ -728,7 +852,7 @@ function loadTrack(index) {
         youtubePlayerDiv.style.display = 'none';
       }
       audio.src = track.url;
-      musicStatus.textContent = `${index + 1}/${playlist.length}: ${track.name}`;
+      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
     }
     
     updatePlaylist();
@@ -755,15 +879,14 @@ function deleteTrack(index) {
   updatePlaylist();
 }
 
-// Play button
-playBtn.addEventListener('click', () => {
+playBtn.addEventListener('click', function() {
   if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
     const track = playlist[currentTrackIndex];
     
     if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
       if (youtubePlayer) {
         youtubePlayer.playVideo();
-        musicStatus.textContent = `♪ Playing: ${track.name}`;
+        musicStatus.textContent = '♪ Playing: ' + track.name;
       } else if (isYoutubeReady) {
         loadYouTubePlayer(track.url);
         setTimeout(function() {
@@ -776,9 +899,9 @@ playBtn.addEventListener('click', () => {
       }
     } else {
       if (audio.src) {
-        setupAudioContext(); // Initialize audio context on first play
+        setupAudioContext();
         audio.play();
-        musicStatus.textContent = `♪ Playing: ${track.name}`;
+        musicStatus.textContent = '♪ Playing: ' + track.name;
       } else {
         musicStatus.textContent = 'Please add music first';
         return;
@@ -795,8 +918,7 @@ playBtn.addEventListener('click', () => {
   }
 });
 
-// Pause button
-pauseBtn.addEventListener('click', () => {
+pauseBtn.addEventListener('click', function() {
   if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
     const track = playlist[currentTrackIndex];
     
@@ -820,8 +942,7 @@ pauseBtn.addEventListener('click', () => {
   });
 });
 
-// Next button
-nextBtn.addEventListener('click', () => {
+nextBtn.addEventListener('click', function() {
   if (playlist.length > 0) {
     currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
     loadTrack(currentTrackIndex);
@@ -855,8 +976,7 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
-// Auto play next track when current ends
-audio.addEventListener('ended', () => {
+audio.addEventListener('ended', function() {
   if (playlist.length > 0) {
     const nextIndex = (currentTrackIndex + 1) % playlist.length;
     currentTrackIndex = nextIndex;
@@ -881,8 +1001,7 @@ audio.addEventListener('ended', () => {
   }
 });
 
-// Volume control
-volumeSlider.addEventListener('input', (e) => {
+volumeSlider.addEventListener('input', function(e) {
   const volume = e.target.value;
   audio.volume = volume / 100;
   if (youtubePlayer) {
@@ -890,7 +1009,6 @@ volumeSlider.addEventListener('input', (e) => {
   }
 });
 
-// Set initial volume
 audio.volume = 0.5;
 
 // Draggable Music Controls
@@ -904,13 +1022,11 @@ audio.volume = 0.5;
   document.addEventListener('mousemove', drag);
   document.addEventListener('mouseup', dragEnd);
 
-  // Touch events for mobile
   musicControls.addEventListener('touchstart', dragStart);
   document.addEventListener('touchmove', drag);
   document.addEventListener('touchend', dragEnd);
 
   function dragStart(e) {
-    // Don't drag when clicking buttons or slider
     if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
       return;
     }
@@ -952,7 +1068,7 @@ audio.volume = 0.5;
   }
 
   function setTranslate(xPos, yPos, el) {
-    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    el.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
   }
 })();
 
