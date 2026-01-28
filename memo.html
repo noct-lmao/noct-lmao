@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" sizes="32x32" href="./images/icon.png?v=2">
-<title>???</title>
+<title>Todo & Memo Pro - Enhanced</title>
 
 <!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -871,6 +870,82 @@ input::placeholder, textarea::placeholder {
   background: rgba(220, 38, 38, 0.4);
 }
 
+.confirm-dialog {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.confirm-dialog.active {
+  display: flex;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.confirm-dialog-content {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.98), rgba(0, 0, 0, 0.98));
+  border: 2px solid #670676;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.5);
+}
+
+.confirm-dialog-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #a855f7;
+  font-weight: bold;
+}
+
+.confirm-dialog-message {
+  color: #d1d5db;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.confirm-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.confirm-btn-danger {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: #fff;
+}
+
+.confirm-btn-danger:hover {
+  transform: scale(1.05);
+}
+
+.confirm-btn-cancel {
+  background: rgba(103, 6, 118, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(103, 6, 118, 0.3);
+}
+
+.confirm-btn-cancel:hover {
+  background: rgba(103, 6, 118, 0.4);
+}
+
 .shortcuts-list {
   display: flex;
   flex-direction: column;
@@ -1297,6 +1372,18 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
+<!-- Custom Confirm Dialog -->
+<div class="confirm-dialog" id="confirmDialog">
+  <div class="confirm-dialog-content">
+    <div class="confirm-dialog-title" id="confirmTitle">確認</div>
+    <div class="confirm-dialog-message" id="confirmMessage">この操作を実行しますか？</div>
+    <div class="confirm-dialog-actions">
+      <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">キャンセル</button>
+      <button class="confirm-btn confirm-btn-danger" id="confirmOkBtn">OK</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // データ管理
 let todos = [];
@@ -1316,6 +1403,59 @@ if (typeof marked !== 'undefined') {
   marked.setOptions({
     breaks: true,
     gfm: true
+  });
+}
+
+// カスタム確認ダイアログ
+function customConfirm(message, title = '確認', showCancel = true) {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('confirmDialog');
+    const titleEl = document.getElementById('confirmTitle');
+    const messageEl = document.getElementById('confirmMessage');
+    const okBtn = document.getElementById('confirmOkBtn');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+    
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    
+    // キャンセルボタンの表示/非表示
+    if (showCancel) {
+      cancelBtn.style.display = 'block';
+    } else {
+      cancelBtn.style.display = 'none';
+    }
+    
+    dialog.classList.add('active');
+    
+    const handleOk = () => {
+      dialog.classList.remove('active');
+      okBtn.removeEventListener('click', handleOk);
+      cancelBtn.removeEventListener('click', handleCancel);
+      resolve(true);
+    };
+    
+    const handleCancel = () => {
+      dialog.classList.remove('active');
+      okBtn.removeEventListener('click', handleOk);
+      cancelBtn.removeEventListener('click', handleCancel);
+      resolve(false);
+    };
+    
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
+    
+    // Escキーでキャンセル
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        if (showCancel) {
+          handleCancel();
+        } else {
+          handleOk();
+        }
+        document.removeEventListener('keydown', handleEsc);
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
   });
 }
 
@@ -1708,12 +1848,17 @@ function toggleTodo(id) {
   }
 }
 
-function deleteTodo(id) {
+async function deleteTodo(id) {
   const t = translations[currentLang];
-  if (confirm(t.confirm_delete_task)) {
-    todos = todos.filter(t => t.id !== id);
-    saveTodos();
-    renderTodos();
+  const confirmed = await customConfirm(t.confirm_delete_task, '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete'));
+  
+  if (confirmed) {
+    const index = todos.findIndex(todo => todo.id === id);
+    if (index !== -1) {
+      todos.splice(index, 1);
+      saveTodos();
+      renderTodos();
+    }
   }
 }
 
@@ -1773,11 +1918,11 @@ function exportTodo(id) {
   );
 }
 
-function exportAllTodos() {
+async function exportAllTodos() {
   const t = translations[currentLang];
   
   if (todos.length === 0) {
-    alert(t.no_tasks_export);
+    await customConfirm(t.no_tasks_export, 'ℹ️ ' + (currentLang === 'ja' ? '情報' : 'Info'), false);
     return;
   }
 
@@ -1818,9 +1963,11 @@ function exportAllTodos() {
   downloadTextFile(`todos_${new Date().toISOString().split('T')[0]}.txt`, content);
 }
 
-function clearCompleted() {
+async function clearCompleted() {
   const t = translations[currentLang];
-  if (confirm(t.confirm_clear_completed)) {
+  const confirmed = await customConfirm(t.confirm_clear_completed, '⚠️ ' + (currentLang === 'ja' ? '一括削除確認' : 'Confirm Clear'));
+  
+  if (confirmed) {
     todos = todos.filter(t => !t.completed);
     saveTodos();
     renderTodos();
@@ -1941,15 +2088,15 @@ function renderTodos() {
       return `
         <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
           <div class="todo-main-row">
-            <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+            <div class="checkbox ${todo.completed ? 'checked' : ''}" data-action="toggle" data-id="${todo.id}"></div>
             <div class="todo-text">${todo.text}</div>
             <div class="todo-actions">
               ${todo.priority ? `<span class="priority-badge priority-${todo.priority}">${translations[currentLang]['priority_' + todo.priority]}</span>` : ''}
               ${dueStatus ? `<span class="due-date-badge ${dueStatus.class}">${dueStatus.text}</span>` : ''}
-              <button class="action-btn duplicate" onclick="duplicateTodo(${todo.id})" title="複製">📋</button>
-              <button class="action-btn edit" onclick="openEditTodoModal(${todo.id})" title="編集">✏️</button>
-              <button class="action-btn export" onclick="exportTodo(${todo.id})" title="エクスポート">💾</button>
-              <button class="action-btn" onclick="deleteTodo(${todo.id})" title="削除">🗑️</button>
+              <button class="action-btn duplicate" data-action="duplicate" data-id="${todo.id}" title="複製">📋</button>
+              <button class="action-btn edit" data-action="edit" data-id="${todo.id}" title="編集">✏️</button>
+              <button class="action-btn export" data-action="export" data-id="${todo.id}" title="エクスポート">💾</button>
+              <button class="action-btn" data-action="delete" data-id="${todo.id}" title="削除">🗑️</button>
             </div>
           </div>
           ${todo.tags && todo.tags.length > 0 ? `
@@ -1970,11 +2117,19 @@ function renderTodos() {
   updateStats();
   
   // Sortable.jsでドラッグ&ドロップを有効化
-  if (typeof Sortable !== 'undefined' && !todoSortable) {
+  if (typeof Sortable !== 'undefined') {
     const list = document.getElementById('todoList');
+    
+    // 既存のSortableインスタンスを破棄
+    if (todoSortable) {
+      todoSortable.destroy();
+    }
+    
+    // 新しいインスタンスを作成
     todoSortable = Sortable.create(list, {
       animation: 150,
       ghostClass: 'sortable-ghost',
+      handle: '.todo-text',
       onEnd: function(evt) {
         // ドラッグ後の順序を保存
         const items = Array.from(list.children);
@@ -2032,13 +2187,18 @@ function addMemo() {
   renderMemos();
 }
 
-function deleteMemo(id) {
+async function deleteMemo(id) {
   const t = translations[currentLang];
-  if (confirm(t.confirm_delete_memo)) {
-    memos = memos.filter(m => m.id !== id);
-    saveMemos();
-    updateMemoTags();
-    renderMemos();
+  const confirmed = await customConfirm(t.confirm_delete_memo, '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete'));
+  
+  if (confirmed) {
+    const index = memos.findIndex(memo => memo.id === id);
+    if (index !== -1) {
+      memos.splice(index, 1);
+      saveMemos();
+      updateMemoTags();
+      renderMemos();
+    }
   }
 }
 
@@ -2068,7 +2228,15 @@ function editMemo(id) {
   document.getElementById('memoContent').value = memo.content;
   document.getElementById('memoTags').value = memo.tags ? memo.tags.join(', ') : '';
 
-  deleteMemo(id);
+  // 確認なしで削除（編集モードに入るため）
+  const index = memos.findIndex(m => m.id === id);
+  if (index !== -1) {
+    memos.splice(index, 1);
+    saveMemos();
+    updateMemoTags();
+    renderMemos();
+  }
+  
   window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('memoTitle').focus();
 }
@@ -2094,11 +2262,11 @@ function exportMemo(id) {
   );
 }
 
-function exportAllMemos() {
+async function exportAllMemos() {
   const t = translations[currentLang];
   
   if (memos.length === 0) {
-    alert(t.no_memos_export);
+    await customConfirm(t.no_memos_export, 'ℹ️ ' + (currentLang === 'ja' ? '情報' : 'Info'), false);
     return;
   }
 
@@ -2182,14 +2350,14 @@ function renderMemos() {
     `;
   } else {
     list.innerHTML = filtered.map(memo => `
-      <div class="memo-item">
+      <div class="memo-item" data-id="${memo.id}">
         <div class="memo-header">
           <div class="memo-title">${memo.title}</div>
           <div class="memo-actions">
-            <button class="action-btn duplicate" onclick="duplicateMemo(${memo.id})" title="複製">📋</button>
-            <button class="action-btn edit" onclick="editMemo(${memo.id})" title="編集">✏️</button>
-            <button class="action-btn export" onclick="exportMemo(${memo.id})" title="エクスポート">💾</button>
-            <button class="action-btn" onclick="deleteMemo(${memo.id})" title="削除">🗑️</button>
+            <button class="action-btn duplicate" data-action="duplicate" data-id="${memo.id}" title="複製">📋</button>
+            <button class="action-btn edit" data-action="edit" data-id="${memo.id}" title="編集">✏️</button>
+            <button class="action-btn export" data-action="export" data-id="${memo.id}" title="エクスポート">💾</button>
+            <button class="action-btn" data-action="delete" data-id="${memo.id}" title="削除">🗑️</button>
           </div>
         </div>
         <div class="memo-content-preview">${typeof marked !== 'undefined' ? marked.parse(memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')) : memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')}</div>
@@ -2552,16 +2720,18 @@ function importData() {
   input.type = 'file';
   input.accept = '.json';
   
-  input.onchange = (e) => {
+  input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const data = JSON.parse(event.target.result);
         
-        if (confirm(t.confirm_import)) {
+        const confirmed = await customConfirm(t.confirm_import, '⚠️ ' + (currentLang === 'ja' ? 'インポート確認' : 'Confirm Import'));
+        
+        if (confirmed) {
           if (data.todos) todos = data.todos;
           if (data.memos) memos = data.memos;
           
@@ -2571,11 +2741,11 @@ function importData() {
           renderTodos();
           renderMemos();
           
-          alert(t.import_success);
+          await customConfirm(t.import_success, '✅ ' + (currentLang === 'ja' ? '成功' : 'Success'), false);
           closeSettings();
         }
       } catch (error) {
-        alert(t.import_error);
+        await customConfirm(t.import_error, '❌ ' + (currentLang === 'ja' ? 'エラー' : 'Error'), false);
       }
     };
     
@@ -2585,11 +2755,15 @@ function importData() {
   input.click();
 }
 
-function clearAllData() {
+async function clearAllData() {
   const t = translations[currentLang];
   
-  if (confirm(t.confirm_clear_all_1)) {
-    if (confirm(t.confirm_clear_all_2)) {
+  const confirmed1 = await customConfirm(t.confirm_clear_all_1, '⚠️ ' + (currentLang === 'ja' ? '全データ削除' : 'Clear All Data'));
+  
+  if (confirmed1) {
+    const confirmed2 = await customConfirm(t.confirm_clear_all_2, '⚠️⚠️ ' + (currentLang === 'ja' ? '最終確認' : 'Final Confirmation'));
+    
+    if (confirmed2) {
       todos = [];
       memos = [];
       saveTodos();
@@ -2659,6 +2833,35 @@ document.getElementById('todoInput').addEventListener('keypress', e => {
   if (e.key === 'Enter') addTodo();
 });
 
+// Todoリストのイベント委譲
+document.getElementById('todoList').addEventListener('click', function(e) {
+  const target = e.target;
+  const action = target.dataset.action;
+  const id = parseInt(target.dataset.id);
+  
+  if (!action || !id) return;
+  
+  e.stopPropagation();
+  
+  switch(action) {
+    case 'toggle':
+      toggleTodo(id);
+      break;
+    case 'delete':
+      deleteTodo(id);
+      break;
+    case 'duplicate':
+      duplicateTodo(id);
+      break;
+    case 'edit':
+      openEditTodoModal(id);
+      break;
+    case 'export':
+      exportTodo(id);
+      break;
+  }
+});
+
 document.querySelectorAll('.filter-tabs .filter-btn').forEach(btn => {
   btn.addEventListener('click', function() {
     document.querySelectorAll('.filter-tabs .filter-btn').forEach(b => b.classList.remove('active'));
@@ -2674,6 +2877,32 @@ document.getElementById('todoSort').addEventListener('change', function() {
 });
 
 document.getElementById('addMemoBtn').addEventListener('click', addMemo);
+
+// メモリストのイベント委譲
+document.getElementById('memoList').addEventListener('click', function(e) {
+  const target = e.target;
+  const action = target.dataset.action;
+  const id = parseInt(target.dataset.id);
+  
+  if (!action || !id) return;
+  
+  e.stopPropagation();
+  
+  switch(action) {
+    case 'delete':
+      deleteMemo(id);
+      break;
+    case 'duplicate':
+      duplicateMemo(id);
+      break;
+    case 'edit':
+      editMemo(id);
+      break;
+    case 'export':
+      exportMemo(id);
+      break;
+  }
+});
 
 document.getElementById('memoTitle').addEventListener('keypress', e => {
   if (e.key === 'Enter') {
