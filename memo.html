@@ -1,1759 +1,2768 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo & Memo</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #000;
-      color: #fff;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-
-    #canvas-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .content-wrapper {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(103, 6, 118, 0.3);
-      padding: 1.5rem 2rem;
-    }
-
-    nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1.75rem;
-      font-weight: bold;
-    }
-
-    .lang-switcher {
-      background: rgba(103, 6, 118, 0.2);
-      border: 1px solid rgba(103, 6, 118, 0.3);
-      color: #670676;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .lang-switcher:hover {
-      background: rgba(103, 6, 118, 0.4);
-      border-color: #670676;
-      transform: scale(1.05);
-    }
-
-    .logo svg {
-      color: #670676;
-    }
-
-    .logo span {
-      background: linear-gradient(135deg, #670676, #8800aa, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    main {
-      flex: 1;
-      padding: 3rem 1.5rem;
-    }
-
-    .mode-switcher {
-      max-width: 1200px;
-      margin: 0 auto 2rem;
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-
-    .mode-btn {
-      background: rgba(103, 6, 118, 0.2);
-      border: 2px solid rgba(103, 6, 118, 0.3);
-      border-radius: 12px;
-      padding: 1rem 2rem;
-      color: #9ca3af;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .mode-btn:hover {
-      border-color: #670676;
-      transform: translateY(-2px);
-    }
-
-    .mode-btn.active {
-      background: linear-gradient(135deg, #670676, #8800aa);
-      border-color: #670676;
-      color: #fff;
-      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-    }
-
-    .content-area {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .todo-container, .memo-container {
-      background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
-      border: 1px solid rgba(103, 6, 118, 0.3);
-      border-radius: 16px;
-      padding: 2.5rem;
-      box-shadow: 0 8px 32px rgba(103, 6, 118, 0.4);
-      display: none;
-    }
-
-    .todo-container.active, .memo-container.active {
-      display: block;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-      text-align: center;
-      background: linear-gradient(90deg, #670676, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .input-section {
-      display: flex;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-
-    #todoInput {
-      flex: 1;
-      background: rgba(103, 6, 118, 0.1);
-      border: 2px solid rgba(103, 6, 118, 0.3);
-      border-radius: 8px;
-      padding: 0.875rem 1.25rem;
-      color: #fff;
-      font-size: 1rem;
-      transition: all 0.3s;
-    }
-
-    #todoInput:focus {
-      outline: none;
-      border-color: #670676;
-      background: rgba(103, 6, 118, 0.2);
-      box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
-    }
-
-    #todoInput::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    #addTodoBtn {
-      background: linear-gradient(135deg, #670676, #8800aa);
-      border: none;
-      border-radius: 8px;
-      padding: 0.875rem 2rem;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #addTodoBtn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-
-    #addTodoBtn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-
-    #addTodoBtn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-    }
-
-    .filter-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 2px solid rgba(103, 6, 118, 0.3);
-      padding-bottom: 0.75rem;
-    }
-
-    .filter-btn {
-      background: transparent;
-      border: none;
-      color: #9ca3af;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      transition: all 0.3s;
-    }
-
-    .filter-btn.active {
-      background: rgba(103, 6, 118, 0.3);
-      color: #a855f7;
-    }
-
-    .filter-btn:hover {
-      color: #670676;
-    }
-
-    .todo-list {
-      list-style: none;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 0.5rem;
-    }
-
-    .todo-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .todo-list::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-    }
-
-    .todo-list::-webkit-scrollbar-thumb {
-      background: #670676;
-      border-radius: 4px;
-    }
-
-    .todo-list::-webkit-scrollbar-thumb:hover {
-      background: #8800aa;
-    }
-
-    .todo-item {
-      background: linear-gradient(135deg, rgba(103, 6, 118, 0.1), rgba(0, 0, 0, 0.3));
-      border: 1px solid rgba(103, 6, 118, 0.2);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: all 0.3s;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: slideIn 0.3s forwards;
-    }
-
-    @keyframes slideIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .todo-item:hover {
-      border-color: #670676;
-      box-shadow: 0 4px 16px rgba(103, 6, 118, 0.3);
-      transform: translateX(5px);
-    }
-
-    .todo-item.completed {
-      opacity: 0.6;
-    }
-
-    .todo-item.completed .todo-text {
-      text-decoration: line-through;
-      color: #6b7280;
-    }
-
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      border: 2px solid #670676;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-    }
-
-    .checkbox:hover {
-      background: rgba(103, 6, 118, 0.2);
-    }
-
-    .checkbox.checked {
-      background: #670676;
-      box-shadow: 0 0 15px rgba(103, 6, 118, 0.6);
-    }
-
-    .checkbox.checked::after {
-      content: '✓';
-      color: white;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .todo-text {
-      flex: 1;
-      color: #fff;
-      font-size: 1rem;
-    }
-
-    .delete-btn {
-      background: rgba(220, 38, 38, 0.2);
-      border: 1px solid rgba(220, 38, 38, 0.3);
-      border-radius: 6px;
-      padding: 0.5rem 0.75rem;
-      color: #ef4444;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .delete-btn:hover {
-      background: rgba(220, 38, 38, 0.4);
-      border-color: #ef4444;
-      transform: scale(1.05);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: #6b7280;
-    }
-
-    .empty-state svg {
-      color: rgba(103, 6, 118, 0.3);
-      margin-bottom: 1rem;
-    }
-
-    .stats {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(103, 6, 118, 0.3);
-      display: flex;
-      justify-content: space-around;
-      text-align: center;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      background: linear-gradient(90deg, #670676, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .stat-label {
-      font-size: 0.875rem;
-      color: #9ca3af;
-    }
-
-    .memo-input-section {
-      margin-bottom: 2rem;
-    }
-
-    #memoTitle {
-      width: 100%;
-      background: rgba(103, 6, 118, 0.1);
-      border: 2px solid rgba(103, 6, 118, 0.3);
-      border-radius: 8px;
-      padding: 0.875rem 1.25rem;
-      color: #fff;
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-bottom: 0.75rem;
-      transition: all 0.3s;
-    }
-
-    #memoContent {
-      width: 100%;
-      min-height: 150px;
-      background: rgba(103, 6, 118, 0.1);
-      border: 2px solid rgba(103, 6, 118, 0.3);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      color: #fff;
-      font-size: 1rem;
-      font-family: inherit;
-      resize: vertical;
-      margin-bottom: 0.75rem;
-      transition: all 0.3s;
-    }
-
-    #memoTitle:focus, #memoContent:focus {
-      outline: none;
-      border-color: #670676;
-      background: rgba(103, 6, 118, 0.2);
-      box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
-    }
-
-    #memoTitle::placeholder, #memoContent::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    #addMemoBtn {
-      background: linear-gradient(135deg, #670676, #8800aa);
-      border: none;
-      border-radius: 8px;
-      padding: 0.875rem 2rem;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      width: 100%;
-    }
-
-    #addMemoBtn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-    }
-
-    .memo-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-      max-height: 500px;
-      overflow-y: auto;
-      padding-right: 0.5rem;
-    }
-
-    .memo-list::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .memo-list::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-    }
-
-    .memo-list::-webkit-scrollbar-thumb {
-      background: #670676;
-      border-radius: 4px;
-    }
-
-    .memo-item {
-      background: linear-gradient(135deg, rgba(103, 6, 118, 0.15), rgba(0, 0, 0, 0.4));
-      border: 1px solid rgba(103, 6, 118, 0.3);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: all 0.3s;
-      opacity: 0;
-      transform: scale(0.95);
-      animation: memoSlideIn 0.3s forwards;
-      position: relative;
-    }
-
-    @keyframes memoSlideIn {
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .memo-item:hover {
-      border-color: #670676;
-      box-shadow: 0 8px 24px rgba(103, 6, 118, 0.4);
-      transform: translateY(-4px);
-    }
-
-    .memo-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.75rem;
-    }
-
-    .memo-title {
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: #a855f7;
-      word-break: break-word;
-      flex: 1;
-    }
-
-    .memo-delete {
-      background: rgba(220, 38, 38, 0.2);
-      border: none;
-      border-radius: 6px;
-      padding: 0.4rem 0.6rem;
-      color: #ef4444;
-      cursor: pointer;
-      font-size: 0.75rem;
-      transition: all 0.3s;
-      margin-left: 0.5rem;
-    }
-
-    .memo-delete:hover {
-      background: rgba(220, 38, 38, 0.4);
-      transform: scale(1.1);
-    }
-
-    .memo-content {
-      color: #d1d5db;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin-bottom: 0.75rem;
-    }
-
-    .memo-date {
-      font-size: 0.75rem;
-      color: #6b7280;
-      text-align: right;
-    }
-
-    .particle {
-      position: fixed;
-      width: 2px;
-      height: 2px;
-      background: #670676;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .music-controls {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.9);
-      border: 2px solid #670676;
-      border-radius: 12px;
-      padding: 10px 15px;
-      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-      cursor: move;
-      user-select: none;
-    }
-
-    .music-controls:active {
-      cursor: grabbing;
-    }
-
-    .drag-handle {
-      text-align: center;
-      padding: 4px;
-      margin: -10px -15px 8px -15px;
-      background: #670676;
-      border-radius: 10px 10px 0 0;
-      cursor: grab;
-      font-size: 11px;
-      color: white;
-    }
-
-    .drag-handle:active {
-      cursor: grabbing;
-    }
-
-    .music-controls button {
-      background: #670676;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 11px;
-      font-weight: bold;
-      margin: 3px;
-      box-shadow: 0 0 15px rgba(103, 6, 118, 0.5);
-      transition: all 0.3s;
-    }
-
-    .music-controls button:hover {
-      background: #8800aa;
-      box-shadow: 0 0 25px rgba(103, 6, 118, 0.9);
-      transform: scale(1.05);
-    }
-
-    .music-controls input[type="range"] {
-      width: 120px;
-      margin: 6px 3px;
-      accent-color: #670676;
-    }
-
-    .music-label {
-      color: #670676;
-      font-size: 11px;
-      font-weight: bold;
-      text-shadow: 0 0 10px #670676;
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .volume-container {
-      margin-top: 10px;
-    }
-
-    .music-status {
-      color: white;
-      font-size: 12px;
-      margin-top: 5px;
-      text-align: center;
-    }
-
-    .playlist {
-      max-height: 150px;
-      overflow-y: auto;
-      margin-top: 6px;
-      padding: 3px;
-    }
-
-    .playlist-item {
-      background: rgba(103, 6, 118, 0.3);
-      border: 1px solid #670676;
-      border-radius: 4px;
-      padding: 5px;
-      margin: 3px 0;
-      color: white;
-      font-size: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .playlist-item:hover {
-      background: rgba(103, 6, 118, 0.6);
-      transform: translateX(5px);
-    }
-
-    .playlist-item.active {
-      background: #670676;
-      box-shadow: 0 0 15px rgba(103, 6, 118, 0.8);
-    }
-
-    .playlist-item .delete-btn-music {
-      background: rgba(255, 0, 0, 0.5);
-      border: none;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 2px;
-      cursor: pointer;
-      font-size: 9px;
-    }
-
-    .playlist-item .delete-btn-music:hover {
-      background: rgba(255, 0, 0, 0.8);
-    }
-
-    .playlist::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .playlist::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 4px;
-    }
-
-    .playlist::-webkit-scrollbar-thumb {
-      background: #670676;
-      border-radius: 4px;
-    }
-
-    .playlist::-webkit-scrollbar-thumb:hover {
-      background: #8800aa;
-    }
-
-    #youtubeUrl::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    #youtubePlayer {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 240px;
-      height: 160px;
-      z-index: 1001;
-      border: 2px solid #670676;
-      border-radius: 8px;
-      box-shadow: 0 0 30px rgba(103, 6, 118, 0.6);
-    }
-
-    .audio-visualizer {
-      margin: 15px 0;
-      background: rgba(0, 0, 0, 0.8);
-      border: 2px solid #670676;
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 0 20px rgba(103, 6, 118, 0.4);
-    }
-
-    #visualizerCanvas {
-      width: 100%;
-      height: 80px;
-      border-radius: 5px;
-    }
-
-    @media (max-width: 768px) {
-      .mode-switcher {
-        flex-direction: column;
-      }
-
-      .todo-container, .memo-container {
-        padding: 1.5rem;
-      }
-
-      h1 {
-        font-size: 2rem;
-      }
-
-      .input-section {
-        flex-direction: column;
-      }
-
-      .memo-list {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo & Memo Pro - Enhanced</title>
+
+<!-- External Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #000000 0%, #1a0033 100%);
+  color: #fff;
+  min-height: 100vh;
+}
+
+header {
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom: 2px solid rgba(103, 6, 118, 0.4);
+  padding: 1.5rem 2rem;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.75rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-btn {
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #a855f7;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.header-btn:hover {
+  background: rgba(103, 6, 118, 0.4);
+  border-color: #670676;
+  transform: translateY(-2px);
+}
+
+main {
+  padding: 3rem 1.5rem;
+}
+
+.mode-switcher {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: rgba(103, 6, 118, 0.2);
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  color: #9ca3af;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.mode-btn:hover {
+  border-color: #670676;
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #670676, #8800aa);
+  border-color: #670676;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(103, 6, 118, 0.4);
+}
+
+.content-area {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.todo-container, .memo-container {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 16px;
+  padding: 2.5rem;
+  display: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.todo-container.active, .memo-container.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.input-section {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+#todoInput, #memoTitle, #memoContent, #memoTags {
+  width: 100%;
+  background: rgba(103, 6, 118, 0.1);
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 0.875rem 1.25rem;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+#memoContent {
+  min-height: 200px;
+  resize: vertical;
+  font-family: 'Monaco', 'Courier New', monospace;
+  line-height: 1.6;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #670676;
+  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #670676, #8800aa);
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 2rem;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(103, 6, 118, 0.3);
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(103, 6, 118, 0.5);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 2rem;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-success:hover {
+  transform: scale(1.05);
+}
+
+.filter-tabs, .memo-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #9ca3af;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.filter-btn:hover {
+  border-color: #670676;
+}
+
+.filter-btn.active {
+  background: rgba(103, 6, 118, 0.3);
+  color: #a855f7;
+  border-color: #670676;
+}
+
+.todo-list {
+  list-style: none;
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #670676 rgba(103, 6, 118, 0.2);
+}
+
+.todo-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.todo-list::-webkit-scrollbar-track {
+  background: rgba(103, 6, 118, 0.2);
+  border-radius: 10px;
+}
+
+.todo-list::-webkit-scrollbar-thumb {
+  background: #670676;
+  border-radius: 10px;
+}
+
+.todo-item {
+  background: rgba(103, 6, 118, 0.1);
+  border: 1px solid rgba(103, 6, 118, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.todo-item:hover {
+  border-color: #670676;
+  transform: translateX(4px);
+}
+
+.todo-main-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border: 2px solid #670676;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.checkbox:hover {
+  background: rgba(103, 6, 118, 0.2);
+}
+
+.checkbox.checked {
+  background: #670676;
+}
+
+.checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-weight: bold;
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.priority-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.priority-high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.priority-medium {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.priority-low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.due-date-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  white-space: nowrap;
+}
+
+.due-date-badge.overdue {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.todo-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  padding-left: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.todo-tag {
+  background: rgba(103, 6, 118, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(103, 6, 118, 0.3);
+}
+
+.action-btn {
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: rgba(220, 38, 38, 0.3);
+  transform: scale(1.05);
+}
+
+.action-btn.export {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.action-btn.export:hover {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+.action-btn.edit {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.action-btn.edit:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.action-btn.duplicate {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #a855f7;
+}
+
+.action-btn.duplicate:hover {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+.export-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(103, 6, 118, 0.3);
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stats {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(103, 6, 118, 0.3);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.stat-item {
+  background: rgba(103, 6, 118, 0.1);
+  border: 1px solid rgba(103, 6, 118, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.stat-item:hover {
+  border-color: #670676;
+  transform: translateY(-4px);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.memo-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #a855f7;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+  background: rgba(103, 6, 118, 0.4);
+  border-color: #670676;
+  transform: translateY(-2px);
+}
+
+.memo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #670676 rgba(103, 6, 118, 0.2);
+}
+
+.memo-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.memo-list::-webkit-scrollbar-track {
+  background: rgba(103, 6, 118, 0.2);
+  border-radius: 10px;
+}
+
+.memo-list::-webkit-scrollbar-thumb {
+  background: #670676;
+  border-radius: 10px;
+}
+
+.memo-item {
+  background: rgba(103, 6, 118, 0.15);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.3s;
+}
+
+.memo-item:hover {
+  border-color: #670676;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(103, 6, 118, 0.3);
+}
+
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.memo-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #a855f7;
+  flex: 1;
+  word-break: break-word;
+}
+
+.memo-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.memo-content {
+  color: #d1d5db;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.memo-preview {
+  background: rgba(103, 6, 118, 0.05);
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+}
+
+.memo-preview.active {
+  display: block;
+}
+
+.memo-preview h1, .memo-preview h2, .memo-preview h3 {
+  color: #a855f7;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.memo-preview h1 { font-size: 2rem; }
+.memo-preview h2 { font-size: 1.5rem; }
+.memo-preview h3 { font-size: 1.25rem; }
+
+.memo-preview p {
+  margin-bottom: 1rem;
+}
+
+.memo-preview code {
+  background: rgba(103, 6, 118, 0.3);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  color: #ec4899;
+  font-family: 'Courier New', monospace;
+}
+
+.memo-preview pre {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  margin: 1rem 0;
+}
+
+.memo-preview pre code {
+  background: none;
+  padding: 0;
+  color: #a855f7;
+}
+
+.memo-preview blockquote {
+  border-left: 4px solid #670676;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.memo-preview ul, .memo-preview ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.memo-preview li {
+  margin-bottom: 0.5rem;
+}
+
+.memo-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.memo-preview table th, .memo-preview table td {
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.memo-preview table th {
+  background: rgba(103, 6, 118, 0.2);
+  color: #a855f7;
+  font-weight: bold;
+}
+
+.memo-preview img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.memo-preview a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.memo-preview a:hover {
+  color: #60a5fa;
+}
+
+.memo-preview hr {
+  border: none;
+  border-top: 2px solid rgba(103, 6, 118, 0.3);
+  margin: 1.5rem 0;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.view-btn {
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #a855f7;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.view-btn:hover {
+  background: rgba(103, 6, 118, 0.4);
+  border-color: #670676;
+}
+
+.view-btn.active {
+  background: rgba(103, 6, 118, 0.4);
+  border-color: #670676;
+  box-shadow: 0 4px 10px rgba(103, 6, 118, 0.3);
+}
+
+.chart-container {
+  background: rgba(103, 6, 118, 0.1);
+  border: 1px solid rgba(103, 6, 118, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.memo-tags-display {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.memo-tag-item {
+  background: rgba(103, 6, 118, 0.3);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #a855f7;
+  border: 1px solid rgba(103, 6, 118, 0.4);
+}
+
+.memo-date {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  backdrop-filter: blur(5px);
+}
+
+.modal.active {
+  display: flex;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.98), rgba(0, 0, 0, 0.98));
+  border: 2px solid #670676;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.5);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #a855f7;
+}
+
+.modal-input, .modal-select, .modal-textarea {
+  width: 100%;
+  background: rgba(103, 6, 118, 0.1);
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 0.875rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  transition: all 0.3s;
+}
+
+.modal-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+  outline: none;
+  border-color: #670676;
+  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.modal-btn-primary {
+  background: linear-gradient(135deg, #670676, #8800aa);
+  color: #fff;
+}
+
+.modal-btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.modal-btn-secondary {
+  background: rgba(103, 6, 118, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(103, 6, 118, 0.3);
+}
+
+.modal-btn-secondary:hover {
+  background: rgba(103, 6, 118, 0.4);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(220, 38, 38, 0.2);
+  border: none;
+  color: #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.close-modal:hover {
+  background: rgba(220, 38, 38, 0.4);
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.shortcut-section h3 {
+  color: #a855f7;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(103, 6, 118, 0.3);
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(103, 6, 118, 0.1);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.shortcut-item kbd {
+  background: rgba(103, 6, 118, 0.3);
+  border: 1px solid rgba(103, 6, 118, 0.5);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #a855f7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.shortcut-item span {
+  color: #d1d5db;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.search-result-item {
+  background: rgba(103, 6, 118, 0.1);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.search-result-item:hover {
+  border-color: #670676;
+  transform: translateX(4px);
+}
+
+.search-result-title {
+  font-weight: bold;
+  color: #a855f7;
+  margin-bottom: 0.5rem;
+}
+
+.search-result-preview {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sort-label {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sort-select {
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #a855f7;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .mode-switcher, .input-section, .export-section {
+    flex-direction: column;
+  }
+  
+  .memo-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .todo-main-row {
+    flex-wrap: wrap;
+  }
+  
+  .todo-actions {
+    width: 100%;
+    padding-left: 2.5rem;
+  }
+}
+
+/* アニメーション */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.todo-item, .memo-item {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ダークモード対応のスクロールバー */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(103, 6, 118, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #670676;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8800aa;
+}
+</style>
 </head>
 <body>
-  <div class="music-controls" id="musicControls">
-    <div class="drag-handle">⋮⋮ DRAG ME ⋮⋮</div>
-    <div class="music-label">🎵 MUSIC PLAYER</div>
-    <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
-    <button id="uploadBtn">📁 ADD MUSIC</button>
-    <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(103, 6, 118, 0.2); border: 1px solid #670676; border-radius: 4px; color: white; font-size: 10px;">
-    <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
-    <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube: No spectrum</div>
-    <button id="playBtn">▶ PLAY</button>
-    <button id="pauseBtn">⏸ PAUSE</button>
-    <button id="nextBtn">⏭ NEXT</button>
-    
-    <div class="audio-visualizer">
-      <canvas id="visualizerCanvas"></canvas>
+<header>
+  <nav>
+    <div class="logo">📝 Todo & Memo Pro</div>
+    <div class="header-actions">
+      <button class="header-btn" onclick="openSearch()">🔍 検索</button>
+      <button class="header-btn" onclick="showStats()">📊 統計</button>
+      <button class="header-btn" onclick="showKeyboardShortcuts()">⌨️ ショートカット</button>
+      <button class="header-btn" onclick="openSettings()">⚙️ 設定</button>
+      <button class="header-btn" id="langSwitcher">EN</button>
     </div>
-    
-    <div class="volume-container">
-      <label class="music-label" for="volumeSlider">VOLUME</label>
-      <input type="range" id="volumeSlider" min="0" max="100" value="50">
-    </div>
-    <div class="music-status" id="musicStatus">No tracks</div>
-    <div class="playlist" id="musicPlaylist"></div>
+  </nav>
+</header>
+
+<main>
+  <div class="mode-switcher">
+    <button class="mode-btn active" data-mode="todo">📝 Todoリスト</button>
+    <button class="mode-btn" data-mode="memo">📄 メモ</button>
   </div>
 
-  <audio id="bgMusic" loop></audio>
-  <div id="youtubePlayer"></div>
-  
-  <div id="canvas-container"></div>
-  
-  <div class="content-wrapper">
-    <header>
-      <nav>
-        <div class="logo">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-          <span data-lang-key="app-title">タスク管理</span>
-        </div>
-        <button class="lang-switcher" id="langSwitcher">EN</button>
-      </nav>
-    </header>
-
-    <main>
-      <div class="mode-switcher">
-        <button class="mode-btn active" data-mode="todo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 11 12 14 22 4"></polyline>
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-          </svg>
-          <span data-lang-key="mode-todo">Todoリスト</span>
-        </button>
-        <button class="mode-btn" data-mode="memo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-          <span data-lang-key="mode-memo">メモ</span>
-        </button>
+  <div class="content-area">
+    <!-- Todo Container -->
+    <div class="todo-container active">
+      <h1>タスク管理</h1>
+      
+      <div class="input-section">
+        <input type="text" id="todoInput" placeholder="何をする必要がありますか？">
+        <button class="btn-primary" id="addTodoBtn">タスク追加</button>
       </div>
 
-      <div class="content-area">
-        <div class="todo-container active">
-          <h1 data-lang-key="todo-title">タスク</h1>
-          
-          <div class="input-section">
-            <input type="text" id="todoInput" data-lang-key="todo-placeholder" placeholder="何をする必要がありますか？">
-            <button id="addTodoBtn" data-lang-key="todo-add-btn">タスク追加</button>
-          </div>
+      <div class="sort-controls">
+        <span class="sort-label">並び替え:</span>
+        <select class="sort-select" id="todoSort">
+          <option value="newest">新しい順</option>
+          <option value="oldest">古い順</option>
+          <option value="priority">優先度順</option>
+          <option value="duedate">期限順</option>
+          <option value="alphabetical">アルファベット順</option>
+        </select>
+      </div>
 
-          <div class="filter-tabs">
-            <button class="filter-btn active" data-filter="all" data-lang-key="filter-all">すべて</button>
-            <button class="filter-btn" data-filter="active" data-lang-key="filter-active">未完了</button>
-            <button class="filter-btn" data-filter="completed" data-lang-key="filter-completed">完了済み</button>
-          </div>
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-filter="all">すべて</button>
+        <button class="filter-btn" data-filter="active">未完了</button>
+        <button class="filter-btn" data-filter="completed">完了済み</button>
+        <button class="filter-btn" data-filter="high">優先度: 高</button>
+        <button class="filter-btn" data-filter="medium">優先度: 中</button>
+        <button class="filter-btn" data-filter="low">優先度: 低</button>
+        <button class="filter-btn" data-filter="overdue">期限切れ</button>
+      </div>
 
-          <ul class="todo-list" id="todoList"></ul>
+      <ul class="todo-list" id="todoList"></ul>
 
-          <div class="stats">
-            <div class="stat-item">
-              <div class="stat-value" id="totalTasks">0</div>
-              <div class="stat-label" data-lang-key="stat-total">合計</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="activeTasks">0</div>
-              <div class="stat-label" data-lang-key="stat-active">未完了</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="completedTasks">0</div>
-              <div class="stat-label" data-lang-key="stat-completed">完了済み</div>
-            </div>
-          </div>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-value" id="totalTasks">0</div>
+          <div class="stat-label">合計</div>
         </div>
-
-        <div class="memo-container">
-          <h1 data-lang-key="memo-title">メモ</h1>
-          
-          <div class="memo-input-section">
-            <input type="text" id="memoTitle" data-lang-key="memo-title-placeholder" placeholder="メモタイトル...">
-            <textarea id="memoContent" data-lang-key="memo-content-placeholder" placeholder="メモをここに書いてください..."></textarea>
-            <button id="addMemoBtn" data-lang-key="memo-save-btn">メモを保存</button>
-          </div>
-
-          <div class="memo-list" id="memoList"></div>
+        <div class="stat-item">
+          <div class="stat-value" id="activeTasks">0</div>
+          <div class="stat-label">未完了</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="completedTasks">0</div>
+          <div class="stat-label">完了済み</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="completionRate">0%</div>
+          <div class="stat-label">達成率</div>
         </div>
       </div>
-    </main>
+
+      <div class="export-section">
+        <button class="btn-success" onclick="exportAllTodos()">📥 すべてのタスクをエクスポート</button>
+        <button class="btn-primary" onclick="clearCompleted()">🗑️ 完了済みを削除</button>
+      </div>
+    </div>
+
+    <!-- Memo Container -->
+    <div class="memo-container">
+      <h1>メモ管理</h1>
+      
+      <div class="memo-input-section">
+        <input type="text" id="memoTitle" placeholder="メモタイトル...">
+        
+        <div class="view-toggle">
+          <button class="view-btn active" id="editViewBtn" onclick="switchMemoView('edit')">✏️ 編集</button>
+          <button class="view-btn" id="previewViewBtn" onclick="switchMemoView('preview')">👁️ プレビュー</button>
+        </div>
+        
+        <div class="memo-toolbar">
+          <button class="toolbar-btn" onclick="insertText('**太字**')" title="太字 (選択範囲を太字に)">
+            <strong>B</strong>
+          </button>
+          <button class="toolbar-btn" onclick="insertText('*斜体*')" title="斜体 (選択範囲を斜体に)">
+            <em>I</em>
+          </button>
+          <button class="toolbar-btn" onclick="insertText('~~打ち消し線~~')" title="打ち消し線">
+            <s>S</s>
+          </button>
+          <button class="toolbar-btn" onclick="insertText('# ')" title="見出し1">H1</button>
+          <button class="toolbar-btn" onclick="insertText('## ')" title="見出し2">H2</button>
+          <button class="toolbar-btn" onclick="insertText('### ')" title="見出し3">H3</button>
+          <button class="toolbar-btn" onclick="insertText('- ')" title="箇条書き">• List</button>
+          <button class="toolbar-btn" onclick="insertText('1. ')" title="番号付きリスト">1. List</button>
+          <button class="toolbar-btn" onclick="insertText('[ ] ')" title="チェックボックス">☐ Task</button>
+          <button class="toolbar-btn" onclick="insertText('```\n\n```')" title="コードブロック">&lt;/&gt; Code</button>
+          <button class="toolbar-btn" onclick="insertText('> ')" title="引用">❝ Quote</button>
+          <button class="toolbar-btn" onclick="insertLink()" title="リンク">🔗 Link</button>
+          <button class="toolbar-btn" onclick="insertImage()" title="画像">🖼️ Image</button>
+          <button class="toolbar-btn" onclick="insertTable()" title="テーブル">📊 Table</button>
+          <button class="toolbar-btn" onclick="insertHorizontalRule()" title="水平線">─ HR</button>
+        </div>
+        
+        <textarea id="memoContent" placeholder="メモをここに書いてください...&#10;&#10;Markdownをサポート:&#10;**太字** *斜体* ~~打ち消し線~~&#10;# 見出し1 ## 見出し2 ### 見出し3&#10;- リスト 1. 番号付きリスト [ ] チェックボックス&#10;> 引用 ``` コードブロック ``` [リンク](URL)"></textarea>
+        
+        <div id="memoPreview" class="memo-preview"></div>
+        
+        <input type="text" id="memoTags" placeholder="タグ (カンマ区切り: 仕事, アイデア, 重要)">
+        
+        <button class="btn-primary" id="addMemoBtn">メモを保存</button>
+      </div>
+
+      <div class="sort-controls">
+        <span class="sort-label">並び替え:</span>
+        <select class="sort-select" id="memoSort">
+          <option value="newest">新しい順</option>
+          <option value="oldest">古い順</option>
+          <option value="alphabetical">アルファベット順</option>
+          <option value="longest">長い順</option>
+        </select>
+      </div>
+
+      <div class="memo-filters" id="memoFilters">
+        <button class="filter-btn active" onclick="filterMemosByTag('all')">すべて</button>
+      </div>
+
+      <div class="export-section">
+        <button class="btn-success" onclick="exportAllMemos()">📥 すべてのメモをエクスポート</button>
+      </div>
+
+      <div class="memo-list" id="memoList"></div>
+    </div>
   </div>
+</main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Search Modal -->
+<div class="modal" id="searchModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeSearch()">✕</button>
+    <h2 class="modal-title">🔍 検索</h2>
+    <input type="text" class="modal-input" id="searchInput" placeholder="タスクやメモを検索...">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
 
-  <script>
-    // YouTube IFrame API
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    
-    // Music Player Variables
-    const audio = document.getElementById('bgMusic');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const musicFile = document.getElementById('musicFile');
-    const addYoutubeBtn = document.getElementById('addYoutubeBtn');
-    const youtubeUrl = document.getElementById('youtubeUrl');
-    const playBtn = document.getElementById('playBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const musicStatus = document.getElementById('musicStatus');
-    const musicPlaylistDiv = document.getElementById('musicPlaylist');
-    const youtubePlayerDiv = document.getElementById('youtubePlayer');
+<!-- Edit Todo Modal -->
+<div class="modal" id="editTodoModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeEditTodoModal()">✕</button>
+    <h2 class="modal-title">📝 タスクを編集</h2>
+    <input type="text" class="modal-input" id="editTodoText" placeholder="タスクの内容">
+    <select class="modal-select" id="editTodoPriority">
+      <option value="">優先度なし</option>
+      <option value="high">高</option>
+      <option value="medium">中</option>
+      <option value="low">低</option>
+    </select>
+    <input type="date" class="modal-input" id="editTodoDueDate" placeholder="期限">
+    <input type="text" class="modal-input" id="editTodoTags" placeholder="タグ (カンマ区切り)">
+    <textarea class="modal-textarea" id="editTodoNote" placeholder="メモ"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeEditTodoModal()">キャンセル</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveEditedTodo()">保存</button>
+    </div>
+  </div>
+</div>
 
-    let youtubePlayer = null;
-    let isYoutubeReady = false;
-    let youtubeReadyCheckInterval = null;
-    let isPlayingYouTube = false;
+<!-- Stats Modal -->
+<div class="modal" id="statsModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeStats()">✕</button>
+    <h2 class="modal-title">📊 統計情報</h2>
+    <div id="statsContent"></div>
+  </div>
+</div>
 
-    const visualizerCanvas = document.getElementById('visualizerCanvas');
-    const canvasCtx = visualizerCanvas.getContext('2d');
-    let audioContext, analyser, dataArray, bufferLength, source;
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeSettings()">✕</button>
+    <h2 class="modal-title">⚙️ 設定</h2>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="importData()">📤 データをインポート</button>
+      <button class="modal-btn modal-btn-primary" onclick="exportAllData()">📥 すべてをエクスポート</button>
+      <button class="modal-btn modal-btn-secondary" onclick="clearAllData()">🗑️ すべてを削除</button>
+    </div>
+  </div>
+</div>
 
-    function setupAudioContext() {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        bufferLength = analyser.frequencyBinCount;
-        dataArray = new Uint8Array(bufferLength);
-        
-        source = audioContext.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        
-        drawVisualizer();
+<!-- Keyboard Shortcuts Modal -->
+<div class="modal" id="shortcutsModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeKeyboardShortcuts()">✕</button>
+    <h2 class="modal-title">⌨️ キーボードショートカット</h2>
+    <div class="shortcuts-list">
+      <div class="shortcut-section">
+        <h3>全般</h3>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + K</kbd>
+          <span>検索を開く</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Esc</kbd>
+          <span>モーダルを閉じる</span>
+        </div>
+      </div>
+      
+      <div class="shortcut-section">
+        <h3>メモ編集</h3>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + B</kbd>
+          <span>太字</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + I</kbd>
+          <span>斜体</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + K</kbd>
+          <span>リンク挿入</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + Shift + K</kbd>
+          <span>コードブロック</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Ctrl/Cmd + Enter</kbd>
+          <span>メモを保存</span>
+        </div>
+      </div>
+      
+      <div class="shortcut-section">
+        <h3>Todo</h3>
+        <div class="shortcut-item">
+          <kbd>Enter</kbd>
+          <span>タスクを追加</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// データ管理
+let todos = [];
+let memos = [];
+let currentFilter = 'all';
+let currentMemoFilter = 'all';
+let editingTodoId = null;
+let currentLang = 'ja';
+let allMemoTags = new Set();
+let currentTodoSort = 'newest';
+let currentMemoSort = 'newest';
+let currentMemoView = 'edit';
+let todoSortable = null;
+
+// Marked.jsの設定
+if (typeof marked !== 'undefined') {
+  marked.setOptions({
+    breaks: true,
+    gfm: true
+  });
+}
+
+// メモビューの切り替え
+function switchMemoView(view) {
+  currentMemoView = view;
+  const textarea = document.getElementById('memoContent');
+  const preview = document.getElementById('memoPreview');
+  const editBtn = document.getElementById('editViewBtn');
+  const previewBtn = document.getElementById('previewViewBtn');
+  
+  if (view === 'edit') {
+    textarea.style.display = 'block';
+    preview.classList.remove('active');
+    editBtn.classList.add('active');
+    previewBtn.classList.remove('active');
+  } else {
+    textarea.style.display = 'none';
+    preview.classList.add('active');
+    editBtn.classList.remove('active');
+    previewBtn.classList.add('active');
+    updateMemoPreview();
+  }
+}
+
+// メモプレビューの更新
+function updateMemoPreview() {
+  const content = document.getElementById('memoContent').value;
+  const preview = document.getElementById('memoPreview');
+  
+  if (typeof marked !== 'undefined') {
+    preview.innerHTML = marked.parse(content || '*プレビューする内容がありません*');
+  } else {
+    preview.innerHTML = content.replace(/\n/g, '<br>');
+  }
+}
+
+// メモ入力時にリアルタイムプレビュー
+document.addEventListener('DOMContentLoaded', function() {
+  const memoContent = document.getElementById('memoContent');
+  if (memoContent) {
+    memoContent.addEventListener('input', function() {
+      if (currentMemoView === 'preview') {
+        updateMemoPreview();
       }
+    });
+  }
+});
+
+// 翻訳
+const translations = {
+  ja: {
+    app_title: 'Todo & Memo Pro',
+    search: '検索',
+    stats: '統計',
+    settings: '設定',
+    todo_mode: 'Todoリスト',
+    memo_mode: 'メモ',
+    task_management: 'タスク管理',
+    memo_management: 'メモ管理',
+    add_task: 'タスク追加',
+    add_memo: 'メモを保存',
+    task_placeholder: '何をする必要がありますか？',
+    memo_title_placeholder: 'メモタイトル...',
+    memo_content_placeholder: 'メモをここに書いてください...',
+    tags_placeholder: 'タグ (カンマ区切り: 仕事, アイデア, 重要)',
+    sort_by: '並び替え:',
+    sort_newest: '新しい順',
+    sort_oldest: '古い順',
+    sort_priority: '優先度順',
+    sort_duedate: '期限順',
+    sort_alphabetical: 'アルファベット順',
+    sort_longest: '長い順',
+    filter_all: 'すべて',
+    filter_active: '未完了',
+    filter_completed: '完了済み',
+    filter_high: '優先度: 高',
+    filter_medium: '優先度: 中',
+    filter_low: '優先度: 低',
+    filter_overdue: '期限切れ',
+    stat_total: '合計',
+    stat_active: '未完了',
+    stat_completed: '完了済み',
+    stat_completion_rate: '達成率',
+    export_all_tasks: 'すべてのタスクをエクスポート',
+    export_all_memos: 'すべてのメモをエクスポート',
+    clear_completed: '完了済みを削除',
+    no_tasks: 'タスクが見つかりません',
+    no_memos: 'まだメモがありません',
+    delete_btn: '削除',
+    export_btn: 'エクスポート',
+    edit_btn: '編集',
+    duplicate_btn: '複製',
+    priority_high: '高',
+    priority_medium: '中',
+    priority_low: '低',
+    priority_none: '優先度なし',
+    untitled: '無題',
+    due_today: '今日',
+    due_tomorrow: '明日',
+    overdue: '期限切れ',
+    completed: '完了',
+    active: '未完了',
+    edit_task: 'タスクを編集',
+    task_content: 'タスクの内容',
+    due_date: '期限',
+    note: 'メモ',
+    cancel: 'キャンセル',
+    save: '保存',
+    stats_title: '統計情報',
+    total_tasks: '総タスク数',
+    active_tasks: '未完了タスク',
+    completed_tasks: '完了済みタスク',
+    high_priority_tasks: '高優先度タスク',
+    total_memos: '総メモ数',
+    tags_in_use: '使用中のタグ',
+    settings_title: '設定',
+    import_data: 'データをインポート',
+    export_data: 'すべてをエクスポート',
+    clear_all: 'すべてを削除',
+    search_title: '検索',
+    search_placeholder: 'タスクやメモを検索...',
+    no_results: '検索結果が見つかりません',
+    confirm_delete_task: 'このタスクを削除しますか?',
+    confirm_delete_memo: 'このメモを削除しますか?',
+    confirm_clear_completed: '完了済みのタスクをすべて削除しますか?',
+    confirm_import: 'インポートすると現在のデータが上書きされます。続けますか?',
+    confirm_clear_all_1: 'すべてのデータを削除しますか? この操作は取り消せません。',
+    confirm_clear_all_2: '本当に削除しますか?',
+    import_success: 'データをインポートしました!',
+    import_error: 'ファイルの読み込みに失敗しました',
+    no_tasks_export: 'エクスポートするタスクがありません',
+    no_memos_export: 'エクスポートするメモがありません'
+  },
+  en: {
+    app_title: 'Todo & Memo Pro',
+    search: 'Search',
+    stats: 'Stats',
+    settings: 'Settings',
+    todo_mode: 'Todo List',
+    memo_mode: 'Memos',
+    task_management: 'Task Management',
+    memo_management: 'Memo Management',
+    add_task: 'Add Task',
+    add_memo: 'Save Memo',
+    task_placeholder: 'What do you need to do?',
+    memo_title_placeholder: 'Memo title...',
+    memo_content_placeholder: 'Write your memo here...',
+    tags_placeholder: 'Tags (comma separated: work, ideas, important)',
+    sort_by: 'Sort by:',
+    sort_newest: 'Newest',
+    sort_oldest: 'Oldest',
+    sort_priority: 'Priority',
+    sort_duedate: 'Due Date',
+    sort_alphabetical: 'Alphabetical',
+    sort_longest: 'Longest',
+    filter_all: 'All',
+    filter_active: 'Active',
+    filter_completed: 'Completed',
+    filter_high: 'Priority: High',
+    filter_medium: 'Priority: Medium',
+    filter_low: 'Priority: Low',
+    filter_overdue: 'Overdue',
+    stat_total: 'Total',
+    stat_active: 'Active',
+    stat_completed: 'Completed',
+    stat_completion_rate: 'Completion Rate',
+    export_all_tasks: 'Export All Tasks',
+    export_all_memos: 'Export All Memos',
+    clear_completed: 'Clear Completed',
+    no_tasks: 'No tasks found',
+    no_memos: 'No memos yet',
+    delete_btn: 'Delete',
+    export_btn: 'Export',
+    edit_btn: 'Edit',
+    duplicate_btn: 'Duplicate',
+    priority_high: 'High',
+    priority_medium: 'Medium',
+    priority_low: 'Low',
+    priority_none: 'No Priority',
+    untitled: 'Untitled',
+    due_today: 'Today',
+    due_tomorrow: 'Tomorrow',
+    overdue: 'Overdue',
+    completed: 'Completed',
+    active: 'Active',
+    edit_task: 'Edit Task',
+    task_content: 'Task content',
+    due_date: 'Due Date',
+    note: 'Note',
+    cancel: 'Cancel',
+    save: 'Save',
+    stats_title: 'Statistics',
+    total_tasks: 'Total Tasks',
+    active_tasks: 'Active Tasks',
+    completed_tasks: 'Completed Tasks',
+    high_priority_tasks: 'High Priority Tasks',
+    total_memos: 'Total Memos',
+    tags_in_use: 'Tags in Use',
+    settings_title: 'Settings',
+    import_data: 'Import Data',
+    export_data: 'Export All',
+    clear_all: 'Clear All',
+    search_title: 'Search',
+    search_placeholder: 'Search tasks and memos...',
+    no_results: 'No results found',
+    confirm_delete_task: 'Delete this task?',
+    confirm_delete_memo: 'Delete this memo?',
+    confirm_clear_completed: 'Clear all completed tasks?',
+    confirm_import: 'Importing will overwrite current data. Continue?',
+    confirm_clear_all_1: 'Delete all data? This cannot be undone.',
+    confirm_clear_all_2: 'Are you sure?',
+    import_success: 'Data imported successfully!',
+    import_error: 'Failed to load file',
+    no_tasks_export: 'No tasks to export',
+    no_memos_export: 'No memos to export'
+  }
+};
+
+// UI更新関数
+function updateUILanguage() {
+  const t = translations[currentLang];
+  
+  // ヘッダー
+  document.querySelector('.logo').textContent = `📝 ${t.app_title}`;
+  document.querySelectorAll('.header-btn')[0].textContent = `🔍 ${t.search}`;
+  document.querySelectorAll('.header-btn')[1].textContent = `📊 ${t.stats}`;
+  document.querySelectorAll('.header-btn')[2].textContent = `⚙️ ${t.settings}`;
+  
+  // モード切替
+  document.querySelector('[data-mode="todo"]').textContent = `📝 ${t.todo_mode}`;
+  document.querySelector('[data-mode="memo"]').textContent = `📄 ${t.memo_mode}`;
+  
+  // Todoセクション
+  document.querySelector('.todo-container h1').textContent = t.task_management;
+  document.getElementById('todoInput').placeholder = t.task_placeholder;
+  document.getElementById('addTodoBtn').textContent = t.add_task;
+  
+  // Todo並び替え
+  const todoSortOptions = document.querySelectorAll('#todoSort option');
+  todoSortOptions[0].textContent = t.sort_newest;
+  todoSortOptions[1].textContent = t.sort_oldest;
+  todoSortOptions[2].textContent = t.sort_priority;
+  todoSortOptions[3].textContent = t.sort_duedate;
+  todoSortOptions[4].textContent = t.sort_alphabetical;
+  
+  // Todoフィルター
+  const todoFilters = document.querySelectorAll('.filter-tabs .filter-btn');
+  todoFilters[0].textContent = t.filter_all;
+  todoFilters[1].textContent = t.filter_active;
+  todoFilters[2].textContent = t.filter_completed;
+  todoFilters[3].textContent = t.filter_high;
+  todoFilters[4].textContent = t.filter_medium;
+  todoFilters[5].textContent = t.filter_low;
+  todoFilters[6].textContent = t.filter_overdue;
+  
+  // Todo統計
+  document.querySelectorAll('.todo-container .stat-label')[0].textContent = t.stat_total;
+  document.querySelectorAll('.todo-container .stat-label')[1].textContent = t.stat_active;
+  document.querySelectorAll('.todo-container .stat-label')[2].textContent = t.stat_completed;
+  document.querySelectorAll('.todo-container .stat-label')[3].textContent = t.stat_completion_rate;
+  
+  // Todoエクスポート
+  document.querySelectorAll('.todo-container .export-section button')[0].textContent = `📥 ${t.export_all_tasks}`;
+  document.querySelectorAll('.todo-container .export-section button')[1].textContent = `🗑️ ${t.clear_completed}`;
+  
+  // Memoセクション
+  document.querySelector('.memo-container h1').textContent = t.memo_management;
+  document.getElementById('memoTitle').placeholder = t.memo_title_placeholder;
+  document.getElementById('memoContent').placeholder = t.memo_content_placeholder;
+  document.getElementById('memoTags').placeholder = t.tags_placeholder;
+  document.getElementById('addMemoBtn').textContent = t.add_memo;
+  
+  // Memo並び替え
+  const memoSortLabel = document.querySelectorAll('.memo-container .sort-label')[0];
+  if (memoSortLabel) memoSortLabel.textContent = t.sort_by;
+  
+  const memoSortOptions = document.querySelectorAll('#memoSort option');
+  memoSortOptions[0].textContent = t.sort_newest;
+  memoSortOptions[1].textContent = t.sort_oldest;
+  memoSortOptions[2].textContent = t.sort_alphabetical;
+  memoSortOptions[3].textContent = t.sort_longest;
+  
+  // Memoエクスポート
+  document.querySelectorAll('.memo-container .export-section button')[0].textContent = `📥 ${t.export_all_memos}`;
+  
+  // モーダル
+  document.querySelector('#editTodoModal .modal-title').textContent = `📝 ${t.edit_task}`;
+  document.getElementById('editTodoText').placeholder = t.task_content;
+  
+  const priorityOptions = document.querySelectorAll('#editTodoPriority option');
+  priorityOptions[0].textContent = t.priority_none;
+  priorityOptions[1].textContent = t.priority_high;
+  priorityOptions[2].textContent = t.priority_medium;
+  priorityOptions[3].textContent = t.priority_low;
+  
+  document.getElementById('editTodoTags').placeholder = t.tags_placeholder;
+  document.getElementById('editTodoNote').placeholder = t.note;
+  
+  document.querySelectorAll('#editTodoModal .modal-btn')[0].textContent = t.cancel;
+  document.querySelectorAll('#editTodoModal .modal-btn')[1].textContent = t.save;
+  
+  // 検索モーダル
+  document.querySelector('#searchModal .modal-title').textContent = `🔍 ${t.search_title}`;
+  document.getElementById('searchInput').placeholder = t.search_placeholder;
+  
+  // 統計モーダル
+  document.querySelector('#statsModal .modal-title').textContent = `📊 ${t.stats_title}`;
+  
+  // 設定モーダル
+  document.querySelector('#settingsModal .modal-title').textContent = `⚙️ ${t.settings_title}`;
+  const settingsButtons = document.querySelectorAll('#settingsModal .modal-btn');
+  settingsButtons[0].textContent = `📤 ${t.import_data}`;
+  settingsButtons[1].textContent = `📥 ${t.export_data}`;
+  settingsButtons[2].textContent = `🗑️ ${t.clear_all}`;
+}
+
+// LocalStorage管理
+function saveTodos() {
+  try {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  } catch (e) {
+    console.error('保存エラー:', e);
+  }
+}
+
+function loadTodos() {
+  try {
+    const stored = localStorage.getItem('todos');
+    if (stored) {
+      todos = JSON.parse(stored);
     }
+  } catch (e) {
+    console.error('読み込みエラー:', e);
+  }
+}
 
-    let randomDataArray = new Uint8Array(128);
-    function drawRandomVisualizer() {
-      if (!isPlayingYouTube) return;
-      
-      for (let i = 0; i < randomDataArray.length; i++) {
-        randomDataArray[i] = Math.random() * 255;
-      }
-      
-      const width = visualizerCanvas.width;
-      const height = visualizerCanvas.height;
-      
-      canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      canvasCtx.fillRect(0, 0, width, height);
-      
-      const barWidth = (width / randomDataArray.length) * 2.5;
-      let barHeight, x = 0;
-      
-      for (let i = 0; i < randomDataArray.length; i++) {
-        barHeight = (randomDataArray[i] / 255) * height;
-        
-        const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-        gradient.addColorStop(0, '#660675');
-        gradient.addColorStop(0.5, '#8800aa');
-        gradient.addColorStop(1, '#aa00dd');
-        
-        canvasCtx.fillStyle = gradient;
-        canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-        canvasCtx.shadowBlur = 10;
-        canvasCtx.shadowColor = '#660675';
-        x += barWidth + 1;
-      }
+function saveMemos() {
+  try {
+    localStorage.setItem('memos', JSON.stringify(memos));
+  } catch (e) {
+    console.error('保存エラー:', e);
+  }
+}
+
+function loadMemos() {
+  try {
+    const stored = localStorage.getItem('memos');
+    if (stored) {
+      memos = JSON.parse(stored);
+      updateMemoTags();
     }
+  } catch (e) {
+    console.error('読み込みエラー:', e);
+  }
+}
 
-    function drawVisualizer() {
-      requestAnimationFrame(drawVisualizer);
-      
-      if (isPlayingYouTube) {
-        drawRandomVisualizer();
-        return;
-      }
-      
-      if (!analyser || !dataArray) return;
-      analyser.getByteFrequencyData(dataArray);
-      
-      const width = visualizerCanvas.width;
-      const height = visualizerCanvas.height;
-      
-      canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      canvasCtx.fillRect(0, 0, width, height);
-      
-      const barWidth = (width / bufferLength) * 2.5;
-      let barHeight, x = 0;
-      
-      for (let i = 0; i < bufferLength; i++) {
-        barHeight = (dataArray[i] / 255) * height;
-        
-        const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-        gradient.addColorStop(0, '#660675');
-        gradient.addColorStop(0.5, '#8800aa');
-        gradient.addColorStop(1, '#aa00dd');
-        
-        canvasCtx.fillStyle = gradient;
-        canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-        canvasCtx.shadowBlur = 10;
-        canvasCtx.shadowColor = '#660675';
-        x += barWidth + 1;
-      }
-      canvasCtx.shadowBlur = 0;
+// Todo機能
+function addTodo() {
+  const text = document.getElementById('todoInput').value.trim();
+  if (!text) return;
+
+  todos.unshift({
+    id: Date.now(),
+    text: text,
+    completed: false,
+    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
+    priority: '',
+    tags: [],
+    dueDate: null,
+    note: ''
+  });
+
+  document.getElementById('todoInput').value = '';
+  saveTodos();
+  renderTodos();
+}
+
+function toggleTodo(id) {
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    todo.completed = !todo.completed;
+    if (todo.completed) {
+      todo.completedDate = new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US');
+    } else {
+      delete todo.completedDate;
     }
+    saveTodos();
+    renderTodos();
+  }
+}
 
-    function resizeCanvas() {
-      const rect = visualizerCanvas.getBoundingClientRect();
-      visualizerCanvas.width = rect.width;
-      visualizerCanvas.height = rect.height;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+function deleteTodo(id) {
+  const t = translations[currentLang];
+  if (confirm(t.confirm_delete_task)) {
+    todos = todos.filter(t => t.id !== id);
+    saveTodos();
+    renderTodos();
+  }
+}
 
-    window.onYouTubeIframeAPIReady = function() {
-      isYoutubeReady = true;
-      if (youtubeReadyCheckInterval) {
-        clearInterval(youtubeReadyCheckInterval);
-        youtubeReadyCheckInterval = null;
-      }
-    };
+function duplicateTodo(id) {
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return;
 
-    function isYouTubeUrl(url) {
-      if (!url) return false;
-      return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(url);
-    }
+  const t = translations[currentLang];
+  const copyLabel = currentLang === 'ja' ? ' (コピー)' : ' (Copy)';
 
-    function extractVideoId(url) {
-      if (!url) return null;
-      const match = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
-      return (match && match[7].length === 11) ? match[7] : null;
-    }
+  todos.unshift({
+    ...todo,
+    id: Date.now(),
+    completed: false,
+    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
+    text: todo.text + copyLabel
+  });
 
-    function loadYouTubePlayer(url) {
-      if (typeof YT === 'undefined' || !YT.Player) {
-        musicStatus.textContent = '⏳ YouTube API loading...';
-        if (!youtubeReadyCheckInterval) {
-          youtubeReadyCheckInterval = setInterval(function() {
-            if (typeof YT !== 'undefined' && YT.Player) {
-              clearInterval(youtubeReadyCheckInterval);
-              youtubeReadyCheckInterval = null;
-              isYoutubeReady = true;
-              loadYouTubePlayer(url);
-            }
-          }, 100);
-        }
-        return;
-      }
+  saveTodos();
+  renderTodos();
+}
 
-      const videoId = extractVideoId(url);
-      if (!videoId) {
-        musicStatus.textContent = 'Invalid YouTube URL';
-        return;
-      }
+function exportTodo(id) {
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return;
+  
+  const t = translations[currentLang];
 
-      if (youtubePlayer) {
-        youtubePlayer.loadVideoById(videoId);
-      } else {
-        try {
-          youtubePlayer = new YT.Player('youtubePlayer', {
-            height: '160',
-            width: '240',
-            videoId: videoId,
-            playerVars: { 'autoplay': 0, 'controls': 1, 'rel': 0, 'modestbranding': 1 },
-            events: {
-              'onReady': function(e) { e.target.setVolume(volumeSlider.value); },
-              'onStateChange': function(e) {
-                if (e.data === YT.PlayerState.ENDED && musicPlaylist.length > 0) {
-                  currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
-                  loadMusicTrack(currentMusicTrack);
-                  if (youtubePlayer) youtubePlayer.playVideo();
-                }
-              }
-            }
-          });
-          youtubePlayerDiv.style.display = 'block';
-        } catch (error) {
-          musicStatus.textContent = 'Error loading player';
-        }
-      }
-    }
+  let content = `${currentLang === 'ja' ? 'タスク' : 'Task'}: ${todo.text}\n${'='.repeat(50)}\n\n`;
+  content += `${currentLang === 'ja' ? '状態' : 'Status'}: ${todo.completed ? '✓ ' + t.completed : '☐ ' + t.active}\n`;
+  
+  if (todo.priority) {
+    content += `${currentLang === 'ja' ? '優先度' : 'Priority'}: ${t['priority_' + todo.priority]}\n`;
+  }
+  
+  if (todo.dueDate) {
+    content += `${currentLang === 'ja' ? '期限' : 'Due Date'}: ${new Date(todo.dueDate).toLocaleDateString(currentLang === 'ja' ? 'ja-JP' : 'en-US')}\n`;
+  }
+  
+  if (todo.tags && todo.tags.length > 0) {
+    content += `${currentLang === 'ja' ? 'タグ' : 'Tags'}: ${todo.tags.join(', ')}\n`;
+  }
+  
+  if (todo.note) {
+    content += `\n${currentLang === 'ja' ? 'メモ' : 'Note'}:\n${todo.note}\n`;
+  }
+  
+  content += `\n${currentLang === 'ja' ? '作成日時' : 'Created'}: ${todo.date || (currentLang === 'ja' ? '不明' : 'Unknown')}`;
+  
+  if (todo.completedDate) {
+    content += `\n${currentLang === 'ja' ? '完了日時' : 'Completed'}: ${todo.completedDate}`;
+  }
 
-    let musicPlaylist = [
-    { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio' }
-    ];
-    let currentMusicTrack = -1;
+  downloadTextFile(
+    todo.text.substring(0, 30).replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt',
+    content
+  );
+}
 
-    uploadBtn.addEventListener('click', function() { musicFile.click(); });
+function exportAllTodos() {
+  const t = translations[currentLang];
+  
+  if (todos.length === 0) {
+    alert(t.no_tasks_export);
+    return;
+  }
 
-    musicFile.addEventListener('change', function(e) {
-      Array.from(e.target.files).forEach(function(file) {
-        musicPlaylist.push({ name: file.name, url: URL.createObjectURL(file), type: 'audio' });
+  const header = currentLang === 'ja' ? 'タスクリスト' : 'Task List';
+  let content = header + '\n' + '='.repeat(50) + '\n\n';
+  
+  const active = todos.filter(t => !t.completed);
+  const completed = todos.filter(t => t.completed);
+
+  if (active.length > 0) {
+    content += `【${currentLang === 'ja' ? '未完了' : 'Active'}】\n`;
+    active.forEach((todo, index) => {
+      content += `${index + 1}. ☐ ${todo.text}`;
+      if (todo.priority) content += ` [${t['priority_' + todo.priority]}]`;
+      if (todo.dueDate) content += ` (${currentLang === 'ja' ? '期限' : 'Due'}: ${new Date(todo.dueDate).toLocaleDateString()})`;
+      if (todo.tags && todo.tags.length > 0) content += ` #${todo.tags.join(' #')}`;
+      content += '\n';
+    });
+    content += '\n';
+  }
+
+  if (completed.length > 0) {
+    content += `【${currentLang === 'ja' ? '完了済み' : 'Completed'}】\n`;
+    completed.forEach((todo, index) => {
+      content += `${index + 1}. ☑ ${todo.text}`;
+      if (todo.priority) content += ` [${t['priority_' + todo.priority]}]`;
+      if (todo.tags && todo.tags.length > 0) content += ` #${todo.tags.join(' #')}`;
+      content += '\n';
+    });
+  }
+
+  content += '\n' + '='.repeat(50) + '\n';
+  const summary = currentLang === 'ja' 
+    ? `合計: ${todos.length} | 未完了: ${active.length} | 完了済み: ${completed.length}\n`
+    : `Total: ${todos.length} | Active: ${active.length} | Completed: ${completed.length}\n`;
+  content += summary;
+
+  downloadTextFile(`todos_${new Date().toISOString().split('T')[0]}.txt`, content);
+}
+
+function clearCompleted() {
+  const t = translations[currentLang];
+  if (confirm(t.confirm_clear_completed)) {
+    todos = todos.filter(t => !t.completed);
+    saveTodos();
+    renderTodos();
+  }
+}
+
+function openEditTodoModal(id) {
+  editingTodoId = id;
+  const todo = todos.find(t => t.id === id);
+  if (!todo) return;
+
+  document.getElementById('editTodoText').value = todo.text;
+  document.getElementById('editTodoPriority').value = todo.priority || '';
+  document.getElementById('editTodoDueDate').value = todo.dueDate || '';
+  document.getElementById('editTodoTags').value = todo.tags ? todo.tags.join(', ') : '';
+  document.getElementById('editTodoNote').value = todo.note || '';
+  document.getElementById('editTodoModal').classList.add('active');
+}
+
+function closeEditTodoModal() {
+  document.getElementById('editTodoModal').classList.remove('active');
+  editingTodoId = null;
+}
+
+function saveEditedTodo() {
+  if (!editingTodoId) return;
+
+  const todo = todos.find(t => t.id === editingTodoId);
+  if (!todo) return;
+
+  todo.text = document.getElementById('editTodoText').value.trim();
+  todo.priority = document.getElementById('editTodoPriority').value;
+  todo.dueDate = document.getElementById('editTodoDueDate').value;
+  todo.note = document.getElementById('editTodoNote').value.trim();
+  
+  const tagInput = document.getElementById('editTodoTags').value.trim();
+  todo.tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
+
+  saveTodos();
+  renderTodos();
+  closeEditTodoModal();
+}
+
+function getDueDateStatus(dueDate) {
+  if (!dueDate) return null;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+  
+  const diffTime = due - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return { text: translations[currentLang].overdue, class: 'overdue' };
+  if (diffDays === 0) return { text: translations[currentLang].due_today, class: 'due-today' };
+  if (diffDays === 1) return { text: translations[currentLang].due_tomorrow, class: 'due-tomorrow' };
+  return { text: new Date(dueDate).toLocaleDateString(currentLang === 'ja' ? 'ja-JP' : 'en-US'), class: '' };
+}
+
+function sortTodos(todosToSort) {
+  const sorted = [...todosToSort];
+  
+  switch (currentTodoSort) {
+    case 'oldest':
+      return sorted.reverse();
+    case 'priority':
+      const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2, '': 3 };
+      return sorted.sort((a, b) => priorityOrder[a.priority || ''] - priorityOrder[b.priority || '']);
+    case 'duedate':
+      return sorted.sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
       });
-      updateMusicPlaylist();
-      if (currentMusicTrack === -1 && musicPlaylist.length > 0) {
-        currentMusicTrack = 0;
-        loadMusicTrack(0);
-      }
-    });
+    case 'alphabetical':
+      return sorted.sort((a, b) => a.text.localeCompare(b.text));
+    default: // newest
+      return sorted;
+  }
+}
 
-    function addYouTubeTrack() {
-      const url = youtubeUrl.value.trim();
-      if (!url) {
-        musicStatus.textContent = 'Enter YouTube URL';
-        return;
-      }
-      if (!isYouTubeUrl(url)) {
-        musicStatus.textContent = 'Invalid URL';
-        return;
-      }
-      const videoId = extractVideoId(url);
-      if (!videoId) {
-        musicStatus.textContent = 'Could not extract ID';
-        return;
-      }
-      musicPlaylist.push({ name: 'YouTube: ' + videoId, url: url, type: 'youtube', videoId: videoId });
-      youtubeUrl.value = '';
-      updateMusicPlaylist();
-      if (currentMusicTrack === -1) {
-        currentMusicTrack = musicPlaylist.length - 1;
-        loadMusicTrack(currentMusicTrack);
-      }
+function renderTodos() {
+  let filtered = todos.filter(todo => {
+    if (currentFilter === 'active') return !todo.completed;
+    if (currentFilter === 'completed') return todo.completed;
+    if (currentFilter === 'high') return todo.priority === 'high';
+    if (currentFilter === 'medium') return todo.priority === 'medium';
+    if (currentFilter === 'low') return todo.priority === 'low';
+    if (currentFilter === 'overdue') {
+      if (!todo.dueDate || todo.completed) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(todo.dueDate);
+      due.setHours(0, 0, 0, 0);
+      return due < today;
     }
+    return true;
+  });
 
-    addYoutubeBtn.addEventListener('click', addYouTubeTrack);
-    youtubeUrl.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') addYouTubeTrack();
-    });
+  filtered = sortTodos(filtered);
 
-    function updateMusicPlaylist() {
-      musicPlaylistDiv.innerHTML = '';
-      musicPlaylist.forEach(function(track, index) {
-        const item = document.createElement('div');
-        item.className = 'playlist-item';
-        if (index === currentMusicTrack) item.classList.add('active');
-        
-        const name = document.createElement('span');
-        name.textContent = (index + 1) + '. ' + track.name;
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn-music';
-        deleteBtn.textContent = '✕';
-        deleteBtn.onclick = function(e) {
-          e.stopPropagation();
-          deleteMusicTrack(index);
-        };
-        
-        item.appendChild(name);
-        item.appendChild(deleteBtn);
-        
-        item.onclick = function() {
-          loadMusicTrack(index);
-          const t = musicPlaylist[index];
-          if (t.type === 'youtube' || isYouTubeUrl(t.url)) {
-            if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
-          } else {
-            audio.play();
-          }
-        };
-        
-        musicPlaylistDiv.appendChild(item);
-      });
+  const list = document.getElementById('todoList');
+  
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-text">${translations[currentLang].no_tasks}</div>
+      </div>
+    `;
+  } else {
+    list.innerHTML = filtered.map(todo => {
+      const dueStatus = getDueDateStatus(todo.dueDate);
       
-      if (musicPlaylist.length === 0) musicStatus.textContent = 'No tracks';
-    }
-
-    function loadMusicTrack(index) {
-      if (index >= 0 && index < musicPlaylist.length) {
-        currentMusicTrack = index;
-        const track = musicPlaylist[index];
-        
-        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          isPlayingYouTube = true;
-          if (audio.src) {
-            audio.pause();
-            audio.src = '';
-          }
-          if (isYoutubeReady) {
-            loadYouTubePlayer(track.url);
-          } else {
-            if (youtubeReadyCheckInterval) clearInterval(youtubeReadyCheckInterval);
-            youtubeReadyCheckInterval = setInterval(function() {
-              if (isYoutubeReady) {
-                clearInterval(youtubeReadyCheckInterval);
-                youtubeReadyCheckInterval = null;
-                loadYouTubePlayer(track.url);
-              }
-            }, 100);
-          }
-          musicStatus.textContent = (index + 1) + '/' + musicPlaylist.length + ': ' + track.name;
-        } else {
-          isPlayingYouTube = false;
-          if (youtubePlayer) {
-            youtubePlayer.stopVideo();
-            youtubePlayerDiv.style.display = 'none';
-          }
-          audio.src = track.url;
-          musicStatus.textContent = (index + 1) + '/' + musicPlaylist.length + ': ' + track.name;
-        }
-        updateMusicPlaylist();
-      }
-    }
-
-    function deleteMusicTrack(index) {
-      musicPlaylist.splice(index, 1);
-      if (index === currentMusicTrack) {
-        if (musicPlaylist.length > 0) {
-          currentMusicTrack = Math.min(index, musicPlaylist.length - 1);
-          loadMusicTrack(currentMusicTrack);
-        } else {
-          currentMusicTrack = -1;
-          audio.src = '';
-          musicStatus.textContent = 'No tracks';
-        }
-      } else if (index < currentMusicTrack) {
-        currentMusicTrack--;
-      }
-      updateMusicPlaylist();
-    }
-
-    playBtn.addEventListener('click', function() {
-      if (currentMusicTrack >= 0 && currentMusicTrack < musicPlaylist.length) {
-        const track = musicPlaylist[currentMusicTrack];
-        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-            musicStatus.textContent = '♪ Playing: ' + track.name;
-          } else if (isYoutubeReady) {
-            loadYouTubePlayer(track.url);
-            setTimeout(function() { if (youtubePlayer) youtubePlayer.playVideo(); }, 500);
-          } else {
-            musicStatus.textContent = '⏳ Loading...';
-          }
-        } else {
-          if (audio.src) {
-            setupAudioContext();
-            audio.play();
-            musicStatus.textContent = '♪ Playing: ' + track.name;
-          } else {
-            musicStatus.textContent = 'Add music first';
-          }
-        }
-      } else {
-        musicStatus.textContent = 'Add music first';
-      }
-    });
-
-    pauseBtn.addEventListener('click', function() {
-      if (currentMusicTrack >= 0) {
-        const track = musicPlaylist[currentMusicTrack];
-        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          if (youtubePlayer) {
-            youtubePlayer.pauseVideo();
-            musicStatus.textContent = 'Paused';
-          }
-        } else {
-          audio.pause();
-          musicStatus.textContent = 'Paused';
-        }
-      }
-    });
-
-    nextBtn.addEventListener('click', function() {
-      if (musicPlaylist.length > 0) {
-        currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
-        loadMusicTrack(currentMusicTrack);
-        const track = musicPlaylist[currentMusicTrack];
-        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
-        } else {
-          audio.play();
-        }
-      }
-    });
-
-    audio.addEventListener('ended', function() {
-      if (musicPlaylist.length > 0) {
-        currentMusicTrack = (currentMusicTrack + 1) % musicPlaylist.length;
-        loadMusicTrack(currentMusicTrack);
-        const track = musicPlaylist[currentMusicTrack];
-        if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-          if (youtubePlayer) setTimeout(function() { youtubePlayer.playVideo(); }, 500);
-        } else {
-          audio.play();
-        }
-      }
-    });
-
-    volumeSlider.addEventListener('input', function(e) {
-      const volume = e.target.value;
-      audio.volume = volume / 100;
-      if (youtubePlayer) youtubePlayer.setVolume(volume);
-    });
-    audio.volume = 0.5;
-
-    // Draggable music controls
-    (function() {
-      const mc = document.getElementById('musicControls');
-      let isDragging = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-      mc.addEventListener('mousedown', dragStart);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', dragEnd);
-      mc.addEventListener('touchstart', dragStart);
-      document.addEventListener('touchmove', drag);
-      document.addEventListener('touchend', dragEnd);
-
-      function dragStart(e) {
-        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
-        if (e.type === 'touchstart') {
-          initialX = e.touches[0].clientX - xOffset;
-          initialY = e.touches[0].clientY - yOffset;
-        } else {
-          initialX = e.clientX - xOffset;
-          initialY = e.clientY - yOffset;
-        }
-        isDragging = true;
-      }
-
-      function drag(e) {
-        if (isDragging) {
-          e.preventDefault();
-          if (e.type === 'touchmove') {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
-          } else {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-          }
-          xOffset = currentX;
-          yOffset = currentY;
-          mc.style.transform = 'translate(' + xOffset + 'px, ' + yOffset + 'px)';
-        }
-      }
-
-      function dragEnd(e) {
-        initialX = currentX;
-        initialY = currentY;
-        isDragging = false;
-      }
-    })();
-
-    // Language translations
-    const translations = {
-      ja: {
-        'app-title': 'タスク管理',
-        'mode-todo': 'Todoリスト',
-        'mode-memo': 'メモ',
-        'todo-title': 'タスク',
-        'todo-placeholder': '何をする必要がありますか？',
-        'todo-add-btn': 'タスク追加',
-        'filter-all': 'すべて',
-        'filter-active': '未完了',
-        'filter-completed': '完了済み',
-        'stat-total': '合計',
-        'stat-active': '未完了',
-        'stat-completed': '完了済み',
-        'memo-title': 'メモ',
-        'memo-title-placeholder': 'メモタイトル...',
-        'memo-content-placeholder': 'メモをここに書いてください...',
-        'memo-save-btn': 'メモを保存',
-        'no-tasks': 'タスクが見つかりません',
-        'no-memos': 'まだメモがありません',
-        'delete-btn': '削除',
-        'untitled': '無題'
-      },
-      en: {
-        'app-title': 'Task Manager',
-        'mode-todo': 'Todo List',
-        'mode-memo': 'Memo',
-        'todo-title': 'My Tasks',
-        'todo-placeholder': 'What needs to be done?',
-        'todo-add-btn': 'Add Task',
-        'filter-all': 'All',
-        'filter-active': 'Active',
-        'filter-completed': 'Completed',
-        'stat-total': 'Total',
-        'stat-active': 'Active',
-        'stat-completed': 'Completed',
-        'memo-title': 'My Memos',
-        'memo-title-placeholder': 'Memo Title...',
-        'memo-content-placeholder': 'Write your memo here...',
-        'memo-save-btn': 'Save Memo',
-        'no-tasks': 'No tasks found',
-        'no-memos': 'No memos yet',
-        'delete-btn': 'Delete',
-        'untitled': 'Untitled'
-      }
-    };
-
-    let currentLang = 'ja';
-
-    function switchLanguage(lang) {
-      currentLang = lang;
-      
-      document.querySelectorAll('[data-lang-key]').forEach(function(element) {
-        const key = element.getAttribute('data-lang-key');
-        if (translations[lang][key]) {
-          if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            element.placeholder = translations[lang][key];
-          } else {
-            element.textContent = translations[lang][key];
-          }
-        }
-      });
-
-      document.getElementById('langSwitcher').textContent = lang === 'ja' ? 'EN' : 'JA';
-      
-      try {
-        localStorage.setItem('language', lang);
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-      
-      renderTodos();
-      renderMemos();
-    }
-
-    function loadLanguage() {
-      try {
-        const stored = localStorage.getItem('language');
-        if (stored) {
-          currentLang = stored;
-          switchLanguage(currentLang);
-        }
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-    }
-
-    document.getElementById('langSwitcher').addEventListener('click', function() {
-      switchLanguage(currentLang === 'ja' ? 'en' : 'ja');
-    });
-
-    // Three.js Background
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('canvas-container').appendChild(renderer.domElement);
-    
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1000;
-    const posArray = new Float32Array(particlesCount * 3);
-    
-    for(let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 100;
-    }
-    
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0x670676,
-      transparent: true,
-      opacity: 0.8,
-      blending: THREE.AdditiveBlending
-    });
-    
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-    
-    camera.position.z = 5;
-    
-    let mouseX = 0;
-    let mouseY = 0;
-    
-    document.addEventListener('mousemove', function(e) {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-    });
-    
-    function animate() {
-      requestAnimationFrame(animate);
-      particlesMesh.rotation.x += 0.0005;
-      particlesMesh.rotation.y += 0.0005;
-      particlesMesh.rotation.x += mouseY * 0.0001;
-      particlesMesh.rotation.y += mouseX * 0.0001;
-      renderer.render(scene, camera);
-    }
-    animate();
-    
-    window.addEventListener('resize', function() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // Mouse particle effect
-    let particleTimeout;
-    document.addEventListener('mousemove', function(e) {
-      if (particleTimeout) return;
-      particleTimeout = setTimeout(function() { particleTimeout = null; }, 32);
-      
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = e.clientX + 'px';
-      particle.style.top = e.clientY + 'px';
-      document.body.appendChild(particle);
-
-      let opacity = 0.8;
-      let scale = 1;
-      const interval = setInterval(function() {
-        opacity -= 0.02;
-        scale += 0.02;
-        particle.style.opacity = opacity;
-        particle.style.transform = 'scale(' + scale + ')';
-        if (opacity <= 0) {
-          clearInterval(interval);
-          particle.remove();
-        }
-      }, 16);
-    });
-
-    // Mode Switcher
-    const modeBtns = document.querySelectorAll('.mode-btn');
-    const todoContainer = document.querySelector('.todo-container');
-    const memoContainer = document.querySelector('.memo-container');
-
-    modeBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        modeBtns.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        const mode = this.dataset.mode;
-        if (mode === 'todo') {
-          todoContainer.classList.add('active');
-          memoContainer.classList.remove('active');
-        } else {
-          todoContainer.classList.remove('active');
-          memoContainer.classList.add('active');
-        }
-      });
-    });
-
-    // Todo List Logic
-    let todos = [];
-    let currentFilter = 'all';
-
-    const todoInput = document.getElementById('todoInput');
-    const addTodoBtn = document.getElementById('addTodoBtn');
-    const todoList = document.getElementById('todoList');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-
-    function saveTodos() {
-      try {
-        localStorage.setItem('todos', JSON.stringify(todos));
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-    }
-
-    function loadTodos() {
-      try {
-        const stored = localStorage.getItem('todos');
-        if (stored) {
-          todos = JSON.parse(stored);
-        }
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-    }
-
-    function addTodo() {
-      const text = todoInput.value.trim();
-      if (!text) return;
-
-      const todo = {
-        id: Date.now(),
-        text: text,
-        completed: false
-      };
-
-      todos.push(todo);
-      todoInput.value = '';
-      saveTodos();
-      renderTodos();
-    }
-
-    window.toggleTodo = function(id) {
-      const todo = todos.find(t => t.id === id);
-      if (todo) {
-        todo.completed = !todo.completed;
-        saveTodos();
-        renderTodos();
-      }
-    };
-
-    window.deleteTodo = function(id) {
-      todos = todos.filter(t => t.id !== id);
-      saveTodos();
-      renderTodos();
-    };
-
-    function renderTodos() {
-      const filteredTodos = todos.filter(todo => {
-        if (currentFilter === 'active') return !todo.completed;
-        if (currentFilter === 'completed') return todo.completed;
-        return true;
-      });
-
-      if (filteredTodos.length === 0) {
-        todoList.innerHTML = `
-          <div class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
-            <p>${translations[currentLang]['no-tasks']}</p>
-          </div>
-        `;
-      } else {
-        todoList.innerHTML = filteredTodos.map(todo => `
-          <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+      return `
+        <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+          <div class="todo-main-row">
             <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
             <div class="todo-text">${todo.text}</div>
-            <button class="delete-btn" onclick="deleteTodo(${todo.id})">${translations[currentLang]['delete-btn']}</button>
-          </li>
-        `).join('');
-      }
-
-      updateStats();
-    }
-
-    function updateStats() {
-      const total = todos.length;
-      const active = todos.filter(t => !t.completed).length;
-      const completed = todos.filter(t => t.completed).length;
-
-      document.getElementById('totalTasks').textContent = total;
-      document.getElementById('activeTasks').textContent = active;
-      document.getElementById('completedTasks').textContent = completed;
-    }
-
-    addTodoBtn.addEventListener('click', addTodo);
-    todoInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') addTodo();
-    });
-
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
-        renderTodos();
-      });
-    });
-
-    // Memo Logic
-    let memos = [];
-
-    const memoTitle = document.getElementById('memoTitle');
-    const memoContent = document.getElementById('memoContent');
-    const addMemoBtn = document.getElementById('addMemoBtn');
-    const memoList = document.getElementById('memoList');
-
-    function saveMemos() {
-      try {
-        localStorage.setItem('memos', JSON.stringify(memos));
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-    }
-
-    function loadMemos() {
-      try {
-        const stored = localStorage.getItem('memos');
-        if (stored) {
-          memos = JSON.parse(stored);
-        }
-      } catch (e) {
-        console.log('LocalStorage not available');
-      }
-    }
-
-    function addMemo() {
-      const title = memoTitle.value.trim();
-      const content = memoContent.value.trim();
-      
-      if (!title && !content) return;
-
-      const memo = {
-        id: Date.now(),
-        title: title || translations[currentLang]['untitled'],
-        content: content,
-        date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US')
-      };
-
-      memos.unshift(memo);
-      memoTitle.value = '';
-      memoContent.value = '';
-      saveMemos();
-      renderMemos();
-    }
-
-    window.deleteMemo = function(id) {
-      memos = memos.filter(m => m.id !== id);
-      saveMemos();
-      renderMemos();
-    };
-
-    function renderMemos() {
-      if (memos.length === 0) {
-        memoList.innerHTML = `
-          <div class="empty-state" style="grid-column: 1/-1;">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-            </svg>
-            <p>${translations[currentLang]['no-memos']}</p>
-          </div>
-        `;
-      } else {
-        memoList.innerHTML = memos.map(memo => `
-          <div class="memo-item">
-            <div class="memo-header">
-              <div class="memo-title">${memo.title}</div>
-              <button class="memo-delete" onclick="deleteMemo(${memo.id})">✕</button>
+            <div class="todo-actions">
+              ${todo.priority ? `<span class="priority-badge priority-${todo.priority}">${translations[currentLang]['priority_' + todo.priority]}</span>` : ''}
+              ${dueStatus ? `<span class="due-date-badge ${dueStatus.class}">${dueStatus.text}</span>` : ''}
+              <button class="action-btn duplicate" onclick="duplicateTodo(${todo.id})" title="複製">📋</button>
+              <button class="action-btn edit" onclick="openEditTodoModal(${todo.id})" title="編集">✏️</button>
+              <button class="action-btn export" onclick="exportTodo(${todo.id})" title="エクスポート">💾</button>
+              <button class="action-btn" onclick="deleteTodo(${todo.id})" title="削除">🗑️</button>
             </div>
-            <div class="memo-content">${memo.content}</div>
-            <div class="memo-date">${memo.date}</div>
           </div>
-        `).join('');
-      }
-    }
+          ${todo.tags && todo.tags.length > 0 ? `
+            <div class="todo-meta">
+              ${todo.tags.map(tag => `<span class="todo-tag">#${tag}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${todo.note ? `
+            <div class="todo-meta">
+              <span style="color: #d1d5db;">${todo.note}</span>
+            </div>
+          ` : ''}
+        </li>
+      `;
+    }).join('');
+  }
 
-    addMemoBtn.addEventListener('click', addMemo);
-    memoTitle.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        memoContent.focus();
+  updateStats();
+  
+  // Sortable.jsでドラッグ&ドロップを有効化
+  if (typeof Sortable !== 'undefined' && !todoSortable) {
+    const list = document.getElementById('todoList');
+    todoSortable = Sortable.create(list, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      onEnd: function(evt) {
+        // ドラッグ後の順序を保存
+        const items = Array.from(list.children);
+        const newOrder = items.map(item => parseInt(item.dataset.id));
+        
+        // todosの順序を更新
+        const reordered = [];
+        newOrder.forEach(id => {
+          const todo = todos.find(t => t.id === id);
+          if (todo) reordered.push(todo);
+        });
+        todos = reordered;
+        saveTodos();
       }
     });
-    memoContent.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter' && e.ctrlKey) {
-        addMemo();
-      }
-    });
+  }
+}
 
-    loadTodos();
-    renderTodos();
-    loadMemos();
+function updateStats() {
+  const total = todos.length;
+  const active = todos.filter(t => !t.completed).length;
+  const completed = todos.filter(t => t.completed).length;
+  const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  document.getElementById('totalTasks').textContent = total;
+  document.getElementById('activeTasks').textContent = active;
+  document.getElementById('completedTasks').textContent = completed;
+  document.getElementById('completionRate').textContent = rate + '%';
+}
+
+// Memo機能
+function addMemo() {
+  const title = document.getElementById('memoTitle').value.trim();
+  const content = document.getElementById('memoContent').value.trim();
+  
+  if (!title && !content) return;
+
+  const tagInput = document.getElementById('memoTags').value.trim();
+  const tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
+
+  memos.unshift({
+    id: Date.now(),
+    title: title || translations[currentLang].untitled,
+    content: content,
+    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
+    tags: tags
+  });
+
+  document.getElementById('memoTitle').value = '';
+  document.getElementById('memoContent').value = '';
+  document.getElementById('memoTags').value = '';
+
+  saveMemos();
+  updateMemoTags();
+  renderMemos();
+}
+
+function deleteMemo(id) {
+  const t = translations[currentLang];
+  if (confirm(t.confirm_delete_memo)) {
+    memos = memos.filter(m => m.id !== id);
+    saveMemos();
+    updateMemoTags();
     renderMemos();
-    loadLanguage();
+  }
+}
 
-    // 音楽プレイリスト初期化（最後に実行）
-    if (musicPlaylist.length > 0) {
-      currentMusicTrack = 0;
-      loadMusicTrack(0);
-      updateMusicPlaylist();
+function duplicateMemo(id) {
+  const memo = memos.find(m => m.id === id);
+  if (!memo) return;
+
+  const copyLabel = currentLang === 'ja' ? ' (コピー)' : ' (Copy)';
+
+  memos.unshift({
+    ...memo,
+    id: Date.now(),
+    title: memo.title + copyLabel,
+    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US')
+  });
+
+  saveMemos();
+  updateMemoTags();
+  renderMemos();
+}
+
+function editMemo(id) {
+  const memo = memos.find(m => m.id === id);
+  if (!memo) return;
+
+  document.getElementById('memoTitle').value = memo.title;
+  document.getElementById('memoContent').value = memo.content;
+  document.getElementById('memoTags').value = memo.tags ? memo.tags.join(', ') : '';
+
+  deleteMemo(id);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('memoTitle').focus();
+}
+
+function exportMemo(id) {
+  const memo = memos.find(m => m.id === id);
+  if (!memo) return;
+
+  let content = memo.title + '\n' + '='.repeat(memo.title.length) + '\n\n';
+  content += memo.content + '\n\n';
+  
+  if (memo.tags && memo.tags.length > 0) {
+    const tagLabel = currentLang === 'ja' ? 'タグ' : 'Tags';
+    content += `${tagLabel}: ${memo.tags.join(', ')}\n\n`;
+  }
+  
+  const createdLabel = currentLang === 'ja' ? '作成日時' : 'Created';
+  content += '---\n' + createdLabel + ': ' + memo.date;
+
+  downloadTextFile(
+    memo.title.replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt',
+    content
+  );
+}
+
+function exportAllMemos() {
+  const t = translations[currentLang];
+  
+  if (memos.length === 0) {
+    alert(t.no_memos_export);
+    return;
+  }
+
+  const header = currentLang === 'ja' ? 'メモコレクション' : 'Memo Collection';
+  let content = header + '\n' + '='.repeat(50) + '\n\n';
+
+  memos.forEach((memo, index) => {
+    content += `${index + 1}. ${memo.title}\n`;
+    content += '-'.repeat(memo.title.length + 3) + '\n';
+    content += memo.content + '\n';
+    
+    if (memo.tags && memo.tags.length > 0) {
+      const tagLabel = currentLang === 'ja' ? 'タグ' : 'Tags';
+      content += `${tagLabel}: ${memo.tags.join(', ')}\n`;
     }
-  </script>
+    
+    const createdLabel = currentLang === 'ja' ? '作成日時' : 'Created';
+    content += `${createdLabel}: ${memo.date}\n\n`;
+    content += '='.repeat(50) + '\n\n';
+  });
+
+  downloadTextFile(`all_memos_${new Date().toISOString().split('T')[0]}.txt`, content);
+}
+
+function updateMemoTags() {
+  const t = translations[currentLang];
+  
+  allMemoTags.clear();
+  memos.forEach(memo => {
+    if (memo.tags && memo.tags.length > 0) {
+      memo.tags.forEach(tag => allMemoTags.add(tag));
+    }
+  });
+
+  const filtersDiv = document.getElementById('memoFilters');
+  const allButton = `<button class="filter-btn ${currentMemoFilter === 'all' ? 'active' : ''}" onclick="filterMemosByTag('all')">${t.filter_all}</button>`;
+  const tagButtons = Array.from(allMemoTags).map(tag => 
+    `<button class="filter-btn ${currentMemoFilter === tag ? 'active' : ''}" onclick="filterMemosByTag('${tag}')">#${tag}</button>`
+  ).join('');
+  
+  filtersDiv.innerHTML = allButton + tagButtons;
+}
+
+function filterMemosByTag(tag) {
+  currentMemoFilter = tag;
+  updateMemoTags();
+  renderMemos();
+}
+
+function sortMemos(memosToSort) {
+  const sorted = [...memosToSort];
+  
+  switch (currentMemoSort) {
+    case 'oldest':
+      return sorted.reverse();
+    case 'alphabetical':
+      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case 'longest':
+      return sorted.sort((a, b) => b.content.length - a.content.length);
+    default: // newest
+      return sorted;
+  }
+}
+
+function renderMemos() {
+  let filtered = memos.filter(memo => {
+    if (currentMemoFilter === 'all') return true;
+    return memo.tags && memo.tags.includes(currentMemoFilter);
+  });
+
+  filtered = sortMemos(filtered);
+
+  const list = document.getElementById('memoList');
+  
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <div class="empty-state-icon">📝</div>
+        <div class="empty-state-text">${translations[currentLang].no_memos}</div>
+      </div>
+    `;
+  } else {
+    list.innerHTML = filtered.map(memo => `
+      <div class="memo-item">
+        <div class="memo-header">
+          <div class="memo-title">${memo.title}</div>
+          <div class="memo-actions">
+            <button class="action-btn duplicate" onclick="duplicateMemo(${memo.id})" title="複製">📋</button>
+            <button class="action-btn edit" onclick="editMemo(${memo.id})" title="編集">✏️</button>
+            <button class="action-btn export" onclick="exportMemo(${memo.id})" title="エクスポート">💾</button>
+            <button class="action-btn" onclick="deleteMemo(${memo.id})" title="削除">🗑️</button>
+          </div>
+        </div>
+        <div class="memo-content-preview">${typeof marked !== 'undefined' ? marked.parse(memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')) : memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')}</div>
+        ${memo.tags && memo.tags.length > 0 ? `
+          <div class="memo-tags-display">
+            ${memo.tags.map(tag => `<span class="memo-tag-item">#${tag}</span>`).join('')}
+          </div>
+        ` : ''}
+        <div class="memo-date">${memo.date}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ツールバー機能
+function insertText(text) {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const content = textarea.value;
+
+  let insertedText = '';
+  let cursorOffset = 0;
+
+  // 太字・斜体・打ち消し線の処理（選択範囲がある場合は囲む）
+  if (text === '**太字**' || text === '*斜体*' || text === '~~打ち消し線~~') {
+    if (selectedText) {
+      let marker;
+      if (text === '**太字**') marker = '**';
+      else if (text === '*斜体*') marker = '*';
+      else marker = '~~';
+      
+      insertedText = marker + selectedText + marker;
+      cursorOffset = insertedText.length;
+    } else {
+      insertedText = text;
+      if (text === '**太字**') cursorOffset = 2;
+      else if (text === '*斜体*') cursorOffset = 1;
+      else cursorOffset = 2; // ~~の中
+    }
+  }
+  // コードブロックの処理
+  else if (text.includes('```')) {
+    if (selectedText) {
+      insertedText = '```\n' + selectedText + '\n```';
+      cursorOffset = insertedText.length;
+    } else {
+      insertedText = '```\n\n```';
+      cursorOffset = 4; // 改行の後にカーソル
+    }
+  }
+  // その他の処理（見出し、リスト、引用など）
+  else {
+    insertedText = text;
+    cursorOffset = text.length;
+  }
+
+  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + cursorOffset;
+}
+
+// リンク挿入
+function insertLink() {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const content = textarea.value;
+
+  let insertedText;
+  let cursorOffset;
+
+  if (selectedText) {
+    insertedText = `[${selectedText}](URL)`;
+    cursorOffset = insertedText.length - 4; // "URL"の前にカーソル
+  } else {
+    insertedText = '[リンクテキスト](URL)';
+    cursorOffset = 1; // "[" の後にカーソル
+  }
+
+  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
+  textarea.focus();
+  textarea.selectionStart = start + cursorOffset;
+  textarea.selectionEnd = start + cursorOffset + (selectedText ? 3 : 11); // "URL" または "リンクテキスト" を選択
+}
+
+// 画像挿入
+function insertImage() {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const content = textarea.value;
+
+  const insertedText = '![画像の説明](画像のURL)';
+  
+  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
+  textarea.focus();
+  textarea.selectionStart = start + 2; // "![" の後
+  textarea.selectionEnd = start + 8; // "画像の説明" を選択
+}
+
+// テーブル挿入
+function insertTable() {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const content = textarea.value;
+
+  const tableText = `| 列1 | 列2 | 列3 |
+| --- | --- | --- |
+| データ1 | データ2 | データ3 |
+| データ4 | データ5 | データ6 |`;
+  
+  textarea.value = content.substring(0, start) + tableText + content.substring(end);
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + tableText.length;
+}
+
+// 水平線挿入
+function insertHorizontalRule() {
+  const textarea = document.getElementById('memoContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const content = textarea.value;
+
+  const hrText = '\n---\n';
+  
+  textarea.value = content.substring(0, start) + hrText + content.substring(end);
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + hrText.length;
+}
+
+// ユーティリティ
+function downloadTextFile(filename, content) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
+// 検索機能
+function openSearch() {
+  document.getElementById('searchModal').classList.add('active');
+  document.getElementById('searchInput').focus();
+}
+
+function closeSearch() {
+  document.getElementById('searchModal').classList.remove('active');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+}
+
+function jumpTo(type, id) {
+  closeSearch();
+  
+  const modeButtons = document.querySelectorAll('.mode-btn');
+  const todoContainer = document.querySelector('.todo-container');
+  const memoContainer = document.querySelector('.memo-container');
+
+  modeButtons.forEach(btn => btn.classList.remove('active'));
+
+  if (type === 'todo') {
+    document.querySelector('[data-mode="todo"]').classList.add('active');
+    todoContainer.classList.add('active');
+    memoContainer.classList.remove('active');
+
+    setTimeout(() => {
+      const element = document.querySelector(`[data-id="${id}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.style.boxShadow = '0 0 30px rgba(103, 6, 118, 0.8)';
+        setTimeout(() => element.style.boxShadow = '', 2000);
+      }
+    }, 100);
+  } else {
+    document.querySelector('[data-mode="memo"]').classList.add('active');
+    todoContainer.classList.remove('active');
+    memoContainer.classList.add('active');
+  }
+}
+
+// 統計モーダル
+function showStats() {
+  const modal = document.getElementById('statsModal');
+  const content = document.getElementById('statsContent');
+  const t = translations[currentLang];
+  
+  const totalTodos = todos.length;
+  const activeTodos = todos.filter(t => !t.completed).length;
+  const completedTodos = todos.filter(t => t.completed).length;
+  const highPriority = todos.filter(t => t.priority === 'high').length;
+  const mediumPriority = todos.filter(t => t.priority === 'medium').length;
+  const lowPriority = todos.filter(t => t.priority === 'low').length;
+  const totalMemos = memos.length;
+  const totalTags = allMemoTags.size;
+  
+  content.innerHTML = `
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value">${totalTodos}</div>
+        <div class="stat-label">${t.total_tasks}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${activeTodos}</div>
+        <div class="stat-label">${t.active_tasks}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${completedTodos}</div>
+        <div class="stat-label">${t.completed_tasks}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${highPriority}</div>
+        <div class="stat-label">${t.high_priority_tasks}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${totalMemos}</div>
+        <div class="stat-label">${t.total_memos}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${totalTags}</div>
+        <div class="stat-label">${t.tags_in_use}</div>
+      </div>
+    </div>
+    
+    <div class="chart-container" style="margin-top: 2rem;">
+      <canvas id="statsChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+      <canvas id="priorityChart"></canvas>
+    </div>
+  `;
+  
+  modal.classList.add('active');
+  
+  // Chart.jsでグラフを描画
+  setTimeout(() => {
+    if (typeof Chart !== 'undefined') {
+      // タスク完了状況のドーナツチャート
+      const ctx1 = document.getElementById('statsChart');
+      if (ctx1) {
+        new Chart(ctx1, {
+          type: 'doughnut',
+          data: {
+            labels: [t.active_tasks || '未完了', t.completed_tasks || '完了済み'],
+            datasets: [{
+              data: [activeTodos, completedTodos],
+              backgroundColor: ['#a855f7', '#10b981'],
+              borderColor: ['#670676', '#059669'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: { color: '#fff' },
+                position: 'bottom'
+              },
+              title: {
+                display: true,
+                text: currentLang === 'ja' ? 'タスク完了状況' : 'Task Completion Status',
+                color: '#a855f7',
+                font: { size: 16, weight: 'bold' }
+              }
+            }
+          }
+        });
+      }
+      
+      // 優先度別の棒グラフ
+      const ctx2 = document.getElementById('priorityChart');
+      if (ctx2) {
+        new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: [t.priority_high || '高', t.priority_medium || '中', t.priority_low || '低'],
+            datasets: [{
+              label: currentLang === 'ja' ? 'タスク数' : 'Tasks',
+              data: [highPriority, mediumPriority, lowPriority],
+              backgroundColor: ['#ef4444', '#fbbf24', '#10b981'],
+              borderColor: ['#dc2626', '#f59e0b', '#059669'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                labels: { color: '#fff' }
+              },
+              title: {
+                display: true,
+                text: currentLang === 'ja' ? '優先度別タスク数' : 'Tasks by Priority',
+                color: '#a855f7',
+                font: { size: 16, weight: 'bold' }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: '#fff' },
+                grid: { color: 'rgba(103, 6, 118, 0.2)' }
+              },
+              x: {
+                ticks: { color: '#fff' },
+                grid: { color: 'rgba(103, 6, 118, 0.2)' }
+              }
+            }
+          }
+        });
+      }
+    }
+  }, 100);
+}
+
+function closeStats() {
+  document.getElementById('statsModal').classList.remove('active');
+}
+
+// 設定機能
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('active');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+
+// ショートカットモーダル
+function showKeyboardShortcuts() {
+  document.getElementById('shortcutsModal').classList.add('active');
+}
+
+function closeKeyboardShortcuts() {
+  document.getElementById('shortcutsModal').classList.remove('active');
+}
+
+function exportAllData() {
+  const data = {
+    todos: todos,
+    memos: memos,
+    exportDate: new Date().toISOString()
+  };
+  
+  const json = JSON.stringify(data, null, 2);
+  downloadTextFile(`todo-memo-backup-${new Date().toISOString().split('T')[0]}.json`, json);
+}
+
+function importData() {
+  const t = translations[currentLang];
+  
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        
+        if (confirm(t.confirm_import)) {
+          if (data.todos) todos = data.todos;
+          if (data.memos) memos = data.memos;
+          
+          saveTodos();
+          saveMemos();
+          updateMemoTags();
+          renderTodos();
+          renderMemos();
+          
+          alert(t.import_success);
+          closeSettings();
+        }
+      } catch (error) {
+        alert(t.import_error);
+      }
+    };
+    
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+function clearAllData() {
+  const t = translations[currentLang];
+  
+  if (confirm(t.confirm_clear_all_1)) {
+    if (confirm(t.confirm_clear_all_2)) {
+      todos = [];
+      memos = [];
+      saveTodos();
+      saveMemos();
+      updateMemoTags();
+      renderTodos();
+      renderMemos();
+      closeSettings();
+    }
+  }
+}
+
+// イベントリスナー
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const query = e.target.value.toLowerCase().trim();
+  const resultsDiv = document.getElementById('searchResults');
+  const t = translations[currentLang];
+
+  if (!query) {
+    resultsDiv.innerHTML = '';
+    return;
+  }
+
+  const results = [];
+
+  todos.forEach(todo => {
+    if (todo.text.toLowerCase().includes(query) ||
+        (todo.tags && todo.tags.some(tag => tag.toLowerCase().includes(query))) ||
+        (todo.note && todo.note.toLowerCase().includes(query))) {
+      results.push({
+        type: 'todo',
+        id: todo.id,
+        title: todo.text,
+        preview: todo.completed ? '✓ ' + t.completed : t.active
+      });
+    }
+  });
+
+  memos.forEach(memo => {
+    if (memo.title.toLowerCase().includes(query) ||
+        memo.content.toLowerCase().includes(query) ||
+        (memo.tags && memo.tags.some(tag => tag.toLowerCase().includes(query)))) {
+      results.push({
+        type: 'memo',
+        id: memo.id,
+        title: memo.title,
+        preview: memo.content.substring(0, 100) + '...'
+      });
+    }
+  });
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = `<p style="color: #9ca3af; text-align: center;">${t.no_results}</p>`;
+    return;
+  }
+
+  resultsDiv.innerHTML = results.map(result => `
+    <div class="search-result-item" onclick="jumpTo('${result.type}', ${result.id})">
+      <div class="search-result-title">${result.type === 'todo' ? '📝' : '📄'} ${result.title}</div>
+      <div class="search-result-preview">${result.preview}</div>
+    </div>
+  `).join('');
+});
+
+document.getElementById('addTodoBtn').addEventListener('click', addTodo);
+document.getElementById('todoInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') addTodo();
+});
+
+document.querySelectorAll('.filter-tabs .filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderTodos();
+  });
+});
+
+document.getElementById('todoSort').addEventListener('change', function() {
+  currentTodoSort = this.value;
+  renderTodos();
+});
+
+document.getElementById('addMemoBtn').addEventListener('click', addMemo);
+
+document.getElementById('memoTitle').addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('memoContent').focus();
+  }
+});
+
+document.getElementById('memoContent').addEventListener('keypress', e => {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    addMemo();
+  }
+});
+
+document.getElementById('memoSort').addEventListener('change', function() {
+  currentMemoSort = this.value;
+  renderMemos();
+});
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+
+    const mode = this.dataset.mode;
+    if (mode === 'todo') {
+      document.querySelector('.todo-container').classList.add('active');
+      document.querySelector('.memo-container').classList.remove('active');
+    } else {
+      document.querySelector('.todo-container').classList.remove('active');
+      document.querySelector('.memo-container').classList.add('active');
+    }
+  });
+});
+
+document.getElementById('langSwitcher').addEventListener('click', () => {
+  currentLang = currentLang === 'ja' ? 'en' : 'ja';
+  document.getElementById('langSwitcher').textContent = currentLang === 'ja' ? 'EN' : 'JA';
+  updateUILanguage();
+  renderTodos();
+  renderMemos();
+});
+
+document.addEventListener('keydown', e => {
+  // メモエリアにフォーカスがある時のショートカット
+  if (document.activeElement.id === 'memoContent') {
+    // Ctrl/Cmd + B で太字
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      insertText('**太字**');
+      return;
+    }
+    // Ctrl/Cmd + I で斜体
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+      e.preventDefault();
+      insertText('*斜体*');
+      return;
+    }
+    // Ctrl/Cmd + K でリンク（メモエリア内）
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      insertLink();
+      return;
+    }
+    // Ctrl/Cmd + Shift + K でコードブロック
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
+      e.preventDefault();
+      insertText('```\n\n```');
+      return;
+    }
+  }
+  
+  // グローバルショートカット
+  // Ctrl/Cmd + K で検索（メモエリア外）
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k' && document.activeElement.id !== 'memoContent') {
+    e.preventDefault();
+    openSearch();
+    return;
+  }
+  
+  if (e.key === 'Escape') {
+    closeSearch();
+    closeEditTodoModal();
+    closeStats();
+    closeSettings();
+    closeKeyboardShortcuts();
+  }
+});
+
+// 初期化
+loadTodos();
+renderTodos();
+loadMemos();
+renderMemos();
+updateUILanguage();
+</script>
 </body>
 </html>
