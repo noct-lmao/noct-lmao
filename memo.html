@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" sizes="32x32" href="./images/icon.png?v=3">
-<title>???</title>
+<title>Todo & Memo</title>
 
 <!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1085,7 +1085,6 @@ input::placeholder, textarea::placeholder {
   }
 }
 
-/* アニメーション */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -1101,7 +1100,237 @@ input::placeholder, textarea::placeholder {
   animation: slideIn 0.3s ease-out;
 }
 
-/* ダークモード対応のスクロールバー */
+.login-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.login-container {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 16px;
+  padding: 3rem;
+  max-width: 450px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.4);
+}
+
+.login-logo {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.login-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.login-tab {
+  flex: 1;
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  color: #9ca3af;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-tab:hover {
+  border-color: #670676;
+}
+
+.login-tab.active {
+  background: rgba(103, 6, 118, 0.4);
+  border-color: #670676;
+  color: #a855f7;
+}
+
+.login-form, .register-form {
+  display: none;
+}
+
+.login-form.active, .register-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.form-input {
+  width: 100%;
+  background: rgba(103, 6, 118, 0.1);
+  border: 2px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 0.875rem 1.25rem;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #670676;
+  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
+}
+
+.form-input::placeholder {
+  color: #6b7280;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.form-error.show {
+  display: block;
+}
+
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, #670676, #8800aa);
+  border: none;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(103, 6, 118, 0.3);
+}
+
+.btn-login:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(103, 6, 118, 0.5);
+}
+
+.guest-login {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.guest-link {
+  color: #a855f7;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.guest-link:hover {
+  color: #ec4899;
+}
+
+.app-container {
+  display: none;
+}
+
+.app-container.active {
+  display: block;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(103, 6, 118, 0.2);
+  border: 1px solid rgba(103, 6, 118, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.user-name {
+  color: #a855f7;
+  font-weight: 600;
+}
+
+.header-btn.logout {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.3);
+  color: #ef4444;
+}
+
+.header-btn.logout:hover {
+  background: rgba(220, 38, 38, 0.4);
+}
+
+.account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.account-info-item {
+  background: rgba(103, 6, 118, 0.1);
+  border: 1px solid rgba(103, 6, 118, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.account-info-label {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.account-info-value {
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 2rem;
+  }
+}
+
+.memo-content-preview {
+  color: #d1d5db;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -1121,9 +1350,75 @@ input::placeholder, textarea::placeholder {
 </style>
 </head>
 <body>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-container">
+      <div class="login-logo">📝</div>
+      <h1 class="login-title">Todo & Memo</h1>
+
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="login">ログイン</button>
+        <button class="login-tab" data-tab="register">新規登録</button>
+      </div>
+
+      <form class="login-form active" id="loginForm">
+        <div class="form-group">
+          <label class="form-label">ユーザー名</label>
+          <input type="text" class="form-input" id="loginUsername" placeholder="ユーザー名を入力してください" required>
+          <div class="form-error" id="loginUsernameError"></div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">パスワード</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="パスワードを入力してください" required>
+          <div class="form-error" id="loginPasswordError"></div>
+        </div>
+
+        <button type="submit" class="btn-login">ログイン</button>
+      </form>
+
+      <div class="guest-login">
+        <span class="guest-link" onclick="loginAsGuest()">ゲストとして続ける</span>
+      </div>
+
+      <form class="register-form" id="registerForm">
+        <div class="form-group">
+          <label class="form-label">ユーザー名</label>
+          <input type="text" class="form-input" id="registerUsername" placeholder="ユーザー名を入力してください" required>
+          <div class="form-error" id="registerUsernameError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">メールアドレス（任意）</label>
+          <input type="email" class="form-input" id="registerEmail" placeholder="email@example.com">
+          <div class="form-error" id="registerEmailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">パスワード</label>
+          <input type="password" class="form-input" id="registerPassword" placeholder="パスワードを入力してください" required>
+          <div class="form-error" id="registerPasswordError"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">パスワード（確認）</label>
+          <input type="password" class="form-input" id="registerPasswordConfirm" placeholder="パスワードを再入力してください" required>
+          <div class="form-error" id="registerPasswordConfirmError"></div>
+        </div>
+
+        <button type="submit" class="btn-login">アカウント作成</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer">
+
 <header>
   <nav>
     <div class="logo">📝 Todo & Memo</div>
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar"></div>
+      <div class="user-name" id="userName"></div>
+    </div>
     <div class="header-actions">
       <button class="header-btn" onclick="openSearch()">🔍 検索</button>
       <button class="header-btn" onclick="showStats()">📊 統計</button>
@@ -1134,6 +1429,34 @@ input::placeholder, textarea::placeholder {
   </nav>
 </header>
 
+<div class="modal" id="accountModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeAccountModal()">✕</button>
+    <h2 class="modal-title">👤 アカウント情報</h2>
+    <div class="account-details">
+      <div class="account-info-item">
+        <div class="account-info-label">ユーザー名</div>
+        <div class="account-info-value" id="accountUsername"></div>
+      </div>
+      <div class="account-info-item">
+        <div class="account-info-label">アカウント種類</div>
+        <div class="account-info-value" id="accountType"></div>
+      </div>
+      <div class="account-info-item">
+        <div class="account-info-label">総Todo数</div>
+        <div class="account-info-value" id="accountTotalTodos"></div>
+      </div>
+      <div class="account-info-item">
+        <div class="account-info-label">総メモ数</div>
+        <div class="account-info-value" id="accountTotalMemos"></div>
+      </div>
+      <div class="modal-actions" style="margin-top: 1.5rem;">
+        <button class="modal-btn modal-btn-secondary" onclick="closeAccountModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="mode-switcher">
     <button class="mode-btn active" data-mode="todo">📝 Todoリスト</button>
@@ -1141,7 +1464,6 @@ input::placeholder, textarea::placeholder {
   </div>
 
   <div class="content-area">
-    <!-- Todo Container -->
     <div class="todo-container active">
       <h1>タスク管理</h1>
       
@@ -1198,7 +1520,6 @@ input::placeholder, textarea::placeholder {
       </div>
     </div>
 
-    <!-- Memo Container -->
     <div class="memo-container">
       <h1>メモ管理</h1>
       
@@ -1265,8 +1586,8 @@ input::placeholder, textarea::placeholder {
     </div>
   </div>
 </main>
+</div>
 
-<!-- Search Modal -->
 <div class="modal" id="searchModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeSearch()">✕</button>
@@ -1276,7 +1597,6 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
-<!-- Edit Todo Modal -->
 <div class="modal" id="editTodoModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeEditTodoModal()">✕</button>
@@ -1298,7 +1618,6 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
-<!-- Stats Modal -->
 <div class="modal" id="statsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeStats()">✕</button>
@@ -1307,7 +1626,6 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
-<!-- Settings Modal -->
 <div class="modal" id="settingsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeSettings()">✕</button>
@@ -1320,7 +1638,6 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
-<!-- Keyboard Shortcuts Modal -->
 <div class="modal" id="shortcutsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeKeyboardShortcuts()">✕</button>
@@ -1373,7 +1690,6 @@ input::placeholder, textarea::placeholder {
   </div>
 </div>
 
-<!-- Custom Confirm Dialog -->
 <div class="confirm-dialog" id="confirmDialog">
   <div class="confirm-dialog-content">
     <div class="confirm-dialog-title" id="confirmTitle">確認</div>
@@ -1398,8 +1714,217 @@ let currentTodoSort = 'newest';
 let currentMemoSort = 'newest';
 let currentMemoView = 'edit';
 let todoSortable = null;
+let currentUser = null;
 
-// Marked.jsの設定
+class AccountManager {
+  constructor() {
+    this.users = this.loadUsers();
+  }
+
+  loadUsers() {
+    try {
+      const stored = localStorage.getItem('users');
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      console.error('ユーザーデータの読み込みエラー:', e);
+      return {};
+    }
+  }
+
+  saveUsers() {
+    try {
+      localStorage.setItem('users', JSON.stringify(this.users));
+    } catch (e) {
+      console.error('ユーザーデータの保存エラー:', e);
+    }
+  }
+
+  register(username, password, email = '') {
+    if (this.users[username]) {
+      return { success: false, error: 'このユーザー名は既に使用されています' };
+    }
+
+    if (username.length < 3) {
+      return { success: false, error: 'ユーザー名は3文字以上である必要があります' };
+    }
+
+    if (password.length < 6) {
+      return { success: false, error: 'パスワードは6文字以上である必要があります' };
+    }
+
+    this.users[username] = {
+      password: this.hashPassword(password),
+      email: email,
+      createdAt: new Date().toISOString(),
+      isGuest: false
+    };
+
+    this.saveUsers();
+    return { success: true };
+  }
+
+  login(username, password) {
+    const user = this.users[username];
+    
+    if (!user) {
+      return { success: false, error: 'ユーザー名またはパスワードが正しくありません' };
+    }
+
+    if (user.password !== this.hashPassword(password)) {
+      return { success: false, error: 'ユーザー名またはパスワードが正しくありません' };
+    }
+
+    return { 
+      success: true, 
+      user: { 
+        username, 
+        email: user.email, 
+        createdAt: user.createdAt, 
+        isGuest: user.isGuest 
+      } 
+    };
+  }
+
+  loginAsGuest() {
+    const guestUsername = 'guest_' + Date.now();
+    this.users[guestUsername] = {
+      password: this.hashPassword('guest'),
+      email: '',
+      createdAt: new Date().toISOString(),
+      isGuest: true
+    };
+    this.saveUsers();
+    
+    return { 
+      success: true, 
+      user: { 
+        username: guestUsername, 
+        email: '', 
+        createdAt: this.users[guestUsername].createdAt,
+        isGuest: true 
+      } 
+    };
+  }
+
+  hashPassword(password) {
+    let hash = 0;
+    for (let i = 0; i < password.length; i++) {
+      const char = password.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString();
+  }
+}
+
+const accountManager = new AccountManager();
+
+function loginAsGuest() {
+  const result = accountManager.loginAsGuest();
+  if (result.success) {
+    loginUser(result.user);
+  }
+}
+
+function loginUser(user) {
+  currentUser = user;
+  
+  try {
+    sessionStorage.setItem('currentUser', JSON.stringify(user));
+  } catch (e) {
+    console.error('セッション保存エラー:', e);
+  }
+  
+  document.getElementById('userName').textContent = user.isGuest ? 'ゲスト' : user.username;
+  document.getElementById('userAvatar').textContent = user.isGuest ? '👤' : user.username.charAt(0).toUpperCase();
+  
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appContainer').classList.add('active');
+  
+  loadUserData();
+}
+
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem('currentUser');
+  
+  saveUserData();
+  
+  todos = [];
+  memos = [];
+  renderTodos();
+  renderMemos();
+  
+  document.getElementById('appContainer').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+  
+  document.getElementById('loginForm').reset();
+  document.getElementById('registerForm').reset();
+  document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+}
+
+function openAccountModal() {
+  if (!currentUser) return;
+  
+  document.getElementById('accountUsername').textContent = 
+    currentUser.isGuest ? 'ゲストユーザー' : currentUser.username;
+  
+  document.getElementById('accountType').textContent = 
+    currentUser.isGuest ? 'ゲスト' : '登録ユーザー';
+  
+  document.getElementById('accountTotalTodos').textContent = todos.length;
+  document.getElementById('accountTotalMemos').textContent = memos.length;
+  
+  document.getElementById('accountModal').classList.add('active');
+}
+
+function closeAccountModal() {
+  document.getElementById('accountModal').classList.remove('active');
+}
+
+function loadUserData() {
+  if (!currentUser) return;
+  
+  const userDataKey = `userData_${currentUser.username}`;
+  
+  try {
+    const stored = localStorage.getItem(userDataKey);
+    if (stored) {
+      const data = JSON.parse(stored);
+      todos = data.todos || [];
+      memos = data.memos || [];
+    } else {
+      todos = [];
+      memos = [];
+    }
+  } catch (e) {
+    console.error('データ読み込みエラー:', e);
+    todos = [];
+    memos = [];
+  }
+  
+  updateMemoTags();
+  renderTodos();
+  renderMemos();
+}
+
+function saveUserData() {
+  if (!currentUser) return;
+  
+  const userDataKey = `userData_${currentUser.username}`;
+  
+  try {
+    const data = {
+      todos: todos,
+      memos: memos,
+      lastSaved: new Date().toISOString()
+    };
+    localStorage.setItem(userDataKey, JSON.stringify(data));
+  } catch (e) {
+    console.error('データ保存エラー:', e);
+  }
+}
+
 if (typeof marked !== 'undefined') {
   marked.setOptions({
     breaks: true,
@@ -1407,7 +1932,6 @@ if (typeof marked !== 'undefined') {
   });
 }
 
-// カスタム確認ダイアログ
 function customConfirm(message, title = '確認', showCancel = true) {
   return new Promise((resolve) => {
     const dialog = document.getElementById('confirmDialog');
@@ -1419,7 +1943,6 @@ function customConfirm(message, title = '確認', showCancel = true) {
     titleEl.textContent = title;
     messageEl.textContent = message;
     
-    // キャンセルボタンの表示/非表示
     if (showCancel) {
       cancelBtn.style.display = 'block';
     } else {
@@ -1430,6 +1953,7 @@ function customConfirm(message, title = '確認', showCancel = true) {
     
     const handleOk = () => {
       dialog.classList.remove('active');
+      document.removeEventListener('keydown', handleEsc);
       okBtn.removeEventListener('click', handleOk);
       cancelBtn.removeEventListener('click', handleCancel);
       resolve(true);
@@ -1437,15 +1961,12 @@ function customConfirm(message, title = '確認', showCancel = true) {
     
     const handleCancel = () => {
       dialog.classList.remove('active');
+      document.removeEventListener('keydown', handleEsc);
       okBtn.removeEventListener('click', handleOk);
       cancelBtn.removeEventListener('click', handleCancel);
       resolve(false);
     };
     
-    okBtn.addEventListener('click', handleOk);
-    cancelBtn.addEventListener('click', handleCancel);
-    
-    // Escキーでキャンセル
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
         if (showCancel) {
@@ -1453,14 +1974,15 @@ function customConfirm(message, title = '確認', showCancel = true) {
         } else {
           handleOk();
         }
-        document.removeEventListener('keydown', handleEsc);
       }
     };
+    
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
     document.addEventListener('keydown', handleEsc);
   });
 }
 
-// メモビューの切り替え
 function switchMemoView(view) {
   currentMemoView = view;
   const textarea = document.getElementById('memoContent');
@@ -1482,7 +2004,6 @@ function switchMemoView(view) {
   }
 }
 
-// メモプレビューの更新
 function updateMemoPreview() {
   const content = document.getElementById('memoContent').value;
   const preview = document.getElementById('memoPreview');
@@ -1494,8 +2015,98 @@ function updateMemoPreview() {
   }
 }
 
-// メモ入力時にリアルタイムプレビュー
 document.addEventListener('DOMContentLoaded', function() {
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+      
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!username || !password) {
+        document.getElementById('loginPasswordError').textContent = 'すべてのフィールドを入力してください';
+        document.getElementById('loginPasswordError').classList.add('show');
+        return;
+      }
+
+      const result = accountManager.login(username, password);
+      if (result.success) {
+        loginUser(result.user);
+      } else {
+        document.getElementById('loginPasswordError').textContent = result.error;
+        document.getElementById('loginPasswordError').classList.add('show');
+      }
+    });
+  }
+
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+      
+      const username = document.getElementById('registerUsername').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+      
+      if (!username || !password || !passwordConfirm) {
+        document.getElementById('registerPasswordConfirmError').textContent = 
+          'ユーザー名とパスワードは必須です';
+        document.getElementById('registerPasswordConfirmError').classList.add('show');
+        return;
+      }
+
+      if (password !== passwordConfirm) {
+        document.getElementById('registerPasswordConfirmError').textContent = 
+          'パスワードが一致しません';
+        document.getElementById('registerPasswordConfirmError').classList.add('show');
+        return;
+      }
+
+      const result = accountManager.register(username, password, email);
+      if (result.success) {
+        const loginResult = accountManager.login(username, password);
+        if (loginResult.success) {
+          loginUser(loginResult.user);
+        }
+      } else {
+        document.getElementById('registerUsernameError').textContent = result.error;
+        document.getElementById('registerUsernameError').classList.add('show');
+      }
+    });
+  }
+
+  document.querySelectorAll('.login-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const targetTab = this.dataset.tab;
+      
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+      
+      document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      document.querySelectorAll('.login-form, .register-form')
+        .forEach(f => f.classList.remove('active'));
+      
+      if (targetTab === 'login') {
+        document.getElementById('loginForm').classList.add('active');
+      } else {
+        document.getElementById('registerForm').classList.add('active');
+      }
+    });
+  });
+
+  const userInfo = document.querySelector('.user-info');
+  if (userInfo) {
+    userInfo.addEventListener('click', openAccountModal);
+    userInfo.style.cursor = 'pointer';
+  }
+
   const memoContent = document.getElementById('memoContent');
   if (memoContent) {
     memoContent.addEventListener('input', function() {
@@ -1506,7 +2117,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// 翻訳
 const translations = {
   ja: {
     app_title: 'Todo & Memo',
@@ -1676,26 +2286,21 @@ const translations = {
   }
 };
 
-// UI更新関数
 function updateUILanguage() {
   const t = translations[currentLang];
   
-  // ヘッダー
   document.querySelector('.logo').textContent = `📝 ${t.app_title}`;
   document.querySelectorAll('.header-btn')[0].textContent = `🔍 ${t.search}`;
   document.querySelectorAll('.header-btn')[1].textContent = `📊 ${t.stats}`;
   document.querySelectorAll('.header-btn')[2].textContent = `⚙️ ${t.settings}`;
   
-  // モード切替
   document.querySelector('[data-mode="todo"]').textContent = `📝 ${t.todo_mode}`;
   document.querySelector('[data-mode="memo"]').textContent = `📄 ${t.memo_mode}`;
   
-  // Todoセクション
   document.querySelector('.todo-container h1').textContent = t.task_management;
   document.getElementById('todoInput').placeholder = t.task_placeholder;
   document.getElementById('addTodoBtn').textContent = t.add_task;
   
-  // Todo並び替え
   const todoSortOptions = document.querySelectorAll('#todoSort option');
   todoSortOptions[0].textContent = t.sort_newest;
   todoSortOptions[1].textContent = t.sort_oldest;
@@ -1703,7 +2308,6 @@ function updateUILanguage() {
   todoSortOptions[3].textContent = t.sort_duedate;
   todoSortOptions[4].textContent = t.sort_alphabetical;
   
-  // Todoフィルター
   const todoFilters = document.querySelectorAll('.filter-tabs .filter-btn');
   todoFilters[0].textContent = t.filter_all;
   todoFilters[1].textContent = t.filter_active;
@@ -1713,24 +2317,20 @@ function updateUILanguage() {
   todoFilters[5].textContent = t.filter_low;
   todoFilters[6].textContent = t.filter_overdue;
   
-  // Todo統計
   document.querySelectorAll('.todo-container .stat-label')[0].textContent = t.stat_total;
   document.querySelectorAll('.todo-container .stat-label')[1].textContent = t.stat_active;
   document.querySelectorAll('.todo-container .stat-label')[2].textContent = t.stat_completed;
   document.querySelectorAll('.todo-container .stat-label')[3].textContent = t.stat_completion_rate;
   
-  // Todoエクスポート
   document.querySelectorAll('.todo-container .export-section button')[0].textContent = `📥 ${t.export_all_tasks}`;
   document.querySelectorAll('.todo-container .export-section button')[1].textContent = `🗑️ ${t.clear_completed}`;
   
-  // Memoセクション
   document.querySelector('.memo-container h1').textContent = t.memo_management;
   document.getElementById('memoTitle').placeholder = t.memo_title_placeholder;
   document.getElementById('memoContent').placeholder = t.memo_content_placeholder;
   document.getElementById('memoTags').placeholder = t.tags_placeholder;
   document.getElementById('addMemoBtn').textContent = t.add_memo;
   
-  // Memo並び替え
   const memoSortLabel = document.querySelectorAll('.memo-container .sort-label')[0];
   if (memoSortLabel) memoSortLabel.textContent = t.sort_by;
   
@@ -1740,10 +2340,8 @@ function updateUILanguage() {
   memoSortOptions[2].textContent = t.sort_alphabetical;
   memoSortOptions[3].textContent = t.sort_longest;
   
-  // Memoエクスポート
   document.querySelectorAll('.memo-container .export-section button')[0].textContent = `📥 ${t.export_all_memos}`;
   
-  // モーダル
   document.querySelector('#editTodoModal .modal-title').textContent = `📝 ${t.edit_task}`;
   document.getElementById('editTodoText').placeholder = t.task_content;
   
@@ -1759,14 +2357,11 @@ function updateUILanguage() {
   document.querySelectorAll('#editTodoModal .modal-btn')[0].textContent = t.cancel;
   document.querySelectorAll('#editTodoModal .modal-btn')[1].textContent = t.save;
   
-  // 検索モーダル
   document.querySelector('#searchModal .modal-title').textContent = `🔍 ${t.search_title}`;
   document.getElementById('searchInput').placeholder = t.search_placeholder;
   
-  // 統計モーダル
   document.querySelector('#statsModal .modal-title').textContent = `📊 ${t.stats_title}`;
   
-  // 設定モーダル
   document.querySelector('#settingsModal .modal-title').textContent = `⚙️ ${t.settings_title}`;
   const settingsButtons = document.querySelectorAll('#settingsModal .modal-btn');
   settingsButtons[0].textContent = `📤 ${t.import_data}`;
@@ -1774,47 +2369,20 @@ function updateUILanguage() {
   settingsButtons[2].textContent = `🗑️ ${t.clear_all}`;
 }
 
-// LocalStorage管理
 function saveTodos() {
-  try {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  } catch (e) {
-    console.error('保存エラー:', e);
-  }
+  saveUserData();
 }
 
 function loadTodos() {
-  try {
-    const stored = localStorage.getItem('todos');
-    if (stored) {
-      todos = JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error('読み込みエラー:', e);
-  }
 }
 
 function saveMemos() {
-  try {
-    localStorage.setItem('memos', JSON.stringify(memos));
-  } catch (e) {
-    console.error('保存エラー:', e);
-  }
+  saveUserData();
 }
 
 function loadMemos() {
-  try {
-    const stored = localStorage.getItem('memos');
-    if (stored) {
-      memos = JSON.parse(stored);
-      updateMemoTags();
-    }
-  } catch (e) {
-    console.error('読み込みエラー:', e);
-  }
 }
 
-// Todo機能
 function addTodo() {
   const text = document.getElementById('todoInput').value.trim();
   if (!text) return;
@@ -1900,7 +2468,7 @@ function exportTodo(id) {
   }
   
   if (todo.tags && todo.tags.length > 0) {
-    content += `${currentLang === 'ja' ? 'タグ' : 'Tags'}: ${todo.tags.join(', ')}\n`;
+    content += `${currentLang === 'ja' ? 'タグ' :'Tags'}: ${todo.tags.join(', ')}\n`;
   }
   
   if (todo.note) {
@@ -2048,7 +2616,7 @@ function sortTodos(todosToSort) {
       });
     case 'alphabetical':
       return sorted.sort((a, b) => a.text.localeCompare(b.text));
-    default: // newest
+    default:
       return sorted;
   }
 }
@@ -2117,26 +2685,21 @@ function renderTodos() {
 
   updateStats();
   
-  // Sortable.jsでドラッグ&ドロップを有効化
   if (typeof Sortable !== 'undefined') {
     const list = document.getElementById('todoList');
     
-    // 既存のSortableインスタンスを破棄
     if (todoSortable) {
       todoSortable.destroy();
     }
     
-    // 新しいインスタンスを作成
     todoSortable = Sortable.create(list, {
       animation: 150,
       ghostClass: 'sortable-ghost',
       handle: '.todo-text',
       onEnd: function(evt) {
-        // ドラッグ後の順序を保存
         const items = Array.from(list.children);
         const newOrder = items.map(item => parseInt(item.dataset.id));
         
-        // todosの順序を更新
         const reordered = [];
         newOrder.forEach(id => {
           const todo = todos.find(t => t.id === id);
@@ -2161,7 +2724,6 @@ function updateStats() {
   document.getElementById('completionRate').textContent = rate + '%';
 }
 
-// Memo機能
 function addMemo() {
   const title = document.getElementById('memoTitle').value.trim();
   const content = document.getElementById('memoContent').value.trim();
@@ -2229,7 +2791,6 @@ function editMemo(id) {
   document.getElementById('memoContent').value = memo.content;
   document.getElementById('memoTags').value = memo.tags ? memo.tags.join(', ') : '';
 
-  // 確認なしで削除（編集モードに入るため）
   const index = memos.findIndex(m => m.id === id);
   if (index !== -1) {
     memos.splice(index, 1);
@@ -2327,7 +2888,7 @@ function sortMemos(memosToSort) {
       return sorted.sort((a, b) => a.title.localeCompare(b.title));
     case 'longest':
       return sorted.sort((a, b) => b.content.length - a.content.length);
-    default: // newest
+    default:
       return sorted;
   }
 }
@@ -2373,7 +2934,6 @@ function renderMemos() {
   }
 }
 
-// ツールバー機能
 function insertText(text) {
   const textarea = document.getElementById('memoContent');
   const start = textarea.selectionStart;
@@ -2384,7 +2944,6 @@ function insertText(text) {
   let insertedText = '';
   let cursorOffset = 0;
 
-  // 太字・斜体・打ち消し線の処理（選択範囲がある場合は囲む）
   if (text === '**太字**' || text === '*斜体*' || text === '~~打ち消し線~~') {
     if (selectedText) {
       let marker;
@@ -2398,20 +2957,18 @@ function insertText(text) {
       insertedText = text;
       if (text === '**太字**') cursorOffset = 2;
       else if (text === '*斜体*') cursorOffset = 1;
-      else cursorOffset = 2; // ~~の中
+      else cursorOffset = 2;
     }
   }
-  // コードブロックの処理
   else if (text.includes('```')) {
     if (selectedText) {
       insertedText = '```\n' + selectedText + '\n```';
       cursorOffset = insertedText.length;
     } else {
       insertedText = '```\n\n```';
-      cursorOffset = 4; // 改行の後にカーソル
+      cursorOffset = 4;
     }
   }
-  // その他の処理（見出し、リスト、引用など）
   else {
     insertedText = text;
     cursorOffset = text.length;
@@ -2422,7 +2979,6 @@ function insertText(text) {
   textarea.selectionStart = textarea.selectionEnd = start + cursorOffset;
 }
 
-// リンク挿入
 function insertLink() {
   const textarea = document.getElementById('memoContent');
   const start = textarea.selectionStart;
@@ -2435,19 +2991,18 @@ function insertLink() {
 
   if (selectedText) {
     insertedText = `[${selectedText}](URL)`;
-    cursorOffset = insertedText.length - 4; // "URL"の前にカーソル
+    cursorOffset = insertedText.length - 4;
   } else {
     insertedText = '[リンクテキスト](URL)';
-    cursorOffset = 1; // "[" の後にカーソル
+    cursorOffset = 1;
   }
 
   textarea.value = content.substring(0, start) + insertedText + content.substring(end);
   textarea.focus();
   textarea.selectionStart = start + cursorOffset;
-  textarea.selectionEnd = start + cursorOffset + (selectedText ? 3 : 11); // "URL" または "リンクテキスト" を選択
+  textarea.selectionEnd = start + cursorOffset + (selectedText ? 3 : 11);
 }
 
-// 画像挿入
 function insertImage() {
   const textarea = document.getElementById('memoContent');
   const start = textarea.selectionStart;
@@ -2458,11 +3013,10 @@ function insertImage() {
   
   textarea.value = content.substring(0, start) + insertedText + content.substring(end);
   textarea.focus();
-  textarea.selectionStart = start + 2; // "![" の後
-  textarea.selectionEnd = start + 8; // "画像の説明" を選択
+  textarea.selectionStart = start + 2;
+  textarea.selectionEnd = start + 8;
 }
 
-// テーブル挿入
 function insertTable() {
   const textarea = document.getElementById('memoContent');
   const start = textarea.selectionStart;
@@ -2479,7 +3033,6 @@ function insertTable() {
   textarea.selectionStart = textarea.selectionEnd = start + tableText.length;
 }
 
-// 水平線挿入
 function insertHorizontalRule() {
   const textarea = document.getElementById('memoContent');
   const start = textarea.selectionStart;
@@ -2493,7 +3046,6 @@ function insertHorizontalRule() {
   textarea.selectionStart = textarea.selectionEnd = start + hrText.length;
 }
 
-// ユーティリティ
 function downloadTextFile(filename, content) {
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
   const link = document.createElement('a');
@@ -2505,7 +3057,6 @@ function downloadTextFile(filename, content) {
   URL.revokeObjectURL(link.href);
 }
 
-// 検索機能
 function openSearch() {
   document.getElementById('searchModal').classList.add('active');
   document.getElementById('searchInput').focus();
@@ -2546,7 +3097,6 @@ function jumpTo(type, id) {
   }
 }
 
-// 統計モーダル
 function showStats() {
   const modal = document.getElementById('statsModal');
   const content = document.getElementById('statsContent');
@@ -2600,10 +3150,8 @@ function showStats() {
   
   modal.classList.add('active');
   
-  // Chart.jsでグラフを描画
   setTimeout(() => {
     if (typeof Chart !== 'undefined') {
-      // タスク完了状況のドーナツチャート
       const ctx1 = document.getElementById('statsChart');
       if (ctx1) {
         new Chart(ctx1, {
@@ -2635,7 +3183,6 @@ function showStats() {
         });
       }
       
-      // 優先度別の棒グラフ
       const ctx2 = document.getElementById('priorityChart');
       if (ctx2) {
         new Chart(ctx2, {
@@ -2685,7 +3232,6 @@ function closeStats() {
   document.getElementById('statsModal').classList.remove('active');
 }
 
-// 設定機能
 function openSettings() {
   document.getElementById('settingsModal').classList.add('active');
 }
@@ -2694,7 +3240,6 @@ function closeSettings() {
   document.getElementById('settingsModal').classList.remove('active');
 }
 
-// ショートカットモーダル
 function showKeyboardShortcuts() {
   document.getElementById('shortcutsModal').classList.add('active');
 }
@@ -2707,6 +3252,7 @@ function exportAllData() {
   const data = {
     todos: todos,
     memos: memos,
+    user: currentUser ? currentUser.username : 'unknown',
     exportDate: new Date().toISOString()
   };
   
@@ -2777,7 +3323,6 @@ async function clearAllData() {
   }
 }
 
-// イベントリスナー
 document.getElementById('searchInput').addEventListener('input', function(e) {
   const query = e.target.value.toLowerCase().trim();
   const resultsDiv = document.getElementById('searchResults');
@@ -2834,7 +3379,6 @@ document.getElementById('todoInput').addEventListener('keypress', e => {
   if (e.key === 'Enter') addTodo();
 });
 
-// Todoリストのイベント委譲
 document.getElementById('todoList').addEventListener('click', function(e) {
   const target = e.target;
   const action = target.dataset.action;
@@ -2879,7 +3423,6 @@ document.getElementById('todoSort').addEventListener('change', function() {
 
 document.getElementById('addMemoBtn').addEventListener('click', addMemo);
 
-// メモリストのイベント委譲
 document.getElementById('memoList').addEventListener('click', function(e) {
   const target = e.target;
   const action = target.dataset.action;
@@ -2948,27 +3491,22 @@ document.getElementById('langSwitcher').addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', e => {
-  // メモエリアにフォーカスがある時のショートカット
   if (document.activeElement.id === 'memoContent') {
-    // Ctrl/Cmd + B で太字
     if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
       e.preventDefault();
       insertText('**太字**');
       return;
     }
-    // Ctrl/Cmd + I で斜体
     if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
       e.preventDefault();
       insertText('*斜体*');
       return;
     }
-    // Ctrl/Cmd + K でリンク（メモエリア内）
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
       insertLink();
       return;
     }
-    // Ctrl/Cmd + Shift + K でコードブロック
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
       e.preventDefault();
       insertText('```\n\n```');
@@ -2976,8 +3514,6 @@ document.addEventListener('keydown', e => {
     }
   }
   
-  // グローバルショートカット
-  // Ctrl/Cmd + K で検索（メモエリア外）
   if ((e.ctrlKey || e.metaKey) && e.key === 'k' && document.activeElement.id !== 'memoContent') {
     e.preventDefault();
     openSearch();
@@ -2993,12 +3529,17 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// 初期化
-loadTodos();
-renderTodos();
-loadMemos();
-renderMemos();
-updateUILanguage();
+(function() {
+  try {
+    const storedUser = sessionStorage.getItem('currentUser');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      loginUser(user);
+    }
+  } catch (e) {
+    console.error('セッション復元エラー:', e);
+  }
+})();
 </script>
 </body>
 </html>
