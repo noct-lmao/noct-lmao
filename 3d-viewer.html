@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="images/icon.png" type="image/png">
+<title>???</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #000000;
+    --surface: rgba(0, 0, 0, 0.9);
+    --border: #660675;
+    --accent: #660675;
+    --accent2: #aa00dd;
+    --text: #ffffff;
+    --text-dim: rgba(255,255,255,0.7);
+    --mono: 'Courier New', monospace;
+    --glow: rgba(102, 6, 117, 0.6);
+    --glow-strong: rgba(102, 6, 117, 1);
+  }
+
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  #canvas-container {
+    position: fixed; inset: 0;
+    z-index: 0;
+  }
+
+  canvas { display: block; }
+
+  /* Pulse animation like MAZE */
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow:
+        0 0 30px var(--glow),
+        inset 0 0 20px rgba(102, 6, 117, 0.2);
+    }
+    50% {
+      box-shadow:
+        0 0 50px var(--glow-strong),
+        inset 0 0 30px rgba(102, 6, 117, 0.4);
+    }
+  }
+
+  @keyframes textGlow {
+    0%, 100% { text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); }
+    50% { text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent), 0 0 60px var(--accent); }
+  }
+
+  /* Top bar */
+  #topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 2px solid var(--border);
+    box-shadow: 0 0 20px var(--glow);
+    z-index: 10;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+    animation: textGlow 2s infinite;
+  }
+
+  .file-info {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px var(--accent);
+  }
+
+  /* Drop overlay */
+  #drop-overlay {
+    position: fixed; inset: 0;
+    z-index: 20;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    transition: opacity 0.4s ease;
+  }
+
+  #drop-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .drop-bg {
+    position: absolute; inset: 0;
+    background: #000000;
+  }
+
+  /* Animated grid — matching MAZE background cubes feel */
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(102,6,117,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(102,6,117,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridScroll 20s linear infinite;
+  }
+  @keyframes gridScroll {
+    from { background-position: 0 0; }
+    to { background-position: 60px 60px; }
+  }
+
+  .drop-zone {
+    position: relative;
+    width: 380px; height: 280px;
+    border: 3px solid var(--border);
+    border-radius: 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    box-shadow:
+      0 0 30px var(--glow),
+      inset 0 0 20px rgba(102, 6, 117, 0.2);
+    animation: pulse 2s infinite;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    background: rgba(102, 6, 117, 0.1);
+    box-shadow: 0 0 50px var(--glow-strong), inset 0 0 30px rgba(102, 6, 117, 0.3);
+  }
+
+  .drop-icon {
+    font-size: 48px;
+  }
+
+  .drop-title {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+  }
+
+  .drop-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .format-badges {
+    display: flex; gap: 8px; margin-top: 4px;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(102, 6, 117, 0.2);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px var(--accent);
+    box-shadow: 0 0 10px rgba(102, 6, 117, 0.4);
+  }
+  .badge.pink {
+    background: rgba(170, 0, 221, 0.15);
+    color: var(--accent2);
+    border-color: var(--accent2);
+    text-shadow: 0 0 10px var(--accent2);
+    box-shadow: 0 0 10px rgba(170, 0, 221, 0.4);
+  }
+
+  #file-input { display: none; }
+
+  /* Bottom controls */
+  #controls {
+    position: fixed; bottom: 20px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(16px);
+    border: 2px solid var(--border);
+    border-radius: 40px;
+    padding: 8px 16px;
+    z-index: 10;
+    transition: opacity 0.4s;
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.1);
+    animation: pulse 2s infinite;
+  }
+
+  #controls.hidden { opacity: 0; pointer-events: none; }
+
+  .ctrl-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-family: var(--mono);
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 8px rgba(102, 6, 117, 0.3);
+  }
+  .ctrl-btn:hover {
+    background: rgba(102, 6, 117, 0.3);
+    box-shadow: 0 0 20px var(--glow-strong);
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+  }
+  .ctrl-btn.active {
+    background: var(--accent);
+    box-shadow: 0 0 25px var(--glow-strong);
+    color: #fff;
+  }
+
+  .ctrl-divider {
+    width: 1px; height: 20px;
+    background: var(--border);
+    box-shadow: 0 0 5px var(--glow);
+    margin: 0 4px;
+  }
+
+  .ctrl-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    padding: 0 4px;
+    text-shadow: 0 0 10px var(--accent);
+  }
+
+  /* Info panel */
+  #info-panel {
+    position: fixed; right: 20px; top: 72px;
+    width: 190px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    z-index: 10;
+    transition: opacity 0.4s;
+    font-family: var(--mono);
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.2);
+    animation: pulse 2s infinite;
+  }
+
+  #info-panel.hidden { opacity: 0; pointer-events: none; }
+
+  .panel-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  .info-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(102, 6, 117, 0.3);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-key {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .info-val {
+    font-size: 13px;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+    font-weight: bold;
+  }
+
+  /* Loading spinner */
+  #loading {
+    position: fixed; inset: 0;
+    z-index: 30;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.95);
+    transition: opacity 0.4s;
+  }
+  #loading.hidden { opacity: 0; pointer-events: none; }
+
+  .spinner {
+    width: 48px; height: 48px;
+    border: 2px solid rgba(102, 6, 117, 0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    box-shadow: 0 0 20px var(--glow);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+    animation: textGlow 1s infinite;
+  }
+
+  /* Hint */
+  #hint {
+    position: fixed; left: 20px; bottom: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(102, 6, 117, 0.7);
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+    z-index: 10;
+    transition: opacity 0.4s;
+    text-shadow: 0 0 8px var(--accent);
+  }
+  #hint.hidden { opacity: 0; }
+
+  /* Rotation panel */
+  #rotation-panel {
+    position: fixed; left: 20px; top: 72px;
+    width: 210px;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    z-index: 10;
+    transition: opacity 0.4s;
+    font-family: var(--mono);
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.2);
+    animation: pulse 2s infinite;
+  }
+  #rotation-panel.hidden { opacity: 0; pointer-events: none; }
+
+  .rot-panel-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  .rot-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .rot-row:last-child { margin-bottom: 0; }
+
+  .rot-axis-label {
+    font-size: 12px;
+    font-weight: 700;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .rot-axis-label.x { color: #ff5555; text-shadow: 0 0 10px #ff5555; }
+  .rot-axis-label.y { color: #55ff88; text-shadow: 0 0 10px #55ff88; }
+  .rot-axis-label.z { color: #5599ff; text-shadow: 0 0 10px #5599ff; }
+
+  .rot-btn-group {
+    display: flex; gap: 4px;
+  }
+  .rot-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(102, 6, 117, 0.3);
+  }
+  .rot-btn:hover {
+    background: rgba(102, 6, 117, 0.3);
+    box-shadow: 0 0 15px var(--glow-strong);
+  }
+  .rot-btn.spinning-cw, .rot-btn.spinning-ccw {
+    background: var(--accent);
+    box-shadow: 0 0 20px var(--glow-strong);
+    color: #fff;
+    text-shadow: 0 0 8px #fff;
+  }
+
+  .rot-speed-wrap {
+    flex: 1;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rot-speed {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(102, 6, 117, 0.3);
+    outline: none;
+    cursor: pointer;
+  }
+  .rot-speed::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--glow-strong);
+  }
+
+  .rot-divider {
+    height: 1px;
+    background: rgba(102, 6, 117, 0.4);
+    margin: 10px 0;
+  }
+
+  .rot-reset-btn {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--accent);
+    color: #ffffff;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
+  }
+  .rot-reset-btn:hover {
+    background: #8800aa;
+    box-shadow: 0 0 25px var(--glow-strong);
+    transform: scale(1.03);
+  }
+  .rot-reset-btn:active { transform: scale(0.97); }
+
+  /* Particles */
+  .particle {
+    position: fixed;
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 0 8px var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<!-- Canvas -->
+<div id="canvas-container"></div>
+
+<!-- Top bar -->
+<div id="topbar">
+  <div class="logo">3D_VIEW</div>
+  <div class="file-info" id="file-name">ファイルを読み込んでください</div>
+</div>
+
+<!-- Drop overlay -->
+<div id="drop-overlay">
+  <div class="drop-bg"></div>
+  <div class="grid-lines"></div>
+  <label class="drop-zone" id="drop-zone" for="file-input">
+    <div class="drop-icon">📦</div>
+    <div class="drop-title">DROP FILE HERE</div>
+    <div class="drop-sub">クリックしてファイルを選択</div>
+    <div class="format-badges">
+      <span class="badge">GLB</span>
+      <span class="badge">GLTF</span>
+      <span class="badge pink">OBJ</span>
+    </div>
+  </label>
+  <input type="file" id="file-input" accept=".glb,.gltf,.obj">
+</div>
+
+<!-- Loading -->
+<div id="loading" class="hidden">
+  <div class="spinner"></div>
+  <div class="loading-text">LOADING MODEL...</div>
+</div>
+
+<!-- Controls -->
+<div id="controls" class="hidden">
+  <span class="ctrl-label">VIEW</span>
+  <div class="ctrl-divider"></div>
+  <button class="ctrl-btn" id="btn-reset" title="リセット">⟳</button>
+  <button class="ctrl-btn" id="btn-wireframe" title="ワイヤーフレーム">⬡</button>
+  <button class="ctrl-btn" id="btn-autorotate" title="自動回転">↻</button>
+  <div class="ctrl-divider"></div>
+  <button class="ctrl-btn" id="btn-open" title="別のファイルを開く">📂</button>
+</div>
+
+<!-- Rotation panel -->
+<div id="rotation-panel" class="hidden">
+  <div class="rot-panel-title">Rotation</div>
+
+  <div class="rot-row">
+    <span class="rot-axis-label x">X</span>
+    <div class="rot-btn-group">
+      <button class="rot-btn" id="rx-ccw">↑</button>
+      <button class="rot-btn" id="rx-cw">↓</button>
+    </div>
+    <div class="rot-speed-wrap">
+      <input type="range" class="rot-speed" id="rx-speed" min="1" max="10" value="3">
+    </div>
+  </div>
+
+  <div class="rot-row">
+    <span class="rot-axis-label y">Y</span>
+    <div class="rot-btn-group">
+      <button class="rot-btn" id="ry-ccw">←</button>
+      <button class="rot-btn" id="ry-cw">→</button>
+    </div>
+    <div class="rot-speed-wrap">
+      <input type="range" class="rot-speed" id="ry-speed" min="1" max="10" value="3">
+    </div>
+  </div>
+
+  <div class="rot-row">
+    <span class="rot-axis-label z">Z</span>
+    <div class="rot-btn-group">
+      <button class="rot-btn" id="rz-ccw">↺</button>
+      <button class="rot-btn" id="rz-cw">↻</button>
+    </div>
+    <div class="rot-speed-wrap">
+      <input type="range" class="rot-speed" id="rz-speed" min="1" max="10" value="3">
+    </div>
+  </div>
+
+  <div class="rot-divider"></div>
+  <button class="rot-reset-btn" id="rot-reset-all">回転をリセット</button>
+</div>
+
+<!-- Info panel -->
+<div id="info-panel" class="hidden">
+  <div class="panel-title">Model Info</div>
+  <div class="info-row"><span class="info-key">Vertices</span><span class="info-val" id="info-verts">—</span></div>
+  <div class="info-row"><span class="info-key">Faces</span><span class="info-val" id="info-faces">—</span></div>
+  <div class="info-row"><span class="info-key">Objects</span><span class="info-val" id="info-objs">—</span></div>
+  <div class="info-row"><span class="info-key">Format</span><span class="info-val" id="info-fmt">—</span></div>
+</div>
+
+<!-- Hint -->
+<div id="hint" class="hidden">
+  左ドラッグ: 回転　右ドラッグ: 移動　スクロール: ズーム
+</div>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const GLTF_LOADER_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+const OBJ_LOADER_URL  = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js';
+const ORBIT_URL       = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
+
+function loadScript(url) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = url; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+// Scene setup
+const container = document.getElementById('canvas-container');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+container.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+scene.fog = new THREE.FogExp2(0x000000, 0.03);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+camera.position.set(0, 10, 4);
+
+// Lights — purple tinted like MAZE
+const ambient = new THREE.AmbientLight(0x660675, 0.5);
+scene.add(ambient);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+dirLight.position.set(5, 8, 5);
+dirLight.castShadow = true;
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0x660675, 0.6);
+fillLight.position.set(-5, 2, -5);
+scene.add(fillLight);
+
+const rimLight = new THREE.PointLight(0xaa00dd, 0.8, 20);
+rimLight.position.set(0, 3, -5);
+scene.add(rimLight);
+
+// Grid — purple tinted
+const grid = new THREE.GridHelper(20, 40, 0x660675, 0x330037);
+grid.position.y = -0.01;
+scene.add(grid);
+
+// Particles
+function createParticles() {
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * window.innerWidth + 'px';
+    p.style.top = Math.random() * window.innerHeight + 'px';
+    document.body.appendChild(p);
+    animateParticle(p);
+  }
+}
+
+function animateParticle(p) {
+  const duration = Math.random() * 4000 + 3000;
+  const startY = parseFloat(p.style.top);
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const progress = (ts - start) / duration;
+    if (progress >= 1) {
+      p.style.top = Math.random() * window.innerHeight + 'px';
+      p.style.left = Math.random() * window.innerWidth + 'px';
+      p.style.opacity = 0;
+      start = null;
+      requestAnimationFrame(step);
+      return;
+    }
+    p.style.transform = `translateY(${-progress * 300}px)`;
+    p.style.opacity = progress < 0.2 ? progress * 5 : progress > 0.8 ? (1 - progress) * 5 : 1;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+createParticles();
+
+// State
+let controls, currentModel = null;
+let autoRotate = false;
+let wireframe = false;
+
+const rotState = { x: 0, y: 0, z: 0 };
+
+async function init() {
+  await Promise.all([loadScript(ORBIT_URL), loadScript(GLTF_LOADER_URL), loadScript(OBJ_LOADER_URL)]);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.07;
+  controls.minDistance = 0.5;
+  controls.maxDistance = 100;
+  controls.target.set(0, 0, 0);
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (controls) controls.update();
+  if (currentModel) {
+    const s = 0.0015;
+    if (rotState.x !== 0) currentModel.rotation.x += rotState.x * parseFloat(document.getElementById('rx-speed').value) * s;
+    if (rotState.y !== 0) currentModel.rotation.y += rotState.y * parseFloat(document.getElementById('ry-speed').value) * s;
+    if (autoRotate) currentModel.rotation.y += 0.005;
+    if (rotState.z !== 0) currentModel.rotation.z += rotState.z * parseFloat(document.getElementById('rz-speed').value) * s;
+  }
+  renderer.render(scene, camera);
+}
+
+function loadModel(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  showLoading(true);
+
+  if (currentModel) { scene.remove(currentModel); currentModel = null; }
+
+  const url = URL.createObjectURL(file);
+
+  if (ext === 'glb' || ext === 'gltf') {
+    const loader = new THREE.GLTFLoader();
+    loader.load(url, (gltf) => {
+      onModelLoaded(gltf.scene, file.name, ext.toUpperCase());
+      URL.revokeObjectURL(url);
+    }, undefined, (err) => { console.error(err); showLoading(false); });
+  } else if (ext === 'obj') {
+    const loader = new THREE.OBJLoader();
+    loader.load(url, (obj) => {
+      obj.traverse(child => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: 0xcccccc, roughness: 0.5, metalness: 0.1
+          });
+        }
+      });
+      onModelLoaded(obj, file.name, 'OBJ');
+      URL.revokeObjectURL(url);
+    }, undefined, (err) => { console.error(err); showLoading(false); });
+  }
+}
+
+function onModelLoaded(model, filename, fmt) {
+  const box = new THREE.Box3().setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = 2.5 / maxDim;
+
+  model.position.sub(center.multiplyScalar(scale));
+  model.scale.setScalar(scale);
+
+  model.traverse(child => {
+    if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
+  });
+
+  const pivot = new THREE.Group();
+  pivot.position.y = 1.2;
+  pivot.add(model);
+  scene.add(pivot);
+  currentModel = pivot;
+
+  camera.position.set(0, 10, 4);
+  if (controls) controls.target.set(0, 0.5, 0);
+
+  let verts = 0, faces = 0, objs = 0;
+  model.traverse(child => {
+    if (child.isMesh) {
+      objs++;
+      if (child.geometry.attributes.position) verts += child.geometry.attributes.position.count;
+      if (child.geometry.index) faces += child.geometry.index.count / 3;
+      else if (child.geometry.attributes.position) faces += child.geometry.attributes.position.count / 3;
+    }
+  });
+
+  document.getElementById('info-verts').textContent = verts.toLocaleString();
+  document.getElementById('info-faces').textContent = Math.round(faces).toLocaleString();
+  document.getElementById('info-objs').textContent = objs;
+  document.getElementById('info-fmt').textContent = fmt;
+  document.getElementById('file-name').textContent = filename;
+
+  showLoading(false);
+  showViewer(true);
+}
+
+function showLoading(show) {
+  document.getElementById('loading').classList.toggle('hidden', !show);
+}
+
+function showViewer(show) {
+  document.getElementById('drop-overlay').classList.toggle('hidden', show);
+  document.getElementById('controls').classList.toggle('hidden', !show);
+  document.getElementById('info-panel').classList.toggle('hidden', !show);
+  document.getElementById('rotation-panel').classList.toggle('hidden', !show);
+  document.getElementById('hint').classList.toggle('hidden', !show);
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!currentModel) return;
+  camera.position.set(0, 10, 4);
+  if (controls) controls.target.set(0, 0.5, 0);
+  currentModel.rotation.set(0, 0, 0);
+  rotState.x = rotState.y = rotState.z = 0;
+  ['rx-ccw','rx-cw','ry-ccw','ry-cw','rz-ccw','rz-cw'].forEach(id => {
+    document.getElementById(id).classList.remove('spinning-cw','spinning-ccw');
+  });
+});
+
+document.getElementById('btn-wireframe').addEventListener('click', (e) => {
+  wireframe = !wireframe;
+  e.currentTarget.classList.toggle('active', wireframe);
+  if (!currentModel) return;
+  currentModel.traverse(child => {
+    if (child.isMesh) child.material.wireframe = wireframe;
+  });
+});
+
+document.getElementById('btn-autorotate').addEventListener('click', (e) => {
+  autoRotate = !autoRotate;
+  e.currentTarget.classList.toggle('active', autoRotate);
+});
+
+document.getElementById('btn-open').addEventListener('click', () => {
+  document.getElementById('file-input').click();
+});
+
+document.getElementById('rotation-panel').addEventListener('pointerdown', e => e.stopPropagation());
+document.getElementById('rotation-panel').addEventListener('mousedown',   e => e.stopPropagation());
+document.getElementById('rotation-panel').addEventListener('touchstart',  e => e.stopPropagation());
+
+function setupAxisBtn(axis, dir, btnId) {
+  const btn = document.getElementById(btnId);
+  btn.addEventListener('click', () => {
+    const wasActive = rotState[axis] === dir;
+    rotState[axis] = wasActive ? 0 : dir;
+    document.getElementById(`r${axis}-ccw`).classList.toggle('spinning-ccw', rotState[axis] === -1);
+    document.getElementById(`r${axis}-cw`).classList.toggle('spinning-cw',  rotState[axis] === 1);
+  });
+}
+
+setupAxisBtn('x', -1, 'rx-ccw');
+setupAxisBtn('x',  1, 'rx-cw');
+setupAxisBtn('y', -1, 'ry-ccw');
+setupAxisBtn('y',  1, 'ry-cw');
+setupAxisBtn('z', -1, 'rz-ccw');
+setupAxisBtn('z',  1, 'rz-cw');
+
+document.getElementById('rot-reset-all').addEventListener('click', () => {
+  rotState.x = rotState.y = rotState.z = 0;
+  ['rx-ccw','rx-cw','ry-ccw','ry-cw','rz-ccw','rz-cw'].forEach(id => {
+    document.getElementById(id).classList.remove('spinning-cw','spinning-ccw');
+  });
+  if (currentModel) currentModel.rotation.set(0, 0, 0);
+});
+
+document.getElementById('file-input').addEventListener('change', (e) => {
+  if (e.target.files[0]) loadModel(e.target.files[0]);
+});
+
+const dropZone = document.getElementById('drop-zone');
+const body = document.body;
+
+body.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+body.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+body.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) loadModel(file);
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+init();
+</script>
+</body>
+</html>
