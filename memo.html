@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" sizes="32x32" href="./images/icon.png?v=3">
-<title>???</title>
+<title>Todo & Memo</title>
 
 <!-- External Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -615,9 +614,7 @@ input::placeholder, textarea::placeholder {
 .memo-preview h2 { font-size: 1.5rem; }
 .memo-preview h3 { font-size: 1.25rem; }
 
-.memo-preview p {
-  margin-bottom: 1rem;
-}
+.memo-preview p { margin-bottom: 1rem; }
 
 .memo-preview code {
   background: rgba(103, 6, 118, 0.3);
@@ -655,9 +652,7 @@ input::placeholder, textarea::placeholder {
   margin-bottom: 1rem;
 }
 
-.memo-preview li {
-  margin-bottom: 0.5rem;
-}
+.memo-preview li { margin-bottom: 0.5rem; }
 
 .memo-preview table {
   width: 100%;
@@ -688,9 +683,7 @@ input::placeholder, textarea::placeholder {
   text-decoration: underline;
 }
 
-.memo-preview a:hover {
-  color: #60a5fa;
-}
+.memo-preview a:hover { color: #60a5fa; }
 
 .memo-preview hr {
   border: none;
@@ -839,9 +832,7 @@ input::placeholder, textarea::placeholder {
   color: #fff;
 }
 
-.modal-btn-primary:hover {
-  transform: scale(1.05);
-}
+.modal-btn-primary:hover { transform: scale(1.05); }
 
 .modal-btn-secondary {
   background: rgba(103, 6, 118, 0.2);
@@ -849,9 +840,7 @@ input::placeholder, textarea::placeholder {
   border: 1px solid rgba(103, 6, 118, 0.3);
 }
 
-.modal-btn-secondary:hover {
-  background: rgba(103, 6, 118, 0.4);
-}
+.modal-btn-secondary:hover { background: rgba(103, 6, 118, 0.4); }
 
 .close-modal {
   position: absolute;
@@ -867,9 +856,7 @@ input::placeholder, textarea::placeholder {
   transition: all 0.3s;
 }
 
-.close-modal:hover {
-  background: rgba(220, 38, 38, 0.4);
-}
+.close-modal:hover { background: rgba(220, 38, 38, 0.4); }
 
 .confirm-dialog {
   display: none;
@@ -933,9 +920,7 @@ input::placeholder, textarea::placeholder {
   color: #fff;
 }
 
-.confirm-btn-danger:hover {
-  transform: scale(1.05);
-}
+.confirm-btn-danger:hover { transform: scale(1.05); }
 
 .confirm-btn-cancel {
   background: rgba(103, 6, 118, 0.2);
@@ -943,9 +928,7 @@ input::placeholder, textarea::placeholder {
   border: 1px solid rgba(103, 6, 118, 0.3);
 }
 
-.confirm-btn-cancel:hover {
-  background: rgba(103, 6, 118, 0.4);
-}
+.confirm-btn-cancel:hover { background: rgba(103, 6, 118, 0.4); }
 
 .shortcuts-list {
   display: flex;
@@ -982,9 +965,7 @@ input::placeholder, textarea::placeholder {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.shortcut-item span {
-  color: #d1d5db;
-}
+.shortcut-item span { color: #d1d5db; }
 
 .search-results {
   display: flex;
@@ -1054,276 +1035,25 @@ input::placeholder, textarea::placeholder {
   opacity: 0.5;
 }
 
-.empty-state-text {
-  font-size: 1.2rem;
-}
+.empty-state-text { font-size: 1.2rem; }
 
 @media (max-width: 768px) {
   .mode-switcher, .input-section, .export-section {
     flex-direction: column;
   }
-  
-  .memo-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .stats {
-    grid-template-columns: 1fr;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-  
-  .todo-main-row {
-    flex-wrap: wrap;
-  }
-  
-  .todo-actions {
-    width: 100%;
-    padding-left: 2.5rem;
-  }
+  .memo-list { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
+  h1 { font-size: 2rem; }
+  .todo-main-row { flex-wrap: wrap; }
+  .todo-actions { width: 100%; padding-left: 2.5rem; }
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.todo-item, .memo-item {
-  animation: slideIn 0.3s ease-out;
-}
-
-.login-screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
-}
-
-.login-container {
-  background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 16px;
-  padding: 3rem;
-  max-width: 450px;
-  width: 100%;
-  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.4);
-}
-
-.login-logo {
-  text-align: center;
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.login-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.login-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.login-tab {
-  flex: 1;
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #9ca3af;
-  padding: 0.75rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 600;
-  text-align: center;
-}
-
-.login-tab:hover {
-  border-color: #670676;
-}
-
-.login-tab.active {
-  background: rgba(103, 6, 118, 0.4);
-  border-color: #670676;
-  color: #a855f7;
-}
-
-.login-form, .register-form {
-  display: none;
-}
-
-.login-form.active, .register-form.active {
-  display: block;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #9ca3af;
-  font-weight: 600;
-}
-
-.form-input {
-  width: 100%;
-  background: rgba(103, 6, 118, 0.1);
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 0.875rem 1.25rem;
-  color: #fff;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #670676;
-  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
-}
-
-.form-input::placeholder {
-  color: #6b7280;
-}
-
-.form-error {
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  display: none;
-}
-
-.form-error.show {
-  display: block;
-}
-
-.btn-login {
-  width: 100%;
-  background: linear-gradient(135deg, #670676, #8800aa);
-  border: none;
-  border-radius: 8px;
-  padding: 1rem;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(103, 6, 118, 0.3);
-}
-
-.btn-login:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(103, 6, 118, 0.5);
-}
-
-.guest-login {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.guest-link {
-  color: #a855f7;
-  text-decoration: underline;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.guest-link:hover {
-  color: #ec4899;
-}
-
-.app-container {
-  display: none;
-}
-
-.app-container.active {
-  display: block;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.user-name {
-  color: #a855f7;
-  font-weight: 600;
-}
-
-.header-btn.logout {
-  background: rgba(220, 38, 38, 0.2);
-  border-color: rgba(220, 38, 38, 0.3);
-  color: #ef4444;
-}
-
-.header-btn.logout:hover {
-  background: rgba(220, 38, 38, 0.4);
-}
-
-.account-details {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.account-info-item {
-  background: rgba(103, 6, 118, 0.1);
-  border: 1px solid rgba(103, 6, 118, 0.2);
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.account-info-label {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-}
-
-.account-info-value {
-  color: #fff;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .login-container {
-    padding: 2rem;
-  }
-}
+.todo-item, .memo-item { animation: slideIn 0.3s ease-out; }
 
 .memo-content-preview {
   color: #d1d5db;
@@ -1331,94 +1061,17 @@ input::placeholder, textarea::placeholder {
   word-break: break-word;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(103, 6, 118, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #670676;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #8800aa;
-}
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: rgba(103, 6, 118, 0.1); }
+::-webkit-scrollbar-thumb { background: #670676; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #8800aa; }
 </style>
 </head>
 <body>
-  <div class="login-screen" id="loginScreen">
-    <div class="login-container">
-      <div class="login-logo">📝</div>
-      <h1 class="login-title">Todo & Memo</h1>
-
-      <div class="login-tabs">
-        <button class="login-tab active" data-tab="login">ログイン</button>
-        <button class="login-tab" data-tab="register">新規登録</button>
-      </div>
-
-      <form class="login-form active" id="loginForm">
-        <div class="form-group">
-          <label class="form-label">ユーザー名</label>
-          <input type="text" class="form-input" id="loginUsername" placeholder="ユーザー名を入力してください" required>
-          <div class="form-error" id="loginUsernameError"></div>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">パスワード</label>
-          <input type="password" class="form-input" id="loginPassword" placeholder="パスワードを入力してください" required>
-          <div class="form-error" id="loginPasswordError"></div>
-        </div>
-
-        <button type="submit" class="btn-login">ログイン</button>
-      </form>
-
-      <div class="guest-login">
-        <span class="guest-link" onclick="loginAsGuest()">ゲストとして続ける</span>
-      </div>
-
-      <form class="register-form" id="registerForm">
-        <div class="form-group">
-          <label class="form-label">ユーザー名</label>
-          <input type="text" class="form-input" id="registerUsername" placeholder="ユーザー名を入力してください" required>
-          <div class="form-error" id="registerUsernameError"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">メールアドレス（任意）</label>
-          <input type="email" class="form-input" id="registerEmail" placeholder="email@example.com">
-          <div class="form-error" id="registerEmailError"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">パスワード</label>
-          <input type="password" class="form-input" id="registerPassword" placeholder="パスワードを入力してください" required>
-          <div class="form-error" id="registerPasswordError"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">パスワード（確認）</label>
-          <input type="password" class="form-input" id="registerPasswordConfirm" placeholder="パスワードを再入力してください" required>
-          <div class="form-error" id="registerPasswordConfirmError"></div>
-        </div>
-
-        <button type="submit" class="btn-login">アカウント作成</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="app-container" id="appContainer">
 
 <header>
   <nav>
     <div class="logo">📝 Todo & Memo</div>
-    <div class="user-info">
-      <div class="user-avatar" id="userAvatar"></div>
-      <div class="user-name" id="userName"></div>
-    </div>
     <div class="header-actions">
       <button class="header-btn" onclick="openSearch()">🔍 検索</button>
       <button class="header-btn" onclick="showStats()">📊 統計</button>
@@ -1428,34 +1081,6 @@ input::placeholder, textarea::placeholder {
     </div>
   </nav>
 </header>
-
-<div class="modal" id="accountModal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeAccountModal()">✕</button>
-    <h2 class="modal-title">👤 アカウント情報</h2>
-    <div class="account-details">
-      <div class="account-info-item">
-        <div class="account-info-label">ユーザー名</div>
-        <div class="account-info-value" id="accountUsername"></div>
-      </div>
-      <div class="account-info-item">
-        <div class="account-info-label">アカウント種類</div>
-        <div class="account-info-value" id="accountType"></div>
-      </div>
-      <div class="account-info-item">
-        <div class="account-info-label">総Todo数</div>
-        <div class="account-info-value" id="accountTotalTodos"></div>
-      </div>
-      <div class="account-info-item">
-        <div class="account-info-label">総メモ数</div>
-        <div class="account-info-value" id="accountTotalMemos"></div>
-      </div>
-      <div class="modal-actions" style="margin-top: 1.5rem;">
-        <button class="modal-btn modal-btn-secondary" onclick="closeAccountModal()">閉じる</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <main>
   <div class="mode-switcher">
@@ -1532,27 +1157,21 @@ input::placeholder, textarea::placeholder {
         </div>
         
         <div class="memo-toolbar">
-          <button class="toolbar-btn" onclick="insertText('**太字**')" title="太字 (選択範囲を太字に)">
-            <strong>B</strong>
-          </button>
-          <button class="toolbar-btn" onclick="insertText('*斜体*')" title="斜体 (選択範囲を斜体に)">
-            <em>I</em>
-          </button>
-          <button class="toolbar-btn" onclick="insertText('~~打ち消し線~~')" title="打ち消し線">
-            <s>S</s>
-          </button>
-          <button class="toolbar-btn" onclick="insertText('# ')" title="見出し1">H1</button>
-          <button class="toolbar-btn" onclick="insertText('## ')" title="見出し2">H2</button>
-          <button class="toolbar-btn" onclick="insertText('### ')" title="見出し3">H3</button>
-          <button class="toolbar-btn" onclick="insertText('- ')" title="箇条書き">• List</button>
-          <button class="toolbar-btn" onclick="insertText('1. ')" title="番号付きリスト">1. List</button>
-          <button class="toolbar-btn" onclick="insertText('[ ] ')" title="チェックボックス">☐ Task</button>
-          <button class="toolbar-btn" onclick="insertText('```\n\n```')" title="コードブロック">&lt;/&gt; Code</button>
-          <button class="toolbar-btn" onclick="insertText('> ')" title="引用">❝ Quote</button>
-          <button class="toolbar-btn" onclick="insertLink()" title="リンク">🔗 Link</button>
-          <button class="toolbar-btn" onclick="insertImage()" title="画像">🖼️ Image</button>
-          <button class="toolbar-btn" onclick="insertTable()" title="テーブル">📊 Table</button>
-          <button class="toolbar-btn" onclick="insertHorizontalRule()" title="水平線">─ HR</button>
+          <button class="toolbar-btn" onclick="insertText('**太字**')"><strong>B</strong></button>
+          <button class="toolbar-btn" onclick="insertText('*斜体*')"><em>I</em></button>
+          <button class="toolbar-btn" onclick="insertText('~~打ち消し線~~')"><s>S</s></button>
+          <button class="toolbar-btn" onclick="insertText('# ')">H1</button>
+          <button class="toolbar-btn" onclick="insertText('## ')">H2</button>
+          <button class="toolbar-btn" onclick="insertText('### ')">H3</button>
+          <button class="toolbar-btn" onclick="insertText('- ')">• List</button>
+          <button class="toolbar-btn" onclick="insertText('1. ')">1. List</button>
+          <button class="toolbar-btn" onclick="insertText('[ ] ')">☐ Task</button>
+          <button class="toolbar-btn" onclick="insertText('```\n\n```')">&lt;/&gt; Code</button>
+          <button class="toolbar-btn" onclick="insertText('> ')">❝ Quote</button>
+          <button class="toolbar-btn" onclick="insertLink()">🔗 Link</button>
+          <button class="toolbar-btn" onclick="insertImage()">🖼️ Image</button>
+          <button class="toolbar-btn" onclick="insertTable()">📊 Table</button>
+          <button class="toolbar-btn" onclick="insertHorizontalRule()">─ HR</button>
         </div>
         
         <textarea id="memoContent" placeholder="メモをここに書いてください...&#10;&#10;Markdownをサポート:&#10;**太字** *斜体* ~~打ち消し線~~&#10;# 見出し1 ## 見出し2 ### 見出し3&#10;- リスト 1. 番号付きリスト [ ] チェックボックス&#10;> 引用 ``` コードブロック ``` [リンク](URL)"></textarea>
@@ -1586,8 +1205,8 @@ input::placeholder, textarea::placeholder {
     </div>
   </div>
 </main>
-</div>
 
+<!-- Modals -->
 <div class="modal" id="searchModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeSearch()">✕</button>
@@ -1645,46 +1264,20 @@ input::placeholder, textarea::placeholder {
     <div class="shortcuts-list">
       <div class="shortcut-section">
         <h3>全般</h3>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + K</kbd>
-          <span>検索を開く</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>Esc</kbd>
-          <span>モーダルを閉じる</span>
-        </div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + K</kbd><span>検索を開く</span></div>
+        <div class="shortcut-item"><kbd>Esc</kbd><span>モーダルを閉じる</span></div>
       </div>
-      
       <div class="shortcut-section">
         <h3>メモ編集</h3>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + B</kbd>
-          <span>太字</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + I</kbd>
-          <span>斜体</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + K</kbd>
-          <span>リンク挿入</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + Shift + K</kbd>
-          <span>コードブロック</span>
-        </div>
-        <div class="shortcut-item">
-          <kbd>Ctrl/Cmd + Enter</kbd>
-          <span>メモを保存</span>
-        </div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + B</kbd><span>太字</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + I</kbd><span>斜体</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + K</kbd><span>リンク挿入</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + Shift + K</kbd><span>コードブロック</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + Enter</kbd><span>メモを保存</span></div>
       </div>
-      
       <div class="shortcut-section">
         <h3>Todo</h3>
-        <div class="shortcut-item">
-          <kbd>Enter</kbd>
-          <span>タスクを追加</span>
-        </div>
+        <div class="shortcut-item"><kbd>Enter</kbd><span>タスクを追加</span></div>
       </div>
     </div>
   </div>
@@ -1702,7 +1295,7 @@ input::placeholder, textarea::placeholder {
 </div>
 
 <script>
-// データ管理
+// ─── データ管理 ───────────────────────────────────────────────────
 let todos = [];
 let memos = [];
 let currentFilter = 'all';
@@ -1714,282 +1307,75 @@ let currentTodoSort = 'newest';
 let currentMemoSort = 'newest';
 let currentMemoView = 'edit';
 let todoSortable = null;
-let currentUser = null;
 
-class AccountManager {
-  constructor() {
-    this.users = this.loadUsers();
-  }
+const STORAGE_KEY_TODOS = 'todo_memo_todos';
+const STORAGE_KEY_MEMOS = 'todo_memo_memos';
 
-  loadUsers() {
-    try {
-      const stored = localStorage.getItem('users');
-      return stored ? JSON.parse(stored) : {};
-    } catch (e) {
-      console.error('ユーザーデータの読み込みエラー:', e);
-      return {};
-    }
-  }
-
-  saveUsers() {
-    try {
-      localStorage.setItem('users', JSON.stringify(this.users));
-    } catch (e) {
-      console.error('ユーザーデータの保存エラー:', e);
-    }
-  }
-
-  register(username, password, email = '') {
-    if (this.users[username]) {
-      return { success: false, error: 'このユーザー名は既に使用されています' };
-    }
-
-    if (username.length < 3) {
-      return { success: false, error: 'ユーザー名は3文字以上である必要があります' };
-    }
-
-    if (password.length < 6) {
-      return { success: false, error: 'パスワードは6文字以上である必要があります' };
-    }
-
-    this.users[username] = {
-      password: this.hashPassword(password),
-      email: email,
-      createdAt: new Date().toISOString(),
-      isGuest: false
-    };
-
-    this.saveUsers();
-    return { success: true };
-  }
-
-  login(username, password) {
-    const user = this.users[username];
-    
-    if (!user) {
-      return { success: false, error: 'ユーザー名またはパスワードが正しくありません' };
-    }
-
-    if (user.password !== this.hashPassword(password)) {
-      return { success: false, error: 'ユーザー名またはパスワードが正しくありません' };
-    }
-
-    return { 
-      success: true, 
-      user: { 
-        username, 
-        email: user.email, 
-        createdAt: user.createdAt, 
-        isGuest: user.isGuest 
-      } 
-    };
-  }
-
-  loginAsGuest() {
-    const guestUsername = 'guest_' + Date.now();
-    this.users[guestUsername] = {
-      password: this.hashPassword('guest'),
-      email: '',
-      createdAt: new Date().toISOString(),
-      isGuest: true
-    };
-    this.saveUsers();
-    
-    return { 
-      success: true, 
-      user: { 
-        username: guestUsername, 
-        email: '', 
-        createdAt: this.users[guestUsername].createdAt,
-        isGuest: true 
-      } 
-    };
-  }
-
-  hashPassword(password) {
-    let hash = 0;
-    for (let i = 0; i < password.length; i++) {
-      const char = password.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return hash.toString();
-  }
-}
-
-const accountManager = new AccountManager();
-
-function loginAsGuest() {
-  const result = accountManager.loginAsGuest();
-  if (result.success) {
-    loginUser(result.user);
-  }
-}
-
-function loginUser(user) {
-  currentUser = user;
-  
+function saveData() {
   try {
-    sessionStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEY_TODOS, JSON.stringify(todos));
+    localStorage.setItem(STORAGE_KEY_MEMOS, JSON.stringify(memos));
   } catch (e) {
-    console.error('セッション保存エラー:', e);
+    console.error('保存エラー:', e);
   }
-  
-  document.getElementById('userName').textContent = user.isGuest ? 'ゲスト' : user.username;
-  document.getElementById('userAvatar').textContent = user.isGuest ? '👤' : user.username.charAt(0).toUpperCase();
-  
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appContainer').classList.add('active');
-  
-  loadUserData();
 }
 
-function logout() {
-  currentUser = null;
-  sessionStorage.removeItem('currentUser');
-  
-  saveUserData();
-  
-  todos = [];
-  memos = [];
-  renderTodos();
-  renderMemos();
-  
-  document.getElementById('appContainer').classList.remove('active');
-  document.getElementById('loginScreen').style.display = 'flex';
-  
-  document.getElementById('loginForm').reset();
-  document.getElementById('registerForm').reset();
-  document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-}
-
-function openAccountModal() {
-  if (!currentUser) return;
-  
-  document.getElementById('accountUsername').textContent = 
-    currentUser.isGuest ? 'ゲストユーザー' : currentUser.username;
-  
-  document.getElementById('accountType').textContent = 
-    currentUser.isGuest ? 'ゲスト' : '登録ユーザー';
-  
-  document.getElementById('accountTotalTodos').textContent = todos.length;
-  document.getElementById('accountTotalMemos').textContent = memos.length;
-  
-  document.getElementById('accountModal').classList.add('active');
-}
-
-function closeAccountModal() {
-  document.getElementById('accountModal').classList.remove('active');
-}
-
-function loadUserData() {
-  if (!currentUser) return;
-  
-  const userDataKey = `userData_${currentUser.username}`;
-  
+function loadData() {
   try {
-    const stored = localStorage.getItem(userDataKey);
-    if (stored) {
-      const data = JSON.parse(stored);
-      todos = data.todos || [];
-      memos = data.memos || [];
-    } else {
-      todos = [];
-      memos = [];
-    }
+    const storedTodos = localStorage.getItem(STORAGE_KEY_TODOS);
+    const storedMemos = localStorage.getItem(STORAGE_KEY_MEMOS);
+    todos = storedTodos ? JSON.parse(storedTodos) : [];
+    memos = storedMemos ? JSON.parse(storedMemos) : [];
   } catch (e) {
-    console.error('データ読み込みエラー:', e);
+    console.error('読み込みエラー:', e);
     todos = [];
     memos = [];
   }
-  
   updateMemoTags();
   renderTodos();
   renderMemos();
 }
 
-function saveUserData() {
-  if (!currentUser) return;
-  
-  const userDataKey = `userData_${currentUser.username}`;
-  
-  try {
-    const data = {
-      todos: todos,
-      memos: memos,
-      lastSaved: new Date().toISOString()
-    };
-    localStorage.setItem(userDataKey, JSON.stringify(data));
-  } catch (e) {
-    console.error('データ保存エラー:', e);
-  }
-}
-
+// ─── marked 設定 ─────────────────────────────────────────────────
 if (typeof marked !== 'undefined') {
-  marked.setOptions({
-    breaks: true,
-    gfm: true
-  });
+  marked.setOptions({ breaks: true, gfm: true });
 }
 
+// ─── カスタム確認ダイアログ ───────────────────────────────────────
 function customConfirm(message, title = '確認', showCancel = true) {
   return new Promise((resolve) => {
     const dialog = document.getElementById('confirmDialog');
-    const titleEl = document.getElementById('confirmTitle');
-    const messageEl = document.getElementById('confirmMessage');
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
     const okBtn = document.getElementById('confirmOkBtn');
     const cancelBtn = document.getElementById('confirmCancelBtn');
-    
-    titleEl.textContent = title;
-    messageEl.textContent = message;
-    
-    if (showCancel) {
-      cancelBtn.style.display = 'block';
-    } else {
-      cancelBtn.style.display = 'none';
-    }
-    
+    cancelBtn.style.display = showCancel ? 'block' : 'none';
     dialog.classList.add('active');
-    
-    const handleOk = () => {
+
+    const cleanup = (result) => {
       dialog.classList.remove('active');
       document.removeEventListener('keydown', handleEsc);
       okBtn.removeEventListener('click', handleOk);
       cancelBtn.removeEventListener('click', handleCancel);
-      resolve(true);
+      resolve(result);
     };
-    
-    const handleCancel = () => {
-      dialog.classList.remove('active');
-      document.removeEventListener('keydown', handleEsc);
-      okBtn.removeEventListener('click', handleOk);
-      cancelBtn.removeEventListener('click', handleCancel);
-      resolve(false);
-    };
-    
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        if (showCancel) {
-          handleCancel();
-        } else {
-          handleOk();
-        }
-      }
-    };
-    
+    const handleOk = () => cleanup(true);
+    const handleCancel = () => cleanup(false);
+    const handleEsc = (e) => { if (e.key === 'Escape') cleanup(showCancel ? false : true); };
+
     okBtn.addEventListener('click', handleOk);
     cancelBtn.addEventListener('click', handleCancel);
     document.addEventListener('keydown', handleEsc);
   });
 }
 
+// ─── メモプレビュー ───────────────────────────────────────────────
 function switchMemoView(view) {
   currentMemoView = view;
   const textarea = document.getElementById('memoContent');
   const preview = document.getElementById('memoPreview');
   const editBtn = document.getElementById('editViewBtn');
   const previewBtn = document.getElementById('previewViewBtn');
-  
   if (view === 'edit') {
     textarea.style.display = 'block';
     preview.classList.remove('active');
@@ -2007,389 +1393,18 @@ function switchMemoView(view) {
 function updateMemoPreview() {
   const content = document.getElementById('memoContent').value;
   const preview = document.getElementById('memoPreview');
-  
-  if (typeof marked !== 'undefined') {
-    preview.innerHTML = marked.parse(content || '*プレビューする内容がありません*');
-  } else {
-    preview.innerHTML = content.replace(/\n/g, '<br>');
-  }
+  preview.innerHTML = typeof marked !== 'undefined'
+    ? marked.parse(content || '*プレビューする内容がありません*')
+    : content.replace(/\n/g, '<br>');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-      
-      const username = document.getElementById('loginUsername').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      
-      if (!username || !password) {
-        document.getElementById('loginPasswordError').textContent = 'すべてのフィールドを入力してください';
-        document.getElementById('loginPasswordError').classList.add('show');
-        return;
-      }
-
-      const result = accountManager.login(username, password);
-      if (result.success) {
-        loginUser(result.user);
-      } else {
-        document.getElementById('loginPasswordError').textContent = result.error;
-        document.getElementById('loginPasswordError').classList.add('show');
-      }
-    });
-  }
-
-  const registerForm = document.getElementById('registerForm');
-  if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-      
-      const username = document.getElementById('registerUsername').value.trim();
-      const email = document.getElementById('registerEmail').value.trim();
-      const password = document.getElementById('registerPassword').value;
-      const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
-      
-      if (!username || !password || !passwordConfirm) {
-        document.getElementById('registerPasswordConfirmError').textContent = 
-          'ユーザー名とパスワードは必須です';
-        document.getElementById('registerPasswordConfirmError').classList.add('show');
-        return;
-      }
-
-      if (password !== passwordConfirm) {
-        document.getElementById('registerPasswordConfirmError').textContent = 
-          'パスワードが一致しません';
-        document.getElementById('registerPasswordConfirmError').classList.add('show');
-        return;
-      }
-
-      const result = accountManager.register(username, password, email);
-      if (result.success) {
-        const loginResult = accountManager.login(username, password);
-        if (loginResult.success) {
-          loginUser(loginResult.user);
-        }
-      } else {
-        document.getElementById('registerUsernameError').textContent = result.error;
-        document.getElementById('registerUsernameError').classList.add('show');
-      }
-    });
-  }
-
-  document.querySelectorAll('.login-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      const targetTab = this.dataset.tab;
-      
-      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-      
-      document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      
-      document.querySelectorAll('.login-form, .register-form')
-        .forEach(f => f.classList.remove('active'));
-      
-      if (targetTab === 'login') {
-        document.getElementById('loginForm').classList.add('active');
-      } else {
-        document.getElementById('registerForm').classList.add('active');
-      }
-    });
-  });
-
-  const userInfo = document.querySelector('.user-info');
-  if (userInfo) {
-    userInfo.addEventListener('click', openAccountModal);
-    userInfo.style.cursor = 'pointer';
-  }
-
-  const memoContent = document.getElementById('memoContent');
-  if (memoContent) {
-    memoContent.addEventListener('input', function() {
-      if (currentMemoView === 'preview') {
-        updateMemoPreview();
-      }
-    });
-  }
-});
-
-const translations = {
-  ja: {
-    app_title: 'Todo & Memo',
-    search: '検索',
-    stats: '統計',
-    settings: '設定',
-    todo_mode: 'Todoリスト',
-    memo_mode: 'メモ',
-    task_management: 'Todo',
-    memo_management: 'Memo',
-    add_task: 'Todo追加',
-    add_memo: 'Memoを保存',
-    task_placeholder: '何をする必要がありますか？',
-    memo_title_placeholder: 'メモタイトル...',
-    memo_content_placeholder: 'メモをここに書いてください...',
-    tags_placeholder: 'タグ (カンマ区切り: 仕事, アイデア, 重要)',
-    sort_by: '並び替え:',
-    sort_newest: '新しい順',
-    sort_oldest: '古い順',
-    sort_priority: '優先度順',
-    sort_duedate: '期限順',
-    sort_alphabetical: 'アルファベット順',
-    sort_longest: '長い順',
-    filter_all: 'すべて',
-    filter_active: '未完了',
-    filter_completed: '完了済み',
-    filter_high: '優先度: 高',
-    filter_medium: '優先度: 中',
-    filter_low: '優先度: 低',
-    filter_overdue: '期限切れ',
-    stat_total: '合計',
-    stat_active: '未完了',
-    stat_completed: '完了済み',
-    stat_completion_rate: '達成率',
-    export_all_tasks: 'すべてのタスクをエクスポート',
-    export_all_memos: 'すべてのメモをエクスポート',
-    clear_completed: '完了済みを削除',
-    no_tasks: 'タスクが見つかりません',
-    no_memos: 'まだメモがありません',
-    delete_btn: '削除',
-    export_btn: 'エクスポート',
-    edit_btn: '編集',
-    duplicate_btn: '複製',
-    priority_high: '高',
-    priority_medium: '中',
-    priority_low: '低',
-    priority_none: '優先度なし',
-    untitled: '無題',
-    due_today: '今日',
-    due_tomorrow: '明日',
-    overdue: '期限切れ',
-    completed: '完了',
-    active: '未完了',
-    edit_task: 'タスクを編集',
-    task_content: 'タスクの内容',
-    due_date: '期限',
-    note: 'メモ',
-    cancel: 'キャンセル',
-    save: '保存',
-    stats_title: '統計情報',
-    total_tasks: '総タスク数',
-    active_tasks: '未完了タスク',
-    completed_tasks: '完了済みタスク',
-    high_priority_tasks: '高優先度タスク',
-    total_memos: '総メモ数',
-    tags_in_use: '使用中のタグ',
-    settings_title: '設定',
-    import_data: 'データをインポート',
-    export_data: 'すべてをエクスポート',
-    clear_all: 'すべてを削除',
-    search_title: '検索',
-    search_placeholder: 'タスクやメモを検索...',
-    no_results: '検索結果が見つかりません',
-    confirm_delete_task: 'このタスクを削除しますか?',
-    confirm_delete_memo: 'このメモを削除しますか?',
-    confirm_clear_completed: '完了済みのタスクをすべて削除しますか?',
-    confirm_import: 'インポートすると現在のデータが上書きされます。続けますか?',
-    confirm_clear_all_1: 'すべてのデータを削除しますか? この操作は取り消せません。',
-    confirm_clear_all_2: '本当に削除しますか?',
-    import_success: 'データをインポートしました!',
-    import_error: 'ファイルの読み込みに失敗しました',
-    no_tasks_export: 'エクスポートするタスクがありません',
-    no_memos_export: 'エクスポートするメモがありません'
-  },
-  en: {
-    app_title: 'Todo & Memo',
-    search: 'Search',
-    stats: 'Stats',
-    settings: 'Settings',
-    todo_mode: 'Todo List',
-    memo_mode: 'Memos',
-    task_management: 'Todo',
-    memo_management: 'Memo',
-    add_task: 'Add Todo',
-    add_memo: 'Save Memo',
-    task_placeholder: 'What do you need to do?',
-    memo_title_placeholder: 'Memo title...',
-    memo_content_placeholder: 'Write your memo here...',
-    tags_placeholder: 'Tags (comma separated: work, ideas, important)',
-    sort_by: 'Sort by:',
-    sort_newest: 'Newest',
-    sort_oldest: 'Oldest',
-    sort_priority: 'Priority',
-    sort_duedate: 'Due Date',
-    sort_alphabetical: 'Alphabetical',
-    sort_longest: 'Longest',
-    filter_all: 'All',
-    filter_active: 'Active',
-    filter_completed: 'Completed',
-    filter_high: 'Priority: High',
-    filter_medium: 'Priority: Medium',
-    filter_low: 'Priority: Low',
-    filter_overdue: 'Overdue',
-    stat_total: 'Total',
-    stat_active: 'Active',
-    stat_completed: 'Completed',
-    stat_completion_rate: 'Completion Rate',
-    export_all_tasks: 'Export All Tasks',
-    export_all_memos: 'Export All Memos',
-    clear_completed: 'Clear Completed',
-    no_tasks: 'No tasks found',
-    no_memos: 'No memos yet',
-    delete_btn: 'Delete',
-    export_btn: 'Export',
-    edit_btn: 'Edit',
-    duplicate_btn: 'Duplicate',
-    priority_high: 'High',
-    priority_medium: 'Medium',
-    priority_low: 'Low',
-    priority_none: 'No Priority',
-    untitled: 'Untitled',
-    due_today: 'Today',
-    due_tomorrow: 'Tomorrow',
-    overdue: 'Overdue',
-    completed: 'Completed',
-    active: 'Active',
-    edit_task: 'Edit Task',
-    task_content: 'Task content',
-    due_date: 'Due Date',
-    note: 'Note',
-    cancel: 'Cancel',
-    save: 'Save',
-    stats_title: 'Statistics',
-    total_tasks: 'Total Tasks',
-    active_tasks: 'Active Tasks',
-    completed_tasks: 'Completed Tasks',
-    high_priority_tasks: 'High Priority Tasks',
-    total_memos: 'Total Memos',
-    tags_in_use: 'Tags in Use',
-    settings_title: 'Settings',
-    import_data: 'Import Data',
-    export_data: 'Export All',
-    clear_all: 'Clear All',
-    search_title: 'Search',
-    search_placeholder: 'Search tasks and memos...',
-    no_results: 'No results found',
-    confirm_delete_task: 'Delete this task?',
-    confirm_delete_memo: 'Delete this memo?',
-    confirm_clear_completed: 'Clear all completed tasks?',
-    confirm_import: 'Importing will overwrite current data. Continue?',
-    confirm_clear_all_1: 'Delete all data? This cannot be undone.',
-    confirm_clear_all_2: 'Are you sure?',
-    import_success: 'Data imported successfully!',
-    import_error: 'Failed to load file',
-    no_tasks_export: 'No tasks to export',
-    no_memos_export: 'No memos to export'
-  }
-};
-
-function updateUILanguage() {
-  const t = translations[currentLang];
-  
-  document.querySelector('.logo').textContent = `📝 ${t.app_title}`;
-  document.querySelectorAll('.header-btn')[0].textContent = `🔍 ${t.search}`;
-  document.querySelectorAll('.header-btn')[1].textContent = `📊 ${t.stats}`;
-  document.querySelectorAll('.header-btn')[2].textContent = `⚙️ ${t.settings}`;
-  
-  document.querySelector('[data-mode="todo"]').textContent = `📝 ${t.todo_mode}`;
-  document.querySelector('[data-mode="memo"]').textContent = `📄 ${t.memo_mode}`;
-  
-  document.querySelector('.todo-container h1').textContent = t.task_management;
-  document.getElementById('todoInput').placeholder = t.task_placeholder;
-  document.getElementById('addTodoBtn').textContent = t.add_task;
-  
-  const todoSortOptions = document.querySelectorAll('#todoSort option');
-  todoSortOptions[0].textContent = t.sort_newest;
-  todoSortOptions[1].textContent = t.sort_oldest;
-  todoSortOptions[2].textContent = t.sort_priority;
-  todoSortOptions[3].textContent = t.sort_duedate;
-  todoSortOptions[4].textContent = t.sort_alphabetical;
-  
-  const todoFilters = document.querySelectorAll('.filter-tabs .filter-btn');
-  todoFilters[0].textContent = t.filter_all;
-  todoFilters[1].textContent = t.filter_active;
-  todoFilters[2].textContent = t.filter_completed;
-  todoFilters[3].textContent = t.filter_high;
-  todoFilters[4].textContent = t.filter_medium;
-  todoFilters[5].textContent = t.filter_low;
-  todoFilters[6].textContent = t.filter_overdue;
-  
-  document.querySelectorAll('.todo-container .stat-label')[0].textContent = t.stat_total;
-  document.querySelectorAll('.todo-container .stat-label')[1].textContent = t.stat_active;
-  document.querySelectorAll('.todo-container .stat-label')[2].textContent = t.stat_completed;
-  document.querySelectorAll('.todo-container .stat-label')[3].textContent = t.stat_completion_rate;
-  
-  document.querySelectorAll('.todo-container .export-section button')[0].textContent = `📥 ${t.export_all_tasks}`;
-  document.querySelectorAll('.todo-container .export-section button')[1].textContent = `🗑️ ${t.clear_completed}`;
-  
-  document.querySelector('.memo-container h1').textContent = t.memo_management;
-  document.getElementById('memoTitle').placeholder = t.memo_title_placeholder;
-  document.getElementById('memoContent').placeholder = t.memo_content_placeholder;
-  document.getElementById('memoTags').placeholder = t.tags_placeholder;
-  document.getElementById('addMemoBtn').textContent = t.add_memo;
-  
-  const memoSortLabel = document.querySelectorAll('.memo-container .sort-label')[0];
-  if (memoSortLabel) memoSortLabel.textContent = t.sort_by;
-  
-  const memoSortOptions = document.querySelectorAll('#memoSort option');
-  memoSortOptions[0].textContent = t.sort_newest;
-  memoSortOptions[1].textContent = t.sort_oldest;
-  memoSortOptions[2].textContent = t.sort_alphabetical;
-  memoSortOptions[3].textContent = t.sort_longest;
-  
-  document.querySelectorAll('.memo-container .export-section button')[0].textContent = `📥 ${t.export_all_memos}`;
-  
-  document.querySelector('#editTodoModal .modal-title').textContent = `📝 ${t.edit_task}`;
-  document.getElementById('editTodoText').placeholder = t.task_content;
-  
-  const priorityOptions = document.querySelectorAll('#editTodoPriority option');
-  priorityOptions[0].textContent = t.priority_none;
-  priorityOptions[1].textContent = t.priority_high;
-  priorityOptions[2].textContent = t.priority_medium;
-  priorityOptions[3].textContent = t.priority_low;
-  
-  document.getElementById('editTodoTags').placeholder = t.tags_placeholder;
-  document.getElementById('editTodoNote').placeholder = t.note;
-  
-  document.querySelectorAll('#editTodoModal .modal-btn')[0].textContent = t.cancel;
-  document.querySelectorAll('#editTodoModal .modal-btn')[1].textContent = t.save;
-  
-  document.querySelector('#searchModal .modal-title').textContent = `🔍 ${t.search_title}`;
-  document.getElementById('searchInput').placeholder = t.search_placeholder;
-  
-  document.querySelector('#statsModal .modal-title').textContent = `📊 ${t.stats_title}`;
-  
-  document.querySelector('#settingsModal .modal-title').textContent = `⚙️ ${t.settings_title}`;
-  const settingsButtons = document.querySelectorAll('#settingsModal .modal-btn');
-  settingsButtons[0].textContent = `📤 ${t.import_data}`;
-  settingsButtons[1].textContent = `📥 ${t.export_data}`;
-  settingsButtons[2].textContent = `🗑️ ${t.clear_all}`;
-}
-
-function saveTodos() {
-  saveUserData();
-}
-
-function loadTodos() {
-}
-
-function saveMemos() {
-  saveUserData();
-}
-
-function loadMemos() {
-}
-
+// ─── Todo 操作 ────────────────────────────────────────────────────
 function addTodo() {
   const text = document.getElementById('todoInput').value.trim();
   if (!text) return;
-
   todos.unshift({
     id: Date.now(),
-    text: text,
+    text,
     completed: false,
     date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
     priority: '',
@@ -2397,148 +1412,105 @@ function addTodo() {
     dueDate: null,
     note: ''
   });
-
   document.getElementById('todoInput').value = '';
-  saveTodos();
+  saveData();
   renderTodos();
 }
 
 function toggleTodo(id) {
   const todo = todos.find(t => t.id === id);
-  if (todo) {
-    todo.completed = !todo.completed;
-    if (todo.completed) {
-      todo.completedDate = new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US');
-    } else {
-      delete todo.completedDate;
-    }
-    saveTodos();
-    renderTodos();
+  if (!todo) return;
+  todo.completed = !todo.completed;
+  if (todo.completed) {
+    todo.completedDate = new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US');
+  } else {
+    delete todo.completedDate;
   }
+  saveData();
+  renderTodos();
 }
 
 async function deleteTodo(id) {
-  const t = translations[currentLang];
-  const confirmed = await customConfirm(t.confirm_delete_task, '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete'));
-  
+  const confirmed = await customConfirm(
+    currentLang === 'ja' ? 'このタスクを削除しますか?' : 'Delete this task?',
+    '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete')
+  );
   if (confirmed) {
-    const index = todos.findIndex(todo => todo.id === id);
-    if (index !== -1) {
-      todos.splice(index, 1);
-      saveTodos();
-      renderTodos();
-    }
+    todos.splice(todos.findIndex(t => t.id === id), 1);
+    saveData();
+    renderTodos();
   }
 }
 
 function duplicateTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (!todo) return;
-
-  const t = translations[currentLang];
-  const copyLabel = currentLang === 'ja' ? ' (コピー)' : ' (Copy)';
-
   todos.unshift({
     ...todo,
     id: Date.now(),
     completed: false,
     date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
-    text: todo.text + copyLabel
+    text: todo.text + (currentLang === 'ja' ? ' (コピー)' : ' (Copy)')
   });
-
-  saveTodos();
+  saveData();
   renderTodos();
 }
 
 function exportTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (!todo) return;
-  
   const t = translations[currentLang];
-
   let content = `${currentLang === 'ja' ? 'タスク' : 'Task'}: ${todo.text}\n${'='.repeat(50)}\n\n`;
   content += `${currentLang === 'ja' ? '状態' : 'Status'}: ${todo.completed ? '✓ ' + t.completed : '☐ ' + t.active}\n`;
-  
-  if (todo.priority) {
-    content += `${currentLang === 'ja' ? '優先度' : 'Priority'}: ${t['priority_' + todo.priority]}\n`;
-  }
-  
-  if (todo.dueDate) {
-    content += `${currentLang === 'ja' ? '期限' : 'Due Date'}: ${new Date(todo.dueDate).toLocaleDateString(currentLang === 'ja' ? 'ja-JP' : 'en-US')}\n`;
-  }
-  
-  if (todo.tags && todo.tags.length > 0) {
-    content += `${currentLang === 'ja' ? 'タグ' :'Tags'}: ${todo.tags.join(', ')}\n`;
-  }
-  
-  if (todo.note) {
-    content += `\n${currentLang === 'ja' ? 'メモ' : 'Note'}:\n${todo.note}\n`;
-  }
-  
-  content += `\n${currentLang === 'ja' ? '作成日時' : 'Created'}: ${todo.date || (currentLang === 'ja' ? '不明' : 'Unknown')}`;
-  
-  if (todo.completedDate) {
-    content += `\n${currentLang === 'ja' ? '完了日時' : 'Completed'}: ${todo.completedDate}`;
-  }
-
-  downloadTextFile(
-    todo.text.substring(0, 30).replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt',
-    content
-  );
+  if (todo.priority) content += `${currentLang === 'ja' ? '優先度' : 'Priority'}: ${t['priority_' + todo.priority]}\n`;
+  if (todo.dueDate) content += `${currentLang === 'ja' ? '期限' : 'Due Date'}: ${new Date(todo.dueDate).toLocaleDateString()}\n`;
+  if (todo.tags && todo.tags.length > 0) content += `${currentLang === 'ja' ? 'タグ' : 'Tags'}: ${todo.tags.join(', ')}\n`;
+  if (todo.note) content += `\n${currentLang === 'ja' ? 'メモ' : 'Note'}:\n${todo.note}\n`;
+  content += `\n${currentLang === 'ja' ? '作成日時' : 'Created'}: ${todo.date || ''}`;
+  if (todo.completedDate) content += `\n${currentLang === 'ja' ? '完了日時' : 'Completed'}: ${todo.completedDate}`;
+  downloadTextFile(todo.text.substring(0, 30).replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt', content);
 }
 
 async function exportAllTodos() {
   const t = translations[currentLang];
-  
   if (todos.length === 0) {
-    await customConfirm(t.no_tasks_export, 'ℹ️ ' + (currentLang === 'ja' ? '情報' : 'Info'), false);
+    await customConfirm(t.no_tasks_export, 'ℹ️ Info', false);
     return;
   }
-
   const header = currentLang === 'ja' ? 'タスクリスト' : 'Task List';
   let content = header + '\n' + '='.repeat(50) + '\n\n';
-  
   const active = todos.filter(t => !t.completed);
   const completed = todos.filter(t => t.completed);
-
   if (active.length > 0) {
     content += `【${currentLang === 'ja' ? '未完了' : 'Active'}】\n`;
-    active.forEach((todo, index) => {
-      content += `${index + 1}. ☐ ${todo.text}`;
+    active.forEach((todo, i) => {
+      content += `${i + 1}. ☐ ${todo.text}`;
       if (todo.priority) content += ` [${t['priority_' + todo.priority]}]`;
-      if (todo.dueDate) content += ` (${currentLang === 'ja' ? '期限' : 'Due'}: ${new Date(todo.dueDate).toLocaleDateString()})`;
+      if (todo.dueDate) content += ` (期限: ${new Date(todo.dueDate).toLocaleDateString()})`;
       if (todo.tags && todo.tags.length > 0) content += ` #${todo.tags.join(' #')}`;
       content += '\n';
     });
     content += '\n';
   }
-
   if (completed.length > 0) {
     content += `【${currentLang === 'ja' ? '完了済み' : 'Completed'}】\n`;
-    completed.forEach((todo, index) => {
-      content += `${index + 1}. ☑ ${todo.text}`;
-      if (todo.priority) content += ` [${t['priority_' + todo.priority]}]`;
-      if (todo.tags && todo.tags.length > 0) content += ` #${todo.tags.join(' #')}`;
-      content += '\n';
+    completed.forEach((todo, i) => {
+      content += `${i + 1}. ☑ ${todo.text}\n`;
     });
   }
-
   content += '\n' + '='.repeat(50) + '\n';
-  const summary = currentLang === 'ja' 
-    ? `合計: ${todos.length} | 未完了: ${active.length} | 完了済み: ${completed.length}\n`
-    : `Total: ${todos.length} | Active: ${active.length} | Completed: ${completed.length}\n`;
-  content += summary;
-
+  content += `合計: ${todos.length} | 未完了: ${active.length} | 完了済み: ${completed.length}\n`;
   downloadTextFile(`todos_${new Date().toISOString().split('T')[0]}.txt`, content);
 }
 
 async function clearCompleted() {
-  const t = translations[currentLang];
-  const confirmed = await customConfirm(t.confirm_clear_completed, '⚠️ ' + (currentLang === 'ja' ? '一括削除確認' : 'Confirm Clear'));
-  
+  const confirmed = await customConfirm(
+    currentLang === 'ja' ? '完了済みのタスクをすべて削除しますか?' : 'Clear all completed tasks?',
+    '⚠️ ' + (currentLang === 'ja' ? '一括削除確認' : 'Confirm Clear')
+  );
   if (confirmed) {
     todos = todos.filter(t => !t.completed);
-    saveTodos();
+    saveData();
     renderTodos();
   }
 }
@@ -2547,7 +1519,6 @@ function openEditTodoModal(id) {
   editingTodoId = id;
   const todo = todos.find(t => t.id === id);
   if (!todo) return;
-
   document.getElementById('editTodoText').value = todo.text;
   document.getElementById('editTodoPriority').value = todo.priority || '';
   document.getElementById('editTodoDueDate').value = todo.dueDate || '';
@@ -2563,50 +1534,37 @@ function closeEditTodoModal() {
 
 function saveEditedTodo() {
   if (!editingTodoId) return;
-
   const todo = todos.find(t => t.id === editingTodoId);
   if (!todo) return;
-
   todo.text = document.getElementById('editTodoText').value.trim();
   todo.priority = document.getElementById('editTodoPriority').value;
   todo.dueDate = document.getElementById('editTodoDueDate').value;
   todo.note = document.getElementById('editTodoNote').value.trim();
-  
   const tagInput = document.getElementById('editTodoTags').value.trim();
   todo.tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
-
-  saveTodos();
+  saveData();
   renderTodos();
   closeEditTodoModal();
 }
 
 function getDueDateStatus(dueDate) {
   if (!dueDate) return null;
-  
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const due = new Date(dueDate);
-  due.setHours(0, 0, 0, 0);
-  
-  const diffTime = due - today;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  if (diffDays < 0) return { text: translations[currentLang].overdue, class: 'overdue' };
-  if (diffDays === 0) return { text: translations[currentLang].due_today, class: 'due-today' };
-  if (diffDays === 1) return { text: translations[currentLang].due_tomorrow, class: 'due-tomorrow' };
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const due = new Date(dueDate); due.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return { text: currentLang === 'ja' ? '期限切れ' : 'Overdue', class: 'overdue' };
+  if (diffDays === 0) return { text: currentLang === 'ja' ? '今日' : 'Today', class: 'due-today' };
+  if (diffDays === 1) return { text: currentLang === 'ja' ? '明日' : 'Tomorrow', class: 'due-tomorrow' };
   return { text: new Date(dueDate).toLocaleDateString(currentLang === 'ja' ? 'ja-JP' : 'en-US'), class: '' };
 }
 
-function sortTodos(todosToSort) {
-  const sorted = [...todosToSort];
-  
+function sortTodos(arr) {
+  const sorted = [...arr];
   switch (currentTodoSort) {
-    case 'oldest':
-      return sorted.reverse();
+    case 'oldest': return sorted.reverse();
     case 'priority':
-      const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2, '': 3 };
-      return sorted.sort((a, b) => priorityOrder[a.priority || ''] - priorityOrder[b.priority || '']);
+      const order = { 'high': 0, 'medium': 1, 'low': 2, '': 3 };
+      return sorted.sort((a, b) => order[a.priority || ''] - order[b.priority || '']);
     case 'duedate':
       return sorted.sort((a, b) => {
         if (!a.dueDate && !b.dueDate) return 0;
@@ -2614,14 +1572,13 @@ function sortTodos(todosToSort) {
         if (!b.dueDate) return -1;
         return new Date(a.dueDate) - new Date(b.dueDate);
       });
-    case 'alphabetical':
-      return sorted.sort((a, b) => a.text.localeCompare(b.text));
-    default:
-      return sorted;
+    case 'alphabetical': return sorted.sort((a, b) => a.text.localeCompare(b.text));
+    default: return sorted;
   }
 }
 
 function renderTodos() {
+  const t = translations[currentLang];
   let filtered = todos.filter(todo => {
     if (currentFilter === 'active') return !todo.completed;
     if (currentFilter === 'completed') return todo.completed;
@@ -2630,83 +1587,52 @@ function renderTodos() {
     if (currentFilter === 'low') return todo.priority === 'low';
     if (currentFilter === 'overdue') {
       if (!todo.dueDate || todo.completed) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const due = new Date(todo.dueDate);
-      due.setHours(0, 0, 0, 0);
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const due = new Date(todo.dueDate); due.setHours(0, 0, 0, 0);
       return due < today;
     }
     return true;
   });
-
   filtered = sortTodos(filtered);
 
   const list = document.getElementById('todoList');
-  
   if (filtered.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📭</div>
-        <div class="empty-state-text">${translations[currentLang].no_tasks}</div>
-      </div>
-    `;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">${t.no_tasks}</div></div>`;
   } else {
     list.innerHTML = filtered.map(todo => {
       const dueStatus = getDueDateStatus(todo.dueDate);
-      
       return `
         <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
           <div class="todo-main-row">
             <div class="checkbox ${todo.completed ? 'checked' : ''}" data-action="toggle" data-id="${todo.id}"></div>
             <div class="todo-text">${todo.text}</div>
             <div class="todo-actions">
-              ${todo.priority ? `<span class="priority-badge priority-${todo.priority}">${translations[currentLang]['priority_' + todo.priority]}</span>` : ''}
+              ${todo.priority ? `<span class="priority-badge priority-${todo.priority}">${t['priority_' + todo.priority]}</span>` : ''}
               ${dueStatus ? `<span class="due-date-badge ${dueStatus.class}">${dueStatus.text}</span>` : ''}
-              <button class="action-btn duplicate" data-action="duplicate" data-id="${todo.id}" title="複製">📋</button>
-              <button class="action-btn edit" data-action="edit" data-id="${todo.id}" title="編集">✏️</button>
-              <button class="action-btn export" data-action="export" data-id="${todo.id}" title="エクスポート">💾</button>
-              <button class="action-btn" data-action="delete" data-id="${todo.id}" title="削除">🗑️</button>
+              <button class="action-btn duplicate" data-action="duplicate" data-id="${todo.id}">📋</button>
+              <button class="action-btn edit" data-action="edit" data-id="${todo.id}">✏️</button>
+              <button class="action-btn export" data-action="export" data-id="${todo.id}">💾</button>
+              <button class="action-btn" data-action="delete" data-id="${todo.id}">🗑️</button>
             </div>
           </div>
-          ${todo.tags && todo.tags.length > 0 ? `
-            <div class="todo-meta">
-              ${todo.tags.map(tag => `<span class="todo-tag">#${tag}</span>`).join('')}
-            </div>
-          ` : ''}
-          ${todo.note ? `
-            <div class="todo-meta">
-              <span style="color: #d1d5db;">${todo.note}</span>
-            </div>
-          ` : ''}
-        </li>
-      `;
+          ${todo.tags && todo.tags.length > 0 ? `<div class="todo-meta">${todo.tags.map(tag => `<span class="todo-tag">#${tag}</span>`).join('')}</div>` : ''}
+          ${todo.note ? `<div class="todo-meta"><span style="color:#d1d5db">${todo.note}</span></div>` : ''}
+        </li>`;
     }).join('');
   }
-
   updateStats();
-  
+
   if (typeof Sortable !== 'undefined') {
-    const list = document.getElementById('todoList');
-    
-    if (todoSortable) {
-      todoSortable.destroy();
-    }
-    
+    if (todoSortable) todoSortable.destroy();
     todoSortable = Sortable.create(list, {
       animation: 150,
-      ghostClass: 'sortable-ghost',
       handle: '.todo-text',
-      onEnd: function(evt) {
-        const items = Array.from(list.children);
-        const newOrder = items.map(item => parseInt(item.dataset.id));
-        
+      onEnd: () => {
+        const newOrder = Array.from(list.children).map(el => parseInt(el.dataset.id));
         const reordered = [];
-        newOrder.forEach(id => {
-          const todo = todos.find(t => t.id === id);
-          if (todo) reordered.push(todo);
-        });
+        newOrder.forEach(id => { const t = todos.find(t => t.id === id); if (t) reordered.push(t); });
         todos = reordered;
-        saveTodos();
+        saveData();
       }
     });
   }
@@ -2714,71 +1640,60 @@ function renderTodos() {
 
 function updateStats() {
   const total = todos.length;
-  const active = todos.filter(t => !t.completed).length;
   const completed = todos.filter(t => t.completed).length;
+  const active = total - completed;
   const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-
   document.getElementById('totalTasks').textContent = total;
   document.getElementById('activeTasks').textContent = active;
   document.getElementById('completedTasks').textContent = completed;
   document.getElementById('completionRate').textContent = rate + '%';
 }
 
+// ─── Memo 操作 ────────────────────────────────────────────────────
 function addMemo() {
   const title = document.getElementById('memoTitle').value.trim();
   const content = document.getElementById('memoContent').value.trim();
-  
   if (!title && !content) return;
-
   const tagInput = document.getElementById('memoTags').value.trim();
   const tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
-
   memos.unshift({
     id: Date.now(),
-    title: title || translations[currentLang].untitled,
-    content: content,
+    title: title || (currentLang === 'ja' ? '無題' : 'Untitled'),
+    content,
     date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
-    tags: tags
+    tags
   });
-
   document.getElementById('memoTitle').value = '';
   document.getElementById('memoContent').value = '';
   document.getElementById('memoTags').value = '';
-
-  saveMemos();
+  saveData();
   updateMemoTags();
   renderMemos();
 }
 
 async function deleteMemo(id) {
-  const t = translations[currentLang];
-  const confirmed = await customConfirm(t.confirm_delete_memo, '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete'));
-  
+  const confirmed = await customConfirm(
+    currentLang === 'ja' ? 'このメモを削除しますか?' : 'Delete this memo?',
+    '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete')
+  );
   if (confirmed) {
-    const index = memos.findIndex(memo => memo.id === id);
-    if (index !== -1) {
-      memos.splice(index, 1);
-      saveMemos();
-      updateMemoTags();
-      renderMemos();
-    }
+    memos.splice(memos.findIndex(m => m.id === id), 1);
+    saveData();
+    updateMemoTags();
+    renderMemos();
   }
 }
 
 function duplicateMemo(id) {
   const memo = memos.find(m => m.id === id);
   if (!memo) return;
-
-  const copyLabel = currentLang === 'ja' ? ' (コピー)' : ' (Copy)';
-
   memos.unshift({
     ...memo,
     id: Date.now(),
-    title: memo.title + copyLabel,
+    title: memo.title + (currentLang === 'ja' ? ' (コピー)' : ' (Copy)'),
     date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US')
   });
-
-  saveMemos();
+  saveData();
   updateMemoTags();
   renderMemos();
 }
@@ -2786,19 +1701,13 @@ function duplicateMemo(id) {
 function editMemo(id) {
   const memo = memos.find(m => m.id === id);
   if (!memo) return;
-
   document.getElementById('memoTitle').value = memo.title;
   document.getElementById('memoContent').value = memo.content;
   document.getElementById('memoTags').value = memo.tags ? memo.tags.join(', ') : '';
-
-  const index = memos.findIndex(m => m.id === id);
-  if (index !== -1) {
-    memos.splice(index, 1);
-    saveMemos();
-    updateMemoTags();
-    renderMemos();
-  }
-  
+  memos.splice(memos.findIndex(m => m.id === id), 1);
+  saveData();
+  updateMemoTags();
+  renderMemos();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('memoTitle').focus();
 }
@@ -2806,70 +1715,36 @@ function editMemo(id) {
 function exportMemo(id) {
   const memo = memos.find(m => m.id === id);
   if (!memo) return;
-
-  let content = memo.title + '\n' + '='.repeat(memo.title.length) + '\n\n';
-  content += memo.content + '\n\n';
-  
-  if (memo.tags && memo.tags.length > 0) {
-    const tagLabel = currentLang === 'ja' ? 'タグ' : 'Tags';
-    content += `${tagLabel}: ${memo.tags.join(', ')}\n\n`;
-  }
-  
-  const createdLabel = currentLang === 'ja' ? '作成日時' : 'Created';
-  content += '---\n' + createdLabel + ': ' + memo.date;
-
-  downloadTextFile(
-    memo.title.replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt',
-    content
-  );
+  let content = memo.title + '\n' + '='.repeat(memo.title.length) + '\n\n' + memo.content + '\n\n';
+  if (memo.tags && memo.tags.length > 0) content += `タグ: ${memo.tags.join(', ')}\n\n`;
+  content += `---\n作成日時: ${memo.date}`;
+  downloadTextFile(memo.title.replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt', content);
 }
 
 async function exportAllMemos() {
-  const t = translations[currentLang];
-  
   if (memos.length === 0) {
-    await customConfirm(t.no_memos_export, 'ℹ️ ' + (currentLang === 'ja' ? '情報' : 'Info'), false);
+    await customConfirm(currentLang === 'ja' ? 'エクスポートするメモがありません' : 'No memos to export', 'ℹ️ Info', false);
     return;
   }
-
-  const header = currentLang === 'ja' ? 'メモコレクション' : 'Memo Collection';
-  let content = header + '\n' + '='.repeat(50) + '\n\n';
-
-  memos.forEach((memo, index) => {
-    content += `${index + 1}. ${memo.title}\n`;
-    content += '-'.repeat(memo.title.length + 3) + '\n';
-    content += memo.content + '\n';
-    
-    if (memo.tags && memo.tags.length > 0) {
-      const tagLabel = currentLang === 'ja' ? 'タグ' : 'Tags';
-      content += `${tagLabel}: ${memo.tags.join(', ')}\n`;
-    }
-    
-    const createdLabel = currentLang === 'ja' ? '作成日時' : 'Created';
-    content += `${createdLabel}: ${memo.date}\n\n`;
-    content += '='.repeat(50) + '\n\n';
+  let content = (currentLang === 'ja' ? 'メモコレクション' : 'Memo Collection') + '\n' + '='.repeat(50) + '\n\n';
+  memos.forEach((memo, i) => {
+    content += `${i + 1}. ${memo.title}\n${'-'.repeat(memo.title.length + 3)}\n${memo.content}\n`;
+    if (memo.tags && memo.tags.length > 0) content += `タグ: ${memo.tags.join(', ')}\n`;
+    content += `作成日時: ${memo.date}\n\n${'='.repeat(50)}\n\n`;
   });
-
   downloadTextFile(`all_memos_${new Date().toISOString().split('T')[0]}.txt`, content);
 }
 
 function updateMemoTags() {
-  const t = translations[currentLang];
-  
   allMemoTags.clear();
-  memos.forEach(memo => {
-    if (memo.tags && memo.tags.length > 0) {
-      memo.tags.forEach(tag => allMemoTags.add(tag));
-    }
-  });
-
+  memos.forEach(memo => { if (memo.tags) memo.tags.forEach(tag => allMemoTags.add(tag)); });
   const filtersDiv = document.getElementById('memoFilters');
-  const allButton = `<button class="filter-btn ${currentMemoFilter === 'all' ? 'active' : ''}" onclick="filterMemosByTag('all')">${t.filter_all}</button>`;
-  const tagButtons = Array.from(allMemoTags).map(tag => 
-    `<button class="filter-btn ${currentMemoFilter === tag ? 'active' : ''}" onclick="filterMemosByTag('${tag}')">#${tag}</button>`
-  ).join('');
-  
-  filtersDiv.innerHTML = allButton + tagButtons;
+  const allLabel = currentLang === 'ja' ? 'すべて' : 'All';
+  filtersDiv.innerHTML =
+    `<button class="filter-btn ${currentMemoFilter === 'all' ? 'active' : ''}" onclick="filterMemosByTag('all')">${allLabel}</button>` +
+    Array.from(allMemoTags).map(tag =>
+      `<button class="filter-btn ${currentMemoFilter === tag ? 'active' : ''}" onclick="filterMemosByTag('${tag}')">#${tag}</button>`
+    ).join('');
 }
 
 function filterMemosByTag(tag) {
@@ -2878,185 +1753,108 @@ function filterMemosByTag(tag) {
   renderMemos();
 }
 
-function sortMemos(memosToSort) {
-  const sorted = [...memosToSort];
-  
+function sortMemos(arr) {
+  const sorted = [...arr];
   switch (currentMemoSort) {
-    case 'oldest':
-      return sorted.reverse();
-    case 'alphabetical':
-      return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'longest':
-      return sorted.sort((a, b) => b.content.length - a.content.length);
-    default:
-      return sorted;
+    case 'oldest': return sorted.reverse();
+    case 'alphabetical': return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case 'longest': return sorted.sort((a, b) => b.content.length - a.content.length);
+    default: return sorted;
   }
 }
 
 function renderMemos() {
-  let filtered = memos.filter(memo => {
-    if (currentMemoFilter === 'all') return true;
-    return memo.tags && memo.tags.includes(currentMemoFilter);
-  });
-
+  const t = translations[currentLang];
+  let filtered = memos.filter(memo => currentMemoFilter === 'all' || (memo.tags && memo.tags.includes(currentMemoFilter)));
   filtered = sortMemos(filtered);
-
   const list = document.getElementById('memoList');
-  
   if (filtered.length === 0) {
-    list.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <div class="empty-state-icon">📝</div>
-        <div class="empty-state-text">${translations[currentLang].no_memos}</div>
-      </div>
-    `;
+    list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📝</div><div class="empty-state-text">${t.no_memos}</div></div>`;
   } else {
     list.innerHTML = filtered.map(memo => `
       <div class="memo-item" data-id="${memo.id}">
         <div class="memo-header">
           <div class="memo-title">${memo.title}</div>
           <div class="memo-actions">
-            <button class="action-btn duplicate" data-action="duplicate" data-id="${memo.id}" title="複製">📋</button>
-            <button class="action-btn edit" data-action="edit" data-id="${memo.id}" title="編集">✏️</button>
-            <button class="action-btn export" data-action="export" data-id="${memo.id}" title="エクスポート">💾</button>
-            <button class="action-btn" data-action="delete" data-id="${memo.id}" title="削除">🗑️</button>
+            <button class="action-btn duplicate" data-action="duplicate" data-id="${memo.id}">📋</button>
+            <button class="action-btn edit" data-action="edit" data-id="${memo.id}">✏️</button>
+            <button class="action-btn export" data-action="export" data-id="${memo.id}">💾</button>
+            <button class="action-btn" data-action="delete" data-id="${memo.id}">🗑️</button>
           </div>
         </div>
-        <div class="memo-content-preview">${typeof marked !== 'undefined' ? marked.parse(memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')) : memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')}</div>
-        ${memo.tags && memo.tags.length > 0 ? `
-          <div class="memo-tags-display">
-            ${memo.tags.map(tag => `<span class="memo-tag-item">#${tag}</span>`).join('')}
-          </div>
-        ` : ''}
+        <div class="memo-content-preview">${typeof marked !== 'undefined' ? marked.parse(memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')) : memo.content.substring(0, 200)}</div>
+        ${memo.tags && memo.tags.length > 0 ? `<div class="memo-tags-display">${memo.tags.map(tag => `<span class="memo-tag-item">#${tag}</span>`).join('')}</div>` : ''}
         <div class="memo-date">${memo.date}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 }
 
+// ─── Markdown 挿入ヘルパー ────────────────────────────────────────
 function insertText(text) {
-  const textarea = document.getElementById('memoContent');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selectedText = textarea.value.substring(start, end);
-  const content = textarea.value;
-
-  let insertedText = '';
-  let cursorOffset = 0;
-
+  const ta = document.getElementById('memoContent');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  let inserted = text, cursor = text.length;
   if (text === '**太字**' || text === '*斜体*' || text === '~~打ち消し線~~') {
-    if (selectedText) {
-      let marker;
-      if (text === '**太字**') marker = '**';
-      else if (text === '*斜体*') marker = '*';
-      else marker = '~~';
-      
-      insertedText = marker + selectedText + marker;
-      cursorOffset = insertedText.length;
-    } else {
-      insertedText = text;
-      if (text === '**太字**') cursorOffset = 2;
-      else if (text === '*斜体*') cursorOffset = 1;
-      else cursorOffset = 2;
-    }
+    let m = text === '**太字**' ? '**' : text === '*斜体*' ? '*' : '~~';
+    inserted = selected ? m + selected + m : text;
+    cursor = selected ? inserted.length : m.length;
+  } else if (text.includes('```')) {
+    inserted = selected ? '```\n' + selected + '\n```' : '```\n\n```';
+    cursor = selected ? inserted.length : 4;
   }
-  else if (text.includes('```')) {
-    if (selectedText) {
-      insertedText = '```\n' + selectedText + '\n```';
-      cursorOffset = insertedText.length;
-    } else {
-      insertedText = '```\n\n```';
-      cursorOffset = 4;
-    }
-  }
-  else {
-    insertedText = text;
-    cursorOffset = text.length;
-  }
-
-  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
-  textarea.focus();
-  textarea.selectionStart = textarea.selectionEnd = start + cursorOffset;
+  ta.value = ta.value.substring(0, start) + inserted + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = start + cursor;
 }
 
 function insertLink() {
-  const textarea = document.getElementById('memoContent');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selectedText = textarea.value.substring(start, end);
-  const content = textarea.value;
-
-  let insertedText;
-  let cursorOffset;
-
-  if (selectedText) {
-    insertedText = `[${selectedText}](URL)`;
-    cursorOffset = insertedText.length - 4;
-  } else {
-    insertedText = '[リンクテキスト](URL)';
-    cursorOffset = 1;
-  }
-
-  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
-  textarea.focus();
-  textarea.selectionStart = start + cursorOffset;
-  textarea.selectionEnd = start + cursorOffset + (selectedText ? 3 : 11);
+  const ta = document.getElementById('memoContent');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  const inserted = selected ? `[${selected}](URL)` : '[リンクテキスト](URL)';
+  ta.value = ta.value.substring(0, start) + inserted + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = start + (selected ? inserted.length - 4 : 1);
+  ta.selectionEnd = start + (selected ? inserted.length - 1 : 12);
 }
 
 function insertImage() {
-  const textarea = document.getElementById('memoContent');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const content = textarea.value;
-
-  const insertedText = '![画像の説明](画像のURL)';
-  
-  textarea.value = content.substring(0, start) + insertedText + content.substring(end);
-  textarea.focus();
-  textarea.selectionStart = start + 2;
-  textarea.selectionEnd = start + 8;
+  const ta = document.getElementById('memoContent');
+  const s = ta.selectionStart;
+  const ins = '![画像の説明](画像のURL)';
+  ta.value = ta.value.substring(0, s) + ins + ta.value.substring(ta.selectionEnd);
+  ta.focus(); ta.selectionStart = s + 2; ta.selectionEnd = s + 8;
 }
 
 function insertTable() {
-  const textarea = document.getElementById('memoContent');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const content = textarea.value;
-
-  const tableText = `| 列1 | 列2 | 列3 |
-| --- | --- | --- |
-| データ1 | データ2 | データ3 |
-| データ4 | データ5 | データ6 |`;
-  
-  textarea.value = content.substring(0, start) + tableText + content.substring(end);
-  textarea.focus();
-  textarea.selectionStart = textarea.selectionEnd = start + tableText.length;
+  const ta = document.getElementById('memoContent');
+  const s = ta.selectionStart;
+  const tbl = `| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| データ1 | データ2 | データ3 |\n| データ4 | データ5 | データ6 |`;
+  ta.value = ta.value.substring(0, s) + tbl + ta.value.substring(ta.selectionEnd);
+  ta.focus(); ta.selectionStart = ta.selectionEnd = s + tbl.length;
 }
 
 function insertHorizontalRule() {
-  const textarea = document.getElementById('memoContent');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const content = textarea.value;
-
-  const hrText = '\n---\n';
-  
-  textarea.value = content.substring(0, start) + hrText + content.substring(end);
-  textarea.focus();
-  textarea.selectionStart = textarea.selectionEnd = start + hrText.length;
+  const ta = document.getElementById('memoContent');
+  const s = ta.selectionStart;
+  const hr = '\n---\n';
+  ta.value = ta.value.substring(0, s) + hr + ta.value.substring(ta.selectionEnd);
+  ta.focus(); ta.selectionStart = ta.selectionEnd = s + hr.length;
 }
 
 function downloadTextFile(filename, content) {
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(link.href);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
 }
 
+// ─── 検索 ─────────────────────────────────────────────────────────
 function openSearch() {
   document.getElementById('searchModal').classList.add('active');
   document.getElementById('searchInput').focus();
@@ -3070,24 +1868,20 @@ function closeSearch() {
 
 function jumpTo(type, id) {
   closeSearch();
-  
   const modeButtons = document.querySelectorAll('.mode-btn');
   const todoContainer = document.querySelector('.todo-container');
   const memoContainer = document.querySelector('.memo-container');
-
   modeButtons.forEach(btn => btn.classList.remove('active'));
-
   if (type === 'todo') {
     document.querySelector('[data-mode="todo"]').classList.add('active');
     todoContainer.classList.add('active');
     memoContainer.classList.remove('active');
-
     setTimeout(() => {
-      const element = document.querySelector(`[data-id="${id}"]`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        element.style.boxShadow = '0 0 30px rgba(103, 6, 118, 0.8)';
-        setTimeout(() => element.style.boxShadow = '', 2000);
+      const el = document.querySelector(`[data-id="${id}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.boxShadow = '0 0 30px rgba(103,6,118,0.8)';
+        setTimeout(() => el.style.boxShadow = '', 2000);
       }
     }, 100);
   } else {
@@ -3097,11 +1891,11 @@ function jumpTo(type, id) {
   }
 }
 
+// ─── 統計 ─────────────────────────────────────────────────────────
 function showStats() {
   const modal = document.getElementById('statsModal');
   const content = document.getElementById('statsContent');
   const t = translations[currentLang];
-  
   const totalTodos = todos.length;
   const activeTodos = todos.filter(t => !t.completed).length;
   const completedTodos = todos.filter(t => t.completed).length;
@@ -3109,212 +1903,102 @@ function showStats() {
   const mediumPriority = todos.filter(t => t.priority === 'medium').length;
   const lowPriority = todos.filter(t => t.priority === 'low').length;
   const totalMemos = memos.length;
-  const totalTags = allMemoTags.size;
-  
+
   content.innerHTML = `
     <div class="stats">
-      <div class="stat-item">
-        <div class="stat-value">${totalTodos}</div>
-        <div class="stat-label">${t.total_tasks}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${activeTodos}</div>
-        <div class="stat-label">${t.active_tasks}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${completedTodos}</div>
-        <div class="stat-label">${t.completed_tasks}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${highPriority}</div>
-        <div class="stat-label">${t.high_priority_tasks}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${totalMemos}</div>
-        <div class="stat-label">${t.total_memos}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">${totalTags}</div>
-        <div class="stat-label">${t.tags_in_use}</div>
-      </div>
+      <div class="stat-item"><div class="stat-value">${totalTodos}</div><div class="stat-label">${t.total_tasks}</div></div>
+      <div class="stat-item"><div class="stat-value">${activeTodos}</div><div class="stat-label">${t.active_tasks}</div></div>
+      <div class="stat-item"><div class="stat-value">${completedTodos}</div><div class="stat-label">${t.completed_tasks}</div></div>
+      <div class="stat-item"><div class="stat-value">${highPriority}</div><div class="stat-label">${t.high_priority_tasks}</div></div>
+      <div class="stat-item"><div class="stat-value">${totalMemos}</div><div class="stat-label">${t.total_memos}</div></div>
+      <div class="stat-item"><div class="stat-value">${allMemoTags.size}</div><div class="stat-label">${t.tags_in_use}</div></div>
     </div>
-    
-    <div class="chart-container" style="margin-top: 2rem;">
-      <canvas id="statsChart"></canvas>
-    </div>
-    
-    <div class="chart-container">
-      <canvas id="priorityChart"></canvas>
-    </div>
-  `;
-  
+    <div class="chart-container" style="margin-top:2rem"><canvas id="statsChart"></canvas></div>
+    <div class="chart-container"><canvas id="priorityChart"></canvas></div>`;
+
   modal.classList.add('active');
-  
+
   setTimeout(() => {
-    if (typeof Chart !== 'undefined') {
-      const ctx1 = document.getElementById('statsChart');
-      if (ctx1) {
-        new Chart(ctx1, {
-          type: 'doughnut',
-          data: {
-            labels: [t.active_tasks || '未完了', t.completed_tasks || '完了済み'],
-            datasets: [{
-              data: [activeTodos, completedTodos],
-              backgroundColor: ['#a855f7', '#10b981'],
-              borderColor: ['#670676', '#059669'],
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                labels: { color: '#fff' },
-                position: 'bottom'
-              },
-              title: {
-                display: true,
-                text: currentLang === 'ja' ? 'タスク完了状況' : 'Task Completion Status',
-                color: '#a855f7',
-                font: { size: 16, weight: 'bold' }
-              }
-            }
-          }
-        });
-      }
-      
-      const ctx2 = document.getElementById('priorityChart');
-      if (ctx2) {
-        new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: [t.priority_high || '高', t.priority_medium || '中', t.priority_low || '低'],
-            datasets: [{
-              label: currentLang === 'ja' ? 'タスク数' : 'Tasks',
-              data: [highPriority, mediumPriority, lowPriority],
-              backgroundColor: ['#ef4444', '#fbbf24', '#10b981'],
-              borderColor: ['#dc2626', '#f59e0b', '#059669'],
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                labels: { color: '#fff' }
-              },
-              title: {
-                display: true,
-                text: currentLang === 'ja' ? '優先度別タスク数' : 'Tasks by Priority',
-                color: '#a855f7',
-                font: { size: 16, weight: 'bold' }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { color: '#fff' },
-                grid: { color: 'rgba(103, 6, 118, 0.2)' }
-              },
-              x: {
-                ticks: { color: '#fff' },
-                grid: { color: 'rgba(103, 6, 118, 0.2)' }
-              }
-            }
-          }
-        });
-      }
-    }
+    if (typeof Chart === 'undefined') return;
+    new Chart(document.getElementById('statsChart'), {
+      type: 'doughnut',
+      data: {
+        labels: [t.active_tasks, t.completed_tasks],
+        datasets: [{ data: [activeTodos, completedTodos], backgroundColor: ['#a855f7', '#10b981'], borderColor: ['#670676', '#059669'], borderWidth: 2 }]
+      },
+      options: { responsive: true, plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' }, title: { display: true, text: currentLang === 'ja' ? 'タスク完了状況' : 'Task Completion Status', color: '#a855f7', font: { size: 16, weight: 'bold' } } } }
+    });
+    new Chart(document.getElementById('priorityChart'), {
+      type: 'bar',
+      data: {
+        labels: [t.priority_high, t.priority_medium, t.priority_low],
+        datasets: [{ label: currentLang === 'ja' ? 'タスク数' : 'Tasks', data: [highPriority, mediumPriority, lowPriority], backgroundColor: ['#ef4444', '#fbbf24', '#10b981'], borderColor: ['#dc2626', '#f59e0b', '#059669'], borderWidth: 2 }]
+      },
+      options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } }, title: { display: true, text: currentLang === 'ja' ? '優先度別タスク数' : 'Tasks by Priority', color: '#a855f7', font: { size: 16, weight: 'bold' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(103,6,118,0.2)' } }, x: { ticks: { color: '#fff' }, grid: { color: 'rgba(103,6,118,0.2)' } } } }
+    });
   }, 100);
 }
 
-function closeStats() {
-  document.getElementById('statsModal').classList.remove('active');
-}
+function closeStats() { document.getElementById('statsModal').classList.remove('active'); }
 
-function openSettings() {
-  document.getElementById('settingsModal').classList.add('active');
-}
-
-function closeSettings() {
-  document.getElementById('settingsModal').classList.remove('active');
-}
-
-function showKeyboardShortcuts() {
-  document.getElementById('shortcutsModal').classList.add('active');
-}
-
-function closeKeyboardShortcuts() {
-  document.getElementById('shortcutsModal').classList.remove('active');
-}
+// ─── 設定 ─────────────────────────────────────────────────────────
+function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
+function showKeyboardShortcuts() { document.getElementById('shortcutsModal').classList.add('active'); }
+function closeKeyboardShortcuts() { document.getElementById('shortcutsModal').classList.remove('active'); }
 
 function exportAllData() {
-  const data = {
-    todos: todos,
-    memos: memos,
-    user: currentUser ? currentUser.username : 'unknown',
-    exportDate: new Date().toISOString()
-  };
-  
-  const json = JSON.stringify(data, null, 2);
-  downloadTextFile(`todo-memo-backup-${new Date().toISOString().split('T')[0]}.json`, json);
+  const data = { todos, memos, exportDate: new Date().toISOString() };
+  downloadTextFile(`todo-memo-backup-${new Date().toISOString().split('T')[0]}.json`, JSON.stringify(data, null, 2));
 }
 
 function importData() {
-  const t = translations[currentLang];
-  
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.json';
-  
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = async (ev) => {
       try {
-        const data = JSON.parse(event.target.result);
-        
-        const confirmed = await customConfirm(t.confirm_import, '⚠️ ' + (currentLang === 'ja' ? 'インポート確認' : 'Confirm Import'));
-        
+        const data = JSON.parse(ev.target.result);
+        const confirmed = await customConfirm(
+          currentLang === 'ja' ? 'インポートすると現在のデータが上書きされます。続けますか?' : 'Importing will overwrite current data. Continue?',
+          '⚠️ ' + (currentLang === 'ja' ? 'インポート確認' : 'Confirm Import')
+        );
         if (confirmed) {
           if (data.todos) todos = data.todos;
           if (data.memos) memos = data.memos;
-          
-          saveTodos();
-          saveMemos();
+          saveData();
           updateMemoTags();
           renderTodos();
           renderMemos();
-          
-          await customConfirm(t.import_success, '✅ ' + (currentLang === 'ja' ? '成功' : 'Success'), false);
+          await customConfirm(currentLang === 'ja' ? 'データをインポートしました!' : 'Data imported successfully!', '✅ ' + (currentLang === 'ja' ? '成功' : 'Success'), false);
           closeSettings();
         }
-      } catch (error) {
-        await customConfirm(t.import_error, '❌ ' + (currentLang === 'ja' ? 'エラー' : 'Error'), false);
+      } catch (err) {
+        await customConfirm(currentLang === 'ja' ? 'ファイルの読み込みに失敗しました' : 'Failed to load file', '❌ Error', false);
       }
     };
-    
     reader.readAsText(file);
   };
-  
   input.click();
 }
 
 async function clearAllData() {
-  const t = translations[currentLang];
-  
-  const confirmed1 = await customConfirm(t.confirm_clear_all_1, '⚠️ ' + (currentLang === 'ja' ? '全データ削除' : 'Clear All Data'));
-  
-  if (confirmed1) {
-    const confirmed2 = await customConfirm(t.confirm_clear_all_2, '⚠️⚠️ ' + (currentLang === 'ja' ? '最終確認' : 'Final Confirmation'));
-    
-    if (confirmed2) {
-      todos = [];
-      memos = [];
-      saveTodos();
-      saveMemos();
+  const c1 = await customConfirm(
+    currentLang === 'ja' ? 'すべてのデータを削除しますか? この操作は取り消せません。' : 'Delete all data? This cannot be undone.',
+    '⚠️ ' + (currentLang === 'ja' ? '全データ削除' : 'Clear All Data')
+  );
+  if (c1) {
+    const c2 = await customConfirm(
+      currentLang === 'ja' ? '本当に削除しますか?' : 'Are you sure?',
+      '⚠️⚠️ ' + (currentLang === 'ja' ? '最終確認' : 'Final Confirmation')
+    );
+    if (c2) {
+      todos = []; memos = [];
+      saveData();
       updateMemoTags();
       renderTodos();
       renderMemos();
@@ -3323,87 +2007,42 @@ async function clearAllData() {
   }
 }
 
-document.getElementById('searchInput').addEventListener('input', function(e) {
-  const query = e.target.value.toLowerCase().trim();
-  const resultsDiv = document.getElementById('searchResults');
-  const t = translations[currentLang];
-
-  if (!query) {
-    resultsDiv.innerHTML = '';
-    return;
+// ─── 翻訳 ─────────────────────────────────────────────────────────
+const translations = {
+  ja: {
+    no_tasks: 'タスクが見つかりません', no_memos: 'まだメモがありません',
+    completed: '完了', active: '未完了',
+    priority_high: '高', priority_medium: '中', priority_low: '低',
+    total_tasks: '総タスク数', active_tasks: '未完了タスク', completed_tasks: '完了済みタスク',
+    high_priority_tasks: '高優先度タスク', total_memos: '総メモ数', tags_in_use: '使用中のタグ',
+    no_tasks_export: 'エクスポートするタスクがありません'
+  },
+  en: {
+    no_tasks: 'No tasks found', no_memos: 'No memos yet',
+    completed: 'Completed', active: 'Active',
+    priority_high: 'High', priority_medium: 'Medium', priority_low: 'Low',
+    total_tasks: 'Total Tasks', active_tasks: 'Active Tasks', completed_tasks: 'Completed Tasks',
+    high_priority_tasks: 'High Priority Tasks', total_memos: 'Total Memos', tags_in_use: 'Tags in Use',
+    no_tasks_export: 'No tasks to export'
   }
+};
 
-  const results = [];
-
-  todos.forEach(todo => {
-    if (todo.text.toLowerCase().includes(query) ||
-        (todo.tags && todo.tags.some(tag => tag.toLowerCase().includes(query))) ||
-        (todo.note && todo.note.toLowerCase().includes(query))) {
-      results.push({
-        type: 'todo',
-        id: todo.id,
-        title: todo.text,
-        preview: todo.completed ? '✓ ' + t.completed : t.active
-      });
-    }
-  });
-
-  memos.forEach(memo => {
-    if (memo.title.toLowerCase().includes(query) ||
-        memo.content.toLowerCase().includes(query) ||
-        (memo.tags && memo.tags.some(tag => tag.toLowerCase().includes(query)))) {
-      results.push({
-        type: 'memo',
-        id: memo.id,
-        title: memo.title,
-        preview: memo.content.substring(0, 100) + '...'
-      });
-    }
-  });
-
-  if (results.length === 0) {
-    resultsDiv.innerHTML = `<p style="color: #9ca3af; text-align: center;">${t.no_results}</p>`;
-    return;
-  }
-
-  resultsDiv.innerHTML = results.map(result => `
-    <div class="search-result-item" onclick="jumpTo('${result.type}', ${result.id})">
-      <div class="search-result-title">${result.type === 'todo' ? '📝' : '📄'} ${result.title}</div>
-      <div class="search-result-preview">${result.preview}</div>
-    </div>
-  `).join('');
-});
-
+// ─── イベントリスナー ──────────────────────────────────────────────
 document.getElementById('addTodoBtn').addEventListener('click', addTodo);
-document.getElementById('todoInput').addEventListener('keypress', e => {
-  if (e.key === 'Enter') addTodo();
-});
+document.getElementById('todoInput').addEventListener('keypress', e => { if (e.key === 'Enter') addTodo(); });
 
 document.getElementById('todoList').addEventListener('click', function(e) {
-  const target = e.target;
-  const action = target.dataset.action;
-  const id = parseInt(target.dataset.id);
-  
-  if (!action || !id) return;
-  
+  const target = e.target.closest('[data-action]');
+  if (!target) return;
   e.stopPropagation();
-  
-  switch(action) {
-    case 'toggle':
-      toggleTodo(id);
-      break;
-    case 'delete':
-      deleteTodo(id);
-      break;
-    case 'duplicate':
-      duplicateTodo(id);
-      break;
-    case 'edit':
-      openEditTodoModal(id);
-      break;
-    case 'export':
-      exportTodo(id);
-      break;
+  const action = target.dataset.action, id = parseInt(target.dataset.id);
+  if (!action || !id) return;
+  switch (action) {
+    case 'toggle': toggleTodo(id); break;
+    case 'delete': deleteTodo(id); break;
+    case 'duplicate': duplicateTodo(id); break;
+    case 'edit': openEditTodoModal(id); break;
+    case 'export': exportTodo(id); break;
   }
 });
 
@@ -3424,41 +2063,29 @@ document.getElementById('todoSort').addEventListener('change', function() {
 document.getElementById('addMemoBtn').addEventListener('click', addMemo);
 
 document.getElementById('memoList').addEventListener('click', function(e) {
-  const target = e.target;
-  const action = target.dataset.action;
-  const id = parseInt(target.dataset.id);
-  
-  if (!action || !id) return;
-  
+  const target = e.target.closest('[data-action]');
+  if (!target) return;
   e.stopPropagation();
-  
-  switch(action) {
-    case 'delete':
-      deleteMemo(id);
-      break;
-    case 'duplicate':
-      duplicateMemo(id);
-      break;
-    case 'edit':
-      editMemo(id);
-      break;
-    case 'export':
-      exportMemo(id);
-      break;
+  const action = target.dataset.action, id = parseInt(target.dataset.id);
+  if (!action || !id) return;
+  switch (action) {
+    case 'delete': deleteMemo(id); break;
+    case 'duplicate': duplicateMemo(id); break;
+    case 'edit': editMemo(id); break;
+    case 'export': exportMemo(id); break;
   }
 });
 
 document.getElementById('memoTitle').addEventListener('keypress', e => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    document.getElementById('memoContent').focus();
-  }
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('memoContent').focus(); }
 });
 
 document.getElementById('memoContent').addEventListener('keypress', e => {
-  if (e.key === 'Enter' && e.ctrlKey) {
-    addMemo();
-  }
+  if (e.key === 'Enter' && e.ctrlKey) addMemo();
+});
+
+document.getElementById('memoContent').addEventListener('input', () => {
+  if (currentMemoView === 'preview') updateMemoPreview();
 });
 
 document.getElementById('memoSort').addEventListener('change', function() {
@@ -3470,76 +2097,67 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
   btn.addEventListener('click', function() {
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-
     const mode = this.dataset.mode;
-    if (mode === 'todo') {
-      document.querySelector('.todo-container').classList.add('active');
-      document.querySelector('.memo-container').classList.remove('active');
-    } else {
-      document.querySelector('.todo-container').classList.remove('active');
-      document.querySelector('.memo-container').classList.add('active');
-    }
+    document.querySelector('.todo-container').classList.toggle('active', mode === 'todo');
+    document.querySelector('.memo-container').classList.toggle('active', mode === 'memo');
   });
 });
 
 document.getElementById('langSwitcher').addEventListener('click', () => {
   currentLang = currentLang === 'ja' ? 'en' : 'ja';
   document.getElementById('langSwitcher').textContent = currentLang === 'ja' ? 'EN' : 'JA';
-  updateUILanguage();
   renderTodos();
   renderMemos();
+  updateMemoTags();
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  const resultsDiv = document.getElementById('searchResults');
+  const t = translations[currentLang];
+  if (!query) { resultsDiv.innerHTML = ''; return; }
+
+  const results = [];
+  todos.forEach(todo => {
+    if (todo.text.toLowerCase().includes(query) || (todo.tags && todo.tags.some(tag => tag.toLowerCase().includes(query))) || (todo.note && todo.note.toLowerCase().includes(query))) {
+      results.push({ type: 'todo', id: todo.id, title: todo.text, preview: todo.completed ? '✓ ' + t.completed : t.active });
+    }
+  });
+  memos.forEach(memo => {
+    if (memo.title.toLowerCase().includes(query) || memo.content.toLowerCase().includes(query) || (memo.tags && memo.tags.some(tag => tag.toLowerCase().includes(query)))) {
+      results.push({ type: 'memo', id: memo.id, title: memo.title, preview: memo.content.substring(0, 100) + '...' });
+    }
+  });
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = `<p style="color:#9ca3af;text-align:center">${currentLang === 'ja' ? '検索結果が見つかりません' : 'No results found'}</p>`;
+    return;
+  }
+  resultsDiv.innerHTML = results.map(r => `
+    <div class="search-result-item" onclick="jumpTo('${r.type}', ${r.id})">
+      <div class="search-result-title">${r.type === 'todo' ? '📝' : '📄'} ${r.title}</div>
+      <div class="search-result-preview">${r.preview}</div>
+    </div>`).join('');
 });
 
 document.addEventListener('keydown', e => {
   if (document.activeElement.id === 'memoContent') {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-      e.preventDefault();
-      insertText('**太字**');
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
-      e.preventDefault();
-      insertText('*斜体*');
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      insertLink();
-      return;
-    }
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') {
-      e.preventDefault();
-      insertText('```\n\n```');
-      return;
-    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); insertText('**太字**'); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); insertText('*斜体*'); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); insertLink(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') { e.preventDefault(); insertText('```\n\n```'); return; }
   }
-  
   if ((e.ctrlKey || e.metaKey) && e.key === 'k' && document.activeElement.id !== 'memoContent') {
-    e.preventDefault();
-    openSearch();
-    return;
+    e.preventDefault(); openSearch(); return;
   }
-  
   if (e.key === 'Escape') {
-    closeSearch();
-    closeEditTodoModal();
-    closeStats();
-    closeSettings();
-    closeKeyboardShortcuts();
+    closeSearch(); closeEditTodoModal(); closeStats(); closeSettings(); closeKeyboardShortcuts();
+    document.getElementById('shortcutsModal').classList.remove('active');
   }
 });
 
-(function() {
-  try {
-    const storedUser = sessionStorage.getItem('currentUser');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      loginUser(user);
-    }
-  } catch (e) {
-    console.error('セッション復元エラー:', e);
-  }
-})();
+// ─── 初期化 ───────────────────────────────────────────────────────
+loadData();
 </script>
 </body>
 </html>
