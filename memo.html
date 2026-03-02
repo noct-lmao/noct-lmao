@@ -3,2160 +3,1589 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todo & Memo</title>
-
-<!-- External Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<title>???</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  background: #0a0a0a;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-  background-attachment: fixed;
-  color: #fff;
-  min-height: 100vh;
-}
-
-header {
-  background: rgba(0, 0, 0, 0.9);
-  border-bottom: 2px solid rgba(103, 6, 118, 0.4);
-  padding: 1.5rem 2rem;
-  backdrop-filter: blur(10px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-nav {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.logo {
-  font-size: 1.75rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.header-btn {
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #a855f7;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s;
-  font-size: 0.9rem;
-}
-
-.header-btn:hover {
-  background: rgba(103, 6, 118, 0.4);
-  border-color: #670676;
-  transform: translateY(-2px);
-}
-
-main {
-  padding: 3rem 1.5rem;
-}
-
-.mode-switcher {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.mode-btn {
-  background: rgba(103, 6, 118, 0.2);
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  color: #9ca3af;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.mode-btn:hover {
-  border-color: #670676;
-  transform: translateY(-2px);
-}
-
-.mode-btn.active {
-  background: linear-gradient(135deg, #670676, #8800aa);
-  border-color: #670676;
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(103, 6, 118, 0.4);
-}
-
-.content-area {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.todo-container, .memo-container {
-  background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(0, 0, 0, 0.95));
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 16px;
-  padding: 2.5rem;
-  display: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-}
-
-.todo-container.active, .memo-container.active {
-  display: block;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.input-section {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-#todoInput, #memoTitle, #memoContent, #memoTags {
-  width: 100%;
-  background: rgba(103, 6, 118, 0.1);
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 0.875rem 1.25rem;
-  color: #fff;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-#memoContent {
-  min-height: 200px;
-  resize: vertical;
-  font-family: 'Monaco', 'Courier New', monospace;
-  line-height: 1.6;
-}
-
-input:focus, textarea:focus {
-  outline: none;
-  border-color: #670676;
-  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
-}
-
-input::placeholder, textarea::placeholder {
-  color: #6b7280;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #670676, #8800aa);
-  border: none;
-  border-radius: 8px;
-  padding: 0.875rem 2rem;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(103, 6, 118, 0.3);
-}
-
-.btn-primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(103, 6, 118, 0.5);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border: none;
-  border-radius: 8px;
-  padding: 0.875rem 2rem;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-success:hover {
-  transform: scale(1.05);
-}
-
-.filter-tabs, .memo-filters {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  background: transparent;
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #9ca3af;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-weight: 600;
-  border-radius: 6px;
-  transition: all 0.3s;
-}
-
-.filter-btn:hover {
-  border-color: #670676;
-}
-
-.filter-btn.active {
-  background: rgba(103, 6, 118, 0.3);
-  color: #a855f7;
-  border-color: #670676;
-}
-
-.todo-list {
-  list-style: none;
-  max-height: 500px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #670676 rgba(103, 6, 118, 0.2);
-}
-
-.todo-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.todo-list::-webkit-scrollbar-track {
-  background: rgba(103, 6, 118, 0.2);
-  border-radius: 10px;
-}
-
-.todo-list::-webkit-scrollbar-thumb {
-  background: #670676;
-  border-radius: 10px;
-}
-
-.todo-item {
-  background: rgba(103, 6, 118, 0.1);
-  border: 1px solid rgba(103, 6, 118, 0.2);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  transition: all 0.3s;
-}
-
-.todo-item:hover {
-  border-color: #670676;
-  transform: translateX(4px);
-}
-
-.todo-main-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.checkbox {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  border: 2px solid #670676;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.checkbox:hover {
-  background: rgba(103, 6, 118, 0.2);
-}
-
-.checkbox.checked {
-  background: #670676;
-}
-
-.checkbox.checked::after {
-  content: '✓';
-  color: #fff;
-  font-weight: bold;
-}
-
-.todo-text {
-  flex: 1;
-  font-size: 1rem;
-  word-break: break-word;
-}
-
-.todo-item.completed .todo-text {
-  text-decoration: line-through;
-  color: #6b7280;
-}
-
-.todo-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.priority-badge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.priority-high {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.priority-medium {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-.priority-low {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.due-date-badge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  white-space: nowrap;
-}
-
-.due-date-badge.overdue {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-.todo-meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.8rem;
-  color: #9ca3af;
-  padding-left: 2.5rem;
-  flex-wrap: wrap;
-}
-
-.todo-tag {
-  background: rgba(103, 6, 118, 0.2);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  border: 1px solid rgba(103, 6, 118, 0.3);
-}
-
-.action-btn {
-  background: rgba(220, 38, 38, 0.2);
-  border: 1px solid rgba(220, 38, 38, 0.3);
-  border-radius: 6px;
-  padding: 0.4rem 0.7rem;
-  color: #ef4444;
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.action-btn:hover {
-  background: rgba(220, 38, 38, 0.3);
-  transform: scale(1.05);
-}
-
-.action-btn.export {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #10b981;
-}
-
-.action-btn.export:hover {
-  background: rgba(16, 185, 129, 0.3);
-}
-
-.action-btn.edit {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #3b82f6;
-}
-
-.action-btn.edit:hover {
-  background: rgba(59, 130, 246, 0.3);
-}
-
-.action-btn.duplicate {
-  background: rgba(168, 85, 247, 0.2);
-  border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
-}
-
-.action-btn.duplicate:hover {
-  background: rgba(168, 85, 247, 0.3);
-}
-
-.export-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(103, 6, 118, 0.3);
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.stats {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(103, 6, 118, 0.3);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.5rem;
-  text-align: center;
-}
-
-.stat-item {
-  background: rgba(103, 6, 118, 0.1);
-  border: 1px solid rgba(103, 6, 118, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  transition: all 0.3s;
-}
-
-.stat-item:hover {
-  border-color: #670676;
-  transform: translateY(-4px);
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #9ca3af;
-}
-
-.memo-toolbar {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.toolbar-btn {
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #a855f7;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-.toolbar-btn:hover {
-  background: rgba(103, 6, 118, 0.4);
-  border-color: #670676;
-  transform: translateY(-2px);
-}
-
-.memo-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  max-height: 600px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #670676 rgba(103, 6, 118, 0.2);
-}
-
-.memo-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.memo-list::-webkit-scrollbar-track {
-  background: rgba(103, 6, 118, 0.2);
-  border-radius: 10px;
-}
-
-.memo-list::-webkit-scrollbar-thumb {
-  background: #670676;
-  border-radius: 10px;
-}
-
-.memo-item {
-  background: rgba(103, 6, 118, 0.15);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: all 0.3s;
-}
-
-.memo-item:hover {
-  border-color: #670676;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(103, 6, 118, 0.3);
-}
-
-.memo-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.memo-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #a855f7;
-  flex: 1;
-  word-break: break-word;
-}
-
-.memo-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.memo-content {
-  color: #d1d5db;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.memo-preview {
-  background: rgba(103, 6, 118, 0.05);
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  min-height: 200px;
-  max-height: 400px;
-  overflow-y: auto;
-  display: none;
-}
-
-.memo-preview.active {
-  display: block;
-}
-
-.memo-preview h1, .memo-preview h2, .memo-preview h3 {
-  color: #a855f7;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.memo-preview h1 { font-size: 2rem; }
-.memo-preview h2 { font-size: 1.5rem; }
-.memo-preview h3 { font-size: 1.25rem; }
-
-.memo-preview p { margin-bottom: 1rem; }
-
-.memo-preview code {
-  background: rgba(103, 6, 118, 0.3);
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  color: #ec4899;
-  font-family: 'Courier New', monospace;
-}
-
-.memo-preview pre {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  margin: 1rem 0;
-}
-
-.memo-preview pre code {
-  background: none;
-  padding: 0;
-  color: #a855f7;
-}
-
-.memo-preview blockquote {
-  border-left: 4px solid #670676;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: #9ca3af;
-  font-style: italic;
-}
-
-.memo-preview ul, .memo-preview ol {
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.memo-preview li { margin-bottom: 0.5rem; }
-
-.memo-preview table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
-}
-
-.memo-preview table th, .memo-preview table td {
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  padding: 0.75rem;
-  text-align: left;
-}
-
-.memo-preview table th {
-  background: rgba(103, 6, 118, 0.2);
-  color: #a855f7;
-  font-weight: bold;
-}
-
-.memo-preview img {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 1rem 0;
-}
-
-.memo-preview a {
-  color: #3b82f6;
-  text-decoration: underline;
-}
-
-.memo-preview a:hover { color: #60a5fa; }
-
-.memo-preview hr {
-  border: none;
-  border-top: 2px solid rgba(103, 6, 118, 0.3);
-  margin: 1.5rem 0;
-}
-
-.view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.view-btn {
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #a855f7;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s;
-  font-size: 0.9rem;
-}
-
-.view-btn:hover {
-  background: rgba(103, 6, 118, 0.4);
-  border-color: #670676;
-}
-
-.view-btn.active {
-  background: rgba(103, 6, 118, 0.4);
-  border-color: #670676;
-  box-shadow: 0 4px 10px rgba(103, 6, 118, 0.3);
-}
-
-.chart-container {
-  background: rgba(103, 6, 118, 0.1);
-  border: 1px solid rgba(103, 6, 118, 0.2);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem 0;
-}
-
-.memo-tags-display {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.memo-tag-item {
-  background: rgba(103, 6, 118, 0.3);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: #a855f7;
-  border: 1px solid rgba(103, 6, 118, 0.4);
-}
-
-.memo-date {
-  font-size: 0.75rem;
-  color: #6b7280;
-  text-align: right;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  backdrop-filter: blur(5px);
-}
-
-.modal.active {
-  display: flex;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal-content {
-  background: linear-gradient(135deg, rgba(17, 17, 17, 0.98), rgba(0, 0, 0, 0.98));
-  border: 2px solid #670676;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 600px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.5);
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: #a855f7;
-}
-
-.modal-input, .modal-select, .modal-textarea {
-  width: 100%;
-  background: rgba(103, 6, 118, 0.1);
-  border: 2px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 0.875rem;
-  color: #fff;
-  margin-bottom: 1rem;
-  transition: all 0.3s;
-}
-
-.modal-textarea {
-  min-height: 100px;
-  resize: vertical;
-  font-family: inherit;
-}
-
-.modal-input:focus, .modal-select:focus, .modal-textarea:focus {
-  outline: none;
-  border-color: #670676;
-  box-shadow: 0 0 20px rgba(103, 6, 118, 0.3);
-}
-
-.modal-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.modal-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.modal-btn-primary {
-  background: linear-gradient(135deg, #670676, #8800aa);
-  color: #fff;
-}
-
-.modal-btn-primary:hover { transform: scale(1.05); }
-
-.modal-btn-secondary {
-  background: rgba(103, 6, 118, 0.2);
-  color: #a855f7;
-  border: 1px solid rgba(103, 6, 118, 0.3);
-}
-
-.modal-btn-secondary:hover { background: rgba(103, 6, 118, 0.4); }
-
-.close-modal {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(220, 38, 38, 0.2);
-  border: none;
-  color: #ef4444;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-}
-
-.close-modal:hover { background: rgba(220, 38, 38, 0.4); }
-
-.confirm-dialog {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 2000;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(5px);
-}
-
-.confirm-dialog.active {
-  display: flex;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-.confirm-dialog-content {
-  background: linear-gradient(135deg, rgba(17, 17, 17, 0.98), rgba(0, 0, 0, 0.98));
-  border: 2px solid #670676;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 450px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(103, 6, 118, 0.5);
-}
-
-.confirm-dialog-title {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #a855f7;
-  font-weight: bold;
-}
-
-.confirm-dialog-message {
-  color: #d1d5db;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-}
-
-.confirm-dialog-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-
-.confirm-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.confirm-btn-danger {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  color: #fff;
-}
-
-.confirm-btn-danger:hover { transform: scale(1.05); }
-
-.confirm-btn-cancel {
-  background: rgba(103, 6, 118, 0.2);
-  color: #a855f7;
-  border: 1px solid rgba(103, 6, 118, 0.3);
-}
-
-.confirm-btn-cancel:hover { background: rgba(103, 6, 118, 0.4); }
-
-.shortcuts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.shortcut-section h3 {
-  color: #a855f7;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(103, 6, 118, 0.3);
-}
-
-.shortcut-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  background: rgba(103, 6, 118, 0.1);
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-}
-
-.shortcut-item kbd {
-  background: rgba(103, 6, 118, 0.3);
-  border: 1px solid rgba(103, 6, 118, 0.5);
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  font-family: 'Courier New', monospace;
-  font-size: 0.85rem;
-  color: #a855f7;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.shortcut-item span { color: #d1d5db; }
-
-.search-results {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.search-result-item {
-  background: rgba(103, 6, 118, 0.1);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  border-radius: 8px;
-  padding: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.search-result-item:hover {
-  border-color: #670676;
-  transform: translateX(4px);
-}
-
-.search-result-title {
-  font-weight: bold;
-  color: #a855f7;
-  margin-bottom: 0.5rem;
-}
-
-.search-result-preview {
-  color: #9ca3af;
-  font-size: 0.9rem;
-}
-
-.sort-controls {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.sort-label {
-  color: #9ca3af;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.sort-select {
-  background: rgba(103, 6, 118, 0.2);
-  border: 1px solid rgba(103, 6, 118, 0.3);
-  color: #a855f7;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #6b7280;
-}
-
-.empty-state-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-state-text { font-size: 1.2rem; }
-
-@media (max-width: 768px) {
-  .mode-switcher, .input-section, .export-section {
-    flex-direction: column;
-  }
-  .memo-list { grid-template-columns: 1fr; }
-  .stats { grid-template-columns: 1fr; }
-  h1 { font-size: 2rem; }
-  .todo-main-row { flex-wrap: wrap; }
-  .todo-actions { width: 100%; padding-left: 2.5rem; }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.todo-item, .memo-item { animation: slideIn 0.3s ease-out; }
-
-.memo-content-preview {
-  color: #d1d5db;
-  line-height: 1.6;
-  word-break: break-word;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#000; color:#fff; overflow-x:hidden; min-height:100vh; }
+::-webkit-scrollbar{width:8px} ::-webkit-scrollbar-track{background:rgba(0,0,0,0.5);border-radius:4px} ::-webkit-scrollbar-thumb{background:#670676;border-radius:4px} ::-webkit-scrollbar-thumb:hover{background:#8800aa}
+
+/* Header */
+header{position:fixed;top:0;width:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(103,6,118,0.3);z-index:1000;padding:1rem 1.5rem}
+nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.logo{font-size:1.25rem;font-weight:bold;display:flex;align-items:center;gap:0.5rem}
+.logo-icon{color:#670676;font-size:1.4rem}
+.header-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
+.header-btn{background:rgba(103,6,118,0.2);border:1px solid rgba(103,6,118,0.3);color:#fff;padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem;transition:all 0.3s;position:relative;overflow:hidden}
+.header-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.1);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s}
+.header-btn:hover::before{width:200px;height:200px}
+.header-btn:hover{border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.4);transform:translateY(-2px)}
+.lang-btn{background:rgba(103,6,118,0.3);border-color:#670676;color:#a855f7;font-weight:800}
+
+/* Main */
+main{padding:6rem 1.5rem 3rem;max-width:1200px;margin:0 auto}
+
+/* Mode switcher */
+.mode-switcher{display:flex;gap:1rem;justify-content:center;margin-bottom:2.5rem;flex-wrap:wrap}
+.mode-btn{background:linear-gradient(135deg,#111,#000);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:0.875rem 2rem;color:#9ca3af;font-size:1rem;font-weight:bold;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.mode-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(103,6,118,0.2);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s}
+.mode-btn:hover::before{width:300px;height:300px}
+.mode-btn:hover{border-color:#670676;transform:translateY(-4px)}
+.mode-btn.active{border-color:#670676;color:#fff;box-shadow:0 8px 32px rgba(103,6,118,0.4)}
+
+/* Containers */
+.todo-container,.memo-container,.dashboard-container{background:linear-gradient(135deg,#111,#000);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:2.5rem;display:none}
+.todo-container.active,.memo-container.active,.dashboard-container.active{display:block;animation:fadeIn 0.3s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+
+h1{font-size:2.5rem;margin-bottom:2rem;text-align:center;padding-bottom:0.5rem;border-bottom:4px solid #670676;display:inline-block;width:100%}
+
+/* Inputs */
+.input-section{display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap}
+#todoInput{width:100%;background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:0.875rem 1.25rem;color:#fff;font-size:1rem;transition:all 0.3s}
+input:focus,textarea:focus{outline:none;border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.3)}
+input::placeholder{color:#6b7280}
+
+/* Color picker */
+.color-picker-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap}
+.color-picker-label{color:#9ca3af;font-size:0.9rem;font-weight:600;white-space:nowrap}
+.color-options{display:flex;gap:0.5rem;flex-wrap:wrap}
+.color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.color-dot:hover{transform:scale(1.2)}
+.color-dot.selected{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,0.5);transform:scale(1.2)}
+.color-dot.none{background:rgba(103,6,118,0.2);border:2px dashed rgba(103,6,118,0.4)}
+.label-red{background:#ef4444} .label-orange{background:#f97316} .label-yellow{background:#fbbf24}
+.label-green{background:#10b981} .label-blue{background:#3b82f6} .label-purple{background:#a855f7}
+
+/* Buttons */
+.btn-primary,.btn-success{border:none;border-radius:8px;padding:0.875rem 2rem;color:#fff;font-weight:bold;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;white-space:nowrap}
+.btn-primary{background:#670676} .btn-success{background:linear-gradient(135deg,#10b981,#059669)}
+.btn-primary::before,.btn-success::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.2);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s}
+.btn-primary:hover::before,.btn-success:hover::before{width:200px;height:200px}
+.btn-primary:hover{background:rgba(103,6,118,0.8);box-shadow:0 8px 32px rgba(103,6,118,0.4);transform:scale(1.05)}
+.btn-success:hover{transform:scale(1.05)}
+
+/* Filter/Sort */
+.filter-tabs,.memo-filters{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-btn{background:transparent;border:1px solid rgba(103,6,118,0.3);color:#9ca3af;padding:0.5rem 1rem;cursor:pointer;font-weight:600;border-radius:9999px;font-size:0.875rem;transition:all 0.3s}
+.filter-btn:hover{border-color:#670676;color:#fff}
+.filter-btn.active{background:rgba(103,6,118,0.3);color:#fff;border-color:#670676;box-shadow:0 0 15px rgba(103,6,118,0.3)}
+.sort-controls{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.sort-label{color:#9ca3af;font-size:0.9rem;font-weight:600}
+.sort-select{background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);color:#fff;padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-weight:600;transition:all 0.3s}
+.sort-select:focus{outline:none;border-color:#670676}
+
+/* Todo list */
+.todo-list{list-style:none;max-height:500px;overflow-y:auto}
+.todo-item{background:linear-gradient(135deg,rgba(17,17,17,0.8),rgba(0,0,0,0.8));border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;display:flex;flex-direction:column;gap:0.5rem;transition:all 0.3s;animation:slideIn 0.3s ease-out;border-left-width:4px}
+.todo-item:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.3);transform:translateY(-4px) scale(1.01)}
+.todo-item.label-red{border-left-color:#ef4444!important} .todo-item.label-orange{border-left-color:#f97316!important}
+.todo-item.label-yellow{border-left-color:#fbbf24!important} .todo-item.label-green{border-left-color:#10b981!important}
+.todo-item.label-blue{border-left-color:#3b82f6!important} .todo-item.label-purple{border-left-color:#a855f7!important}
+.todo-main-row{display:flex;align-items:center;gap:1rem}
+.checkbox{width:22px;height:22px;min-width:22px;border:2px solid #670676;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.checkbox:hover{background:rgba(103,6,118,0.2)}
+.checkbox.checked{background:#670676;box-shadow:0 0 10px rgba(103,6,118,0.6)}
+.checkbox.checked::after{content:'✓';color:#fff;font-weight:bold;font-size:0.85rem}
+.todo-text{flex:1;font-size:1rem;word-break:break-word}
+.todo-item.completed .todo-text{text-decoration:line-through;color:#6b7280}
+.todo-actions{display:flex;gap:0.5rem;flex-wrap:wrap}
+.priority-badge{padding:0.2rem 0.6rem;border-radius:9999px;font-size:0.7rem;font-weight:bold;white-space:nowrap}
+.priority-high{background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.3)}
+.priority-medium{background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)}
+.priority-low{background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+.due-date-badge{padding:0.2rem 0.6rem;border-radius:9999px;font-size:0.7rem;font-weight:bold;background:rgba(59,130,246,0.2);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);white-space:nowrap}
+.due-date-badge.overdue{background:rgba(239,68,68,0.2);color:#ef4444;border-color:rgba(239,68,68,0.3)}
+.todo-meta{display:flex;gap:0.75rem;font-size:0.8rem;color:#9ca3af;padding-left:2.25rem;flex-wrap:wrap}
+.todo-tag{background:rgba(103,6,118,0.2);padding:0.2rem 0.5rem;border-radius:9999px;border:1px solid rgba(103,6,118,0.3);font-size:0.75rem}
+
+/* Action buttons */
+.action-btn{background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);border-radius:6px;padding:0.35rem 0.65rem;color:#ef4444;cursor:pointer;font-size:0.75rem;transition:all 0.3s;white-space:nowrap}
+.action-btn:hover{box-shadow:0 0 12px rgba(220,38,38,0.4);transform:scale(1.05)}
+.action-btn.export{background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);color:#10b981}
+.action-btn.export:hover{box-shadow:0 0 12px rgba(16,185,129,0.4)}
+.action-btn.edit{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#3b82f6}
+.action-btn.edit:hover{box-shadow:0 0 12px rgba(59,130,246,0.4)}
+.action-btn.duplicate{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);color:#a855f7}
+.action-btn.duplicate:hover{box-shadow:0 0 12px rgba(168,85,247,0.4)}
+
+/* Stats */
+.stats{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(103,6,118,0.3);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem;text-align:center}
+.stat-item{background:linear-gradient(135deg,#111,#000);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:0.5rem;transition:all 0.3s}
+.stat-item:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.3);transform:translateY(-4px)}
+.stat-value{font-size:2rem;font-weight:bold;color:#670676;text-shadow:0 0 20px rgba(103,6,118,0.5)}
+.stat-label{font-size:0.875rem;color:#9ca3af}
+.export-section{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(103,6,118,0.3);display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ── WYSIWYG Editor ── */
+.memo-input-section{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem}
+
+/* Google Docs style toolbar */
+.wysiwyg-toolbar{
+  display:flex;gap:0.25rem;flex-wrap:wrap;padding:0.5rem;
+  background:rgba(0,0,0,0.7);border:1px solid rgba(103,6,118,0.3);
+  border-radius:10px 10px 0 0;align-items:center;
+}
+.toolbar-sep{width:1px;height:24px;background:rgba(103,6,118,0.3);margin:0 0.25rem}
+
+.tb-btn{
+  background:transparent;border:none;color:#9ca3af;
+  padding:0.35rem 0.6rem;border-radius:6px;cursor:pointer;
+  font-size:0.9rem;font-weight:600;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;
+  min-width:32px;height:32px;white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(103,6,118,0.3);color:#fff}
+.tb-btn.active{background:rgba(103,6,118,0.5);color:#fff;box-shadow:0 0 8px rgba(103,6,118,0.4)}
+
+/* Block format dropdown */
+.tb-select{
+  background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);
+  color:#fff;padding:0.3rem 0.5rem;border-radius:6px;cursor:pointer;
+  font-size:0.85rem;font-weight:600;height:32px;
+}
+.tb-select:focus{outline:none;border-color:#670676}
+.tb-select option{background:#111}
+
+/* contenteditable area */
+.wysiwyg-editor{
+  background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);
+  border-top:none;border-radius:0 0 10px 10px;
+  padding:1.25rem 1.5rem;min-height:220px;max-height:500px;
+  overflow-y:auto;color:#fff;font-size:1rem;line-height:1.75;
+  outline:none;word-break:break-word;
+}
+.wysiwyg-editor:focus{border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.2)}
+.wysiwyg-editor:empty::before{content:attr(data-placeholder);color:#6b7280;pointer-events:none}
+
+/* Styled content inside editor */
+.wysiwyg-editor h1{font-size:2rem;font-weight:800;color:#fff;margin:0.5rem 0;border-bottom:2px solid rgba(103,6,118,0.4);padding-bottom:0.3rem}
+.wysiwyg-editor h2{font-size:1.5rem;font-weight:700;color:#e2e8f0;margin:0.5rem 0}
+.wysiwyg-editor h3{font-size:1.2rem;font-weight:600;color:#cbd5e1;margin:0.5rem 0}
+.wysiwyg-editor p{margin:0.25rem 0}
+.wysiwyg-editor strong{color:#fff;font-weight:700}
+.wysiwyg-editor em{color:#e2e8f0;font-style:italic}
+.wysiwyg-editor s{color:#9ca3af}
+.wysiwyg-editor ul{margin-left:1.5rem;list-style:disc}
+.wysiwyg-editor ol{margin-left:1.5rem;list-style:decimal}
+.wysiwyg-editor li{margin:0.2rem 0}
+.wysiwyg-editor blockquote{border-left:4px solid #670676;padding-left:1rem;color:#9ca3af;font-style:italic;margin:0.5rem 0}
+.wysiwyg-editor code{background:rgba(103,6,118,0.3);color:#a855f7;padding:0.1rem 0.4rem;border-radius:4px;font-family:'Courier New',monospace;font-size:0.9em}
+.wysiwyg-editor pre{background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:1rem;overflow-x:auto;margin:0.5rem 0}
+.wysiwyg-editor a{color:#3b82f6;text-decoration:underline}
+.wysiwyg-editor hr{border:none;border-top:2px solid rgba(103,6,118,0.3);margin:1rem 0}
+.wysiwyg-editor table{width:100%;border-collapse:collapse;margin:0.5rem 0}
+.wysiwyg-editor table th,.wysiwyg-editor table td{border:1px solid rgba(103,6,118,0.3);padding:0.5rem 0.75rem}
+.wysiwyg-editor table th{background:rgba(103,6,118,0.2);font-weight:bold}
+
+/* word count */
+.editor-footer{display:flex;justify-content:flex-end;align-items:center;padding:0.3rem 0.5rem;font-size:0.75rem;color:#6b7280}
+
+/* Memo list */
+.memo-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;max-height:600px;overflow-y:auto;padding:0.25rem}
+.memo-item{background:linear-gradient(135deg,#111,#000);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;transition:all 0.3s;animation:slideIn 0.3s ease-out;cursor:pointer;border-left-width:4px}
+.memo-item:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.4);transform:translateY(-8px) scale(1.02)}
+.memo-item.label-red{border-left-color:#ef4444!important} .memo-item.label-orange{border-left-color:#f97316!important}
+.memo-item.label-yellow{border-left-color:#fbbf24!important} .memo-item.label-green{border-left-color:#10b981!important}
+.memo-item.label-blue{border-left-color:#3b82f6!important} .memo-item.label-purple{border-left-color:#a855f7!important}
+.memo-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.memo-title-display{font-size:1.1rem;font-weight:bold;color:#fff;flex:1;word-break:break-word}
+.memo-actions{display:flex;gap:0.5rem;flex-wrap:wrap}
+.memo-content-preview{color:#9ca3af;line-height:1.6;word-break:break-word;font-size:0.9rem;max-height:80px;overflow:hidden}
+.memo-content-preview *{color:#9ca3af!important;font-size:0.9rem!important;margin:0!important;border:none!important;background:none!important}
+.memo-tags-display{display:flex;gap:0.5rem;flex-wrap:wrap}
+.memo-tag-item{background:rgba(103,6,118,0.2);padding:0.2rem 0.5rem;border-radius:9999px;font-size:0.75rem;color:#a855f7;border:1px solid rgba(103,6,118,0.3)}
+.memo-date{font-size:0.75rem;color:#6b7280;text-align:right}
+
+/* Dashboard */
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:2rem}
+.dash-card{background:linear-gradient(135deg,rgba(17,17,17,0.9),rgba(0,0,0,0.9));border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1.5rem;transition:all 0.3s}
+.dash-card:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.3);transform:translateY(-4px)}
+.dash-card-title{font-size:0.9rem;font-weight:bold;color:#9ca3af;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.dash-stat-big{font-size:3rem;font-weight:bold;color:#670676;text-shadow:0 0 20px rgba(103,6,118,0.5);line-height:1}
+.dash-stat-sub{font-size:0.875rem;color:#6b7280;margin-top:0.25rem}
+.dash-todo-list{display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto}
+.dash-todo-item{background:rgba(103,6,118,0.1);border:1px solid rgba(103,6,118,0.2);border-radius:8px;padding:0.75rem 1rem;font-size:0.9rem;display:flex;align-items:center;gap:0.75rem;transition:all 0.2s;border-left-width:3px}
+.dash-todo-item:hover{border-color:#670676}
+.dash-todo-item.overdue{border-left-color:#ef4444!important}
+.dash-todo-item.today{border-left-color:#fbbf24!important}
+.dash-memo-list{display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto}
+.dash-memo-item{background:rgba(103,6,118,0.1);border:1px solid rgba(103,6,118,0.2);border-radius:8px;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s;border-left-width:3px;border-left-color:rgba(103,6,118,0.3)}
+.dash-memo-item:hover{border-color:#670676}
+.dash-memo-title{font-size:0.9rem;font-weight:bold;color:#fff;margin-bottom:0.2rem}
+.dash-memo-date{font-size:0.75rem;color:#6b7280}
+.progress-bar-wrap{margin-top:1rem}
+.progress-bar-bg{background:rgba(103,6,118,0.2);border-radius:999px;height:10px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#670676,#a855f7);border-radius:999px;transition:width 1s ease}
+.progress-label{display:flex;justify-content:space-between;font-size:0.8rem;color:#9ca3af;margin-top:0.5rem}
+.dash-empty{color:#6b7280;font-size:0.9rem;text-align:center;padding:1rem}
+
+/* Chart */
+.chart-container{background:linear-gradient(135deg,#111,#000);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1.5rem;margin:1rem 0}
+
+/* Empty state */
+.empty-state{text-align:center;padding:4rem 2rem;color:#6b7280}
+.empty-state-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
+.empty-state-text{font-size:1.1rem}
+
+/* Modals */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:2000;justify-content:center;align-items:center;padding:2rem;backdrop-filter:blur(5px)}
+.modal.active{display:flex;animation:fadeIn 0.3s ease-out}
+.modal-content{background:linear-gradient(135deg,#111,#000);border:1px solid #670676;border-radius:12px;padding:2rem;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(103,6,118,0.5)}
+#memoViewModal .modal-content{max-width:820px}
+.modal-title{font-size:1.5rem;margin-bottom:1.5rem;color:#fff;padding-bottom:0.75rem;border-bottom:2px solid #670676}
+.modal-input,.modal-select,.modal-textarea{width:100%;background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:0.875rem;color:#fff;margin-bottom:1rem;transition:all 0.3s;font-family:inherit;font-size:1rem}
+.modal-textarea{min-height:100px;resize:vertical}
+.modal-input:focus,.modal-select:focus,.modal-textarea:focus{outline:none;border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.3)}
+.modal-actions{display:flex;gap:1rem;justify-content:flex-end;flex-wrap:wrap;margin-top:0.5rem}
+.modal-btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:bold;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+.modal-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.15);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s}
+.modal-btn:hover::before{width:200px;height:200px}
+.modal-btn-primary{background:#670676;color:#fff}
+.modal-btn-primary:hover{box-shadow:0 8px 32px rgba(103,6,118,0.4);transform:scale(1.05)}
+.modal-btn-secondary{background:rgba(103,6,118,0.15);color:#fff;border:1px solid rgba(103,6,118,0.3)}
+.modal-btn-secondary:hover{border-color:#670676}
+.modal-btn-danger{background:rgba(220,38,38,0.2);color:#ef4444;border:1px solid rgba(220,38,38,0.3)}
+.modal-btn-danger:hover{background:rgba(220,38,38,0.4)}
+.close-modal{position:absolute;top:1rem;right:1rem;background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);color:#ef4444;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-weight:bold;transition:all 0.3s}
+.close-modal:hover{background:rgba(220,38,38,0.3)}
+
+/* Memo full view */
+.memo-full-content{color:#d1d5db;line-height:1.8}
+.memo-full-content h1{font-size:2rem;font-weight:800;color:#fff;margin:1rem 0 0.5rem;border-bottom:2px solid rgba(103,6,118,0.4);padding-bottom:0.3rem}
+.memo-full-content h2{font-size:1.5rem;font-weight:700;color:#e2e8f0;margin:1rem 0 0.5rem}
+.memo-full-content h3{font-size:1.2rem;font-weight:600;color:#cbd5e1;margin:1rem 0 0.5rem}
+.memo-full-content p{margin-bottom:0.75rem}
+.memo-full-content strong{color:#fff;font-weight:700}
+.memo-full-content em{font-style:italic}
+.memo-full-content s{color:#9ca3af}
+.memo-full-content ul{margin-left:1.5rem;margin-bottom:0.75rem;list-style:disc}
+.memo-full-content ol{margin-left:1.5rem;margin-bottom:0.75rem;list-style:decimal}
+.memo-full-content li{margin-bottom:0.3rem}
+.memo-full-content blockquote{border-left:4px solid #670676;padding-left:1rem;margin:0.75rem 0;color:#9ca3af;font-style:italic}
+.memo-full-content code{background:rgba(103,6,118,0.25);padding:0.2rem 0.4rem;border-radius:4px;color:#a855f7;font-family:'Courier New',monospace}
+.memo-full-content pre{background:rgba(0,0,0,0.7);padding:1rem;border-radius:8px;overflow-x:auto;border:1px solid rgba(103,6,118,0.3);margin:0.75rem 0}
+.memo-full-content pre code{background:none;padding:0;color:#a855f7}
+.memo-full-content table{width:100%;border-collapse:collapse;margin:0.75rem 0}
+.memo-full-content table th,.memo-full-content table td{border:1px solid rgba(103,6,118,0.3);padding:0.75rem;text-align:left}
+.memo-full-content table th{background:rgba(103,6,118,0.2);color:#fff;font-weight:bold}
+.memo-full-content hr{border:none;border-top:2px solid rgba(103,6,118,0.3);margin:1.5rem 0}
+.memo-full-content a{color:#3b82f6;text-decoration:underline}
+.memo-view-meta{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(103,6,118,0.2)}
+.memo-view-date{font-size:0.8rem;color:#6b7280}
+
+/* Confirm dialog */
+.confirm-dialog{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:3000;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
+.confirm-dialog.active{display:flex;animation:fadeIn 0.2s ease-out}
+.confirm-dialog-content{background:linear-gradient(135deg,#111,#000);border:1px solid #670676;border-radius:12px;padding:2rem;max-width:450px;width:90%;box-shadow:0 20px 60px rgba(103,6,118,0.5)}
+.confirm-dialog-title{font-size:1.25rem;margin-bottom:1rem;color:#fff;font-weight:bold}
+.confirm-dialog-message{color:#9ca3af;margin-bottom:1.5rem;line-height:1.6}
+.confirm-dialog-actions{display:flex;gap:1rem;justify-content:flex-end}
+.confirm-btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:bold;cursor:pointer;transition:all 0.3s}
+.confirm-btn-danger{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff}
+.confirm-btn-danger:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(220,38,38,0.4)}
+.confirm-btn-cancel{background:rgba(103,6,118,0.15);color:#fff;border:1px solid rgba(103,6,118,0.3)}
+.confirm-btn-cancel:hover{border-color:#670676}
+
+/* Undo toast */
+.undo-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#111,#000);border:1px solid #670676;border-radius:12px;padding:1rem 1.5rem;z-index:4000;display:flex;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(103,6,118,0.5);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);min-width:300px}
+.undo-toast.show{transform:translateX(-50%) translateY(0)}
+.undo-toast-msg{color:#fff;font-size:0.95rem;flex:1}
+.undo-toast-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#670676,#a855f7);border-radius:0 0 12px 12px;width:100%}
+@keyframes shrink{from{width:100%}to{width:0%}}
+.undo-toast.show .undo-toast-bar{animation:shrink 5s linear forwards}
+.undo-btn{background:#670676;color:#fff;border:none;border-radius:6px;padding:0.4rem 1rem;font-weight:bold;cursor:pointer;font-size:0.85rem;transition:all 0.3s;white-space:nowrap}
+.undo-btn:hover{background:#8800aa;transform:scale(1.05)}
+
+/* Shortcuts */
+.shortcuts-list{display:flex;flex-direction:column;gap:2rem}
+.shortcut-section h3{color:#670676;font-size:1.1rem;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(103,6,118,0.3)}
+.shortcut-item{display:flex;justify-content:space-between;align-items:center;padding:0.75rem;background:rgba(0,0,0,0.5);border-radius:8px;margin-bottom:0.5rem;border:1px solid rgba(103,6,118,0.15)}
+.shortcut-item kbd{background:rgba(103,6,118,0.25);border:1px solid rgba(103,6,118,0.4);border-radius:4px;padding:0.25rem 0.5rem;font-family:'Courier New',monospace;font-size:0.85rem;color:#a855f7}
+.shortcut-item span{color:#9ca3af}
+
+/* Search */
+.search-results{display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem}
+.search-result-item{background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:1rem;cursor:pointer;transition:all 0.3s}
+.search-result-item:hover{border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.3);transform:translateX(4px)}
+.search-result-title{font-weight:bold;color:#fff;margin-bottom:0.5rem}
+.search-result-preview{color:#9ca3af;font-size:0.9rem}
+
+/* Responsive */
+@media(max-width:768px){
+  .mode-switcher,.input-section,.export-section{flex-direction:column}
+  .memo-list,.dashboard-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  h1{font-size:1.75rem}
+  .todo-main-row{flex-wrap:wrap}
+  .todo-actions{width:100%;padding-left:2.25rem}
+  .header-actions{gap:0.5rem}
+  .header-btn{font-size:0.8rem;padding:0.4rem 0.75rem}
+  .wysiwyg-toolbar{gap:0.15rem}
+  .tb-btn{min-width:28px;padding:0.25rem 0.4rem;font-size:0.8rem}
+}
+
+.todo-add-form{background:rgba(0,0,0,0.4);border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;transition:border-color 0.3s,box-shadow 0.3s;}
+.todo-add-form:focus-within{border-color:#670676;box-shadow:0 0 24px rgba(103,6,118,0.25);}
+.todo-main-input-row{display:flex;gap:0.75rem;align-items:center}
+#todoInput{flex:1;background:transparent;border:none;border-bottom:2px solid rgba(103,6,118,0.3);border-radius:0;padding:0.6rem 0.25rem;color:#fff;font-size:1.05rem;transition:border-color 0.3s;}
+#todoInput:focus{outline:none;border-bottom-color:#670676;}
+#todoInput::placeholder{color:#4b5563}
+.todo-options-row{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;}
+.todo-options-row.open{max-height:420px;opacity:1;}
+.todo-options-inner{padding-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:0.75rem;align-items:end;}
+.todo-opt-group{display:flex;flex-direction:column;gap:0.35rem;}
+.todo-opt-label{font-size:0.72rem;color:#9ca3af;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+.todo-opt-input{background:rgba(0,0,0,0.55);border:1px solid rgba(103,6,118,0.25);border-radius:8px;padding:0.5rem 0.75rem;color:#fff;font-size:0.875rem;width:100%;font-family:inherit;transition:all 0.2s;}
+.todo-opt-input:focus{outline:none;border-color:#670676;box-shadow:0 0 10px rgba(103,6,118,0.2)}
+.todo-opt-input option{background:#111}
+.todo-color-inline{display:flex;gap:0.4rem;flex-wrap:wrap;padding:0.35rem 0}
+.todo-form-footer{display:flex;justify-content:space-between;align-items:center;margin-top:0.85rem;gap:0.5rem;flex-wrap:wrap;}
+.toggle-detail-btn{background:none;border:none;color:#6b7280;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:0.3rem;transition:all 0.2s;padding:0.3rem 0.6rem;border-radius:6px;}
+.toggle-detail-btn:hover{color:#a855f7;background:rgba(103,6,118,0.12)}
+.toggle-detail-btn .arrow{display:inline-block;transition:transform 0.3s;font-size:0.65rem}
+.toggle-detail-btn.open .arrow{transform:rotate(180deg)}
+.todo-add-badges{display:flex;gap:0.35rem;flex-wrap:wrap;align-items:center}
+.todo-add-badge{background:rgba(103,6,118,0.18);border:1px solid rgba(103,6,118,0.3);border-radius:9999px;padding:0.15rem 0.55rem;color:#a855f7;font-size:0.73rem;}
+.btn-add-todo{background:linear-gradient(135deg,#670676,#8800aa);border:none;border-radius:8px;padding:0.6rem 1.4rem;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.3s;white-space:nowrap;}
+.btn-add-todo:hover{box-shadow:0 0 20px rgba(103,6,118,0.5);transform:scale(1.04)}
+@media(max-width:480px){.todo-options-inner{grid-template-columns:1fr}}
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: rgba(103, 6, 118, 0.1); }
-::-webkit-scrollbar-thumb { background: #670676; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #8800aa; }
 </style>
 </head>
 <body>
 
 <header>
   <nav>
-    <div class="logo">📝 Todo & Memo</div>
+    <div class="logo"><span class="logo-icon">📝</span><span data-i18n="appName">Todo & Memo</span></div>
     <div class="header-actions">
-      <button class="header-btn" onclick="openSearch()">🔍 検索</button>
-      <button class="header-btn" onclick="showStats()">📊 統計</button>
-      <button class="header-btn" onclick="showKeyboardShortcuts()">⌨️ ショートカット</button>
-      <button class="header-btn" onclick="openSettings()">⚙️ 設定</button>
-      <button class="header-btn" id="langSwitcher">EN</button>
+      <button class="header-btn" onclick="openSearch()">🔍 <span data-i18n="search">検索</span></button>
+      <button class="header-btn" onclick="showStats()">📊 <span data-i18n="stats">統計</span></button>
+      <button class="header-btn" onclick="showKeyboardShortcuts()">⌨️ <span data-i18n="shortcuts">ショートカット</span></button>
+      <button class="header-btn" onclick="openSettings()">⚙️ <span data-i18n="settings">設定</span></button>
+      <button class="header-btn lang-btn" id="langSwitcher" onclick="toggleLang()">EN</button>
     </div>
   </nav>
 </header>
 
 <main>
   <div class="mode-switcher">
-    <button class="mode-btn active" data-mode="todo">📝 Todoリスト</button>
-    <button class="mode-btn" data-mode="memo">📄 メモ</button>
+    <button class="mode-btn active" data-mode="dashboard">🏠 <span data-i18n="dashboard">ダッシュボード</span></button>
+    <button class="mode-btn" data-mode="todo">📝 <span data-i18n="todoList">Todoリスト</span></button>
+    <button class="mode-btn" data-mode="memo">📄 <span data-i18n="memoList">メモ</span></button>
   </div>
 
-  <div class="content-area">
-    <div class="todo-container active">
-      <h1>タスク管理</h1>
-      
-      <div class="input-section">
-        <input type="text" id="todoInput" placeholder="何をする必要がありますか？">
-        <button class="btn-primary" id="addTodoBtn">タスク追加</button>
+  <!-- Dashboard -->
+  <div class="dashboard-container active">
+    <h1 data-i18n="dashboard">ダッシュボード</h1>
+    <div class="dashboard-grid" id="dashStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
+      <div class="dash-card">
+        <div class="dash-card-title">⚠️ <span data-i18n="urgentTasks">要注意タスク</span></div>
+        <div class="dash-todo-list" id="dashUrgentTodos"></div>
       </div>
-
-      <div class="sort-controls">
-        <span class="sort-label">並び替え:</span>
-        <select class="sort-select" id="todoSort">
-          <option value="newest">新しい順</option>
-          <option value="oldest">古い順</option>
-          <option value="priority">優先度順</option>
-          <option value="duedate">期限順</option>
-          <option value="alphabetical">アルファベット順</option>
-        </select>
-      </div>
-
-      <div class="filter-tabs">
-        <button class="filter-btn active" data-filter="all">すべて</button>
-        <button class="filter-btn" data-filter="active">未完了</button>
-        <button class="filter-btn" data-filter="completed">完了済み</button>
-        <button class="filter-btn" data-filter="high">優先度: 高</button>
-        <button class="filter-btn" data-filter="medium">優先度: 中</button>
-        <button class="filter-btn" data-filter="low">優先度: 低</button>
-        <button class="filter-btn" data-filter="overdue">期限切れ</button>
-      </div>
-
-      <ul class="todo-list" id="todoList"></ul>
-
-      <div class="stats">
-        <div class="stat-item">
-          <div class="stat-value" id="totalTasks">0</div>
-          <div class="stat-label">合計</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="activeTasks">0</div>
-          <div class="stat-label">未完了</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="completedTasks">0</div>
-          <div class="stat-label">完了済み</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="completionRate">0%</div>
-          <div class="stat-label">達成率</div>
-        </div>
-      </div>
-
-      <div class="export-section">
-        <button class="btn-success" onclick="exportAllTodos()">📥 すべてのタスクをエクスポート</button>
-        <button class="btn-primary" onclick="clearCompleted()">🗑️ 完了済みを削除</button>
+      <div class="dash-card">
+        <div class="dash-card-title">📄 <span data-i18n="recentMemos">最近のメモ</span></div>
+        <div class="dash-memo-list" id="dashRecentMemos"></div>
       </div>
     </div>
+  </div>
 
-    <div class="memo-container">
-      <h1>メモ管理</h1>
-      
-      <div class="memo-input-section">
-        <input type="text" id="memoTitle" placeholder="メモタイトル...">
-        
-        <div class="view-toggle">
-          <button class="view-btn active" id="editViewBtn" onclick="switchMemoView('edit')">✏️ 編集</button>
-          <button class="view-btn" id="previewViewBtn" onclick="switchMemoView('preview')">👁️ プレビュー</button>
+  <!-- Todo -->
+  <div class="todo-container">
+    <h1 data-i18n="taskManagement">タスク管理</h1>
+    <div class="todo-add-form">
+      <div class="todo-main-input-row">
+        <input type="text" id="todoInput" data-i18n-placeholder="todoPlaceholder">
+        <button class="btn-add-todo" id="addTodoBtn" data-i18n="addTask">タスク追加</button>
+      </div>
+      <div class="todo-options-row" id="todoOptionsRow">
+        <div class="todo-options-inner">
+          <div class="todo-opt-group">
+            <label class="todo-opt-label" data-i18n="priority">優先度</label>
+            <select class="todo-opt-input" id="newTodoPriority">
+              <option value="" data-i18n="noPriority">優先度なし</option>
+              <option value="high" data-i18n="high">高</option>
+              <option value="medium" data-i18n="medium">中</option>
+              <option value="low" data-i18n="low">低</option>
+            </select>
+          </div>
+          <div class="todo-opt-group">
+            <label class="todo-opt-label" data-i18n="dueDate">期限日</label>
+            <input type="date" class="todo-opt-input" id="newTodoDueDate">
+          </div>
+          <div class="todo-opt-group">
+            <label class="todo-opt-label" data-i18n="tags">タグ</label>
+            <input type="text" class="todo-opt-input" id="newTodoTags" data-i18n-placeholder="tagsPlaceholder">
+          </div>
+          <div class="todo-opt-group">
+            <label class="todo-opt-label" data-i18n="note">メモ</label>
+            <input type="text" class="todo-opt-input" id="newTodoNote" placeholder="メモ...">
+          </div>
+          <div class="todo-opt-group">
+            <label class="todo-opt-label" data-i18n="label">ラベル</label>
+            <div class="todo-color-inline" id="todoColorPicker">
+              <div class="color-dot none selected" data-color=""></div>
+              <div class="color-dot label-red" data-color="label-red"></div>
+              <div class="color-dot label-orange" data-color="label-orange"></div>
+              <div class="color-dot label-yellow" data-color="label-yellow"></div>
+              <div class="color-dot label-green" data-color="label-green"></div>
+              <div class="color-dot label-blue" data-color="label-blue"></div>
+              <div class="color-dot label-purple" data-color="label-purple"></div>
+            </div>
+          </div>
         </div>
-        
-        <div class="memo-toolbar">
-          <button class="toolbar-btn" onclick="insertText('**太字**')"><strong>B</strong></button>
-          <button class="toolbar-btn" onclick="insertText('*斜体*')"><em>I</em></button>
-          <button class="toolbar-btn" onclick="insertText('~~打ち消し線~~')"><s>S</s></button>
-          <button class="toolbar-btn" onclick="insertText('# ')">H1</button>
-          <button class="toolbar-btn" onclick="insertText('## ')">H2</button>
-          <button class="toolbar-btn" onclick="insertText('### ')">H3</button>
-          <button class="toolbar-btn" onclick="insertText('- ')">• List</button>
-          <button class="toolbar-btn" onclick="insertText('1. ')">1. List</button>
-          <button class="toolbar-btn" onclick="insertText('[ ] ')">☐ Task</button>
-          <button class="toolbar-btn" onclick="insertText('```\n\n```')">&lt;/&gt; Code</button>
-          <button class="toolbar-btn" onclick="insertText('> ')">❝ Quote</button>
-          <button class="toolbar-btn" onclick="insertLink()">🔗 Link</button>
-          <button class="toolbar-btn" onclick="insertImage()">🖼️ Image</button>
-          <button class="toolbar-btn" onclick="insertTable()">📊 Table</button>
-          <button class="toolbar-btn" onclick="insertHorizontalRule()">─ HR</button>
-        </div>
-        
-        <textarea id="memoContent" placeholder="メモをここに書いてください...&#10;&#10;Markdownをサポート:&#10;**太字** *斜体* ~~打ち消し線~~&#10;# 見出し1 ## 見出し2 ### 見出し3&#10;- リスト 1. 番号付きリスト [ ] チェックボックス&#10;> 引用 ``` コードブロック ``` [リンク](URL)"></textarea>
-        
-        <div id="memoPreview" class="memo-preview"></div>
-        
-        <input type="text" id="memoTags" placeholder="タグ (カンマ区切り: 仕事, アイデア, 重要)">
-        
-        <button class="btn-primary" id="addMemoBtn">メモを保存</button>
       </div>
-
-      <div class="sort-controls">
-        <span class="sort-label">並び替え:</span>
-        <select class="sort-select" id="memoSort">
-          <option value="newest">新しい順</option>
-          <option value="oldest">古い順</option>
-          <option value="alphabetical">アルファベット順</option>
-          <option value="longest">長い順</option>
-        </select>
+      <div class="todo-form-footer">
+        <button class="toggle-detail-btn" id="toggleDetailBtn" onclick="toggleTodoDetail()">
+          <span class="arrow">▼</span>
+          <span id="toggleDetailLabel">詳細を設定</span>
+        </button>
+        <div class="todo-add-badges" id="todoBadges"></div>
       </div>
-
-      <div class="memo-filters" id="memoFilters">
-        <button class="filter-btn active" onclick="filterMemosByTag('all')">すべて</button>
-      </div>
-
-      <div class="export-section">
-        <button class="btn-success" onclick="exportAllMemos()">📥 すべてのメモをエクスポート</button>
-      </div>
-
-      <div class="memo-list" id="memoList"></div>
     </div>
+    <div class="sort-controls">
+      <span class="sort-label" data-i18n="sort">並び替え</span>:
+      <select class="sort-select" id="todoSort">
+        <option value="newest"      data-i18n="newest">新しい順</option>
+        <option value="oldest"      data-i18n="oldest">古い順</option>
+        <option value="priority"    data-i18n="byPriority">優先度順</option>
+        <option value="duedate"     data-i18n="byDueDate">期限順</option>
+        <option value="alphabetical"data-i18n="alphabetical">アルファベット順</option>
+      </select>
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-btn active" data-filter="all"       data-i18n="all">すべて</button>
+      <button class="filter-btn"        data-filter="active"    data-i18n="active">未完了</button>
+      <button class="filter-btn"        data-filter="completed" data-i18n="completed">完了済み</button>
+      <button class="filter-btn"        data-filter="high"      data-i18n="highPriority">優先度: 高</button>
+      <button class="filter-btn"        data-filter="medium"    data-i18n="medPriority">優先度: 中</button>
+      <button class="filter-btn"        data-filter="low"       data-i18n="lowPriority">優先度: 低</button>
+      <button class="filter-btn"        data-filter="overdue"   data-i18n="overdue">期限切れ</button>
+    </div>
+    <ul class="todo-list" id="todoList"></ul>
+    <div class="stats">
+      <div class="stat-item"><div class="stat-value" id="totalTasks">0</div><div class="stat-label" data-i18n="total">合計</div></div>
+      <div class="stat-item"><div class="stat-value" id="activeTasks">0</div><div class="stat-label" data-i18n="active">未完了</div></div>
+      <div class="stat-item"><div class="stat-value" id="completedTasks">0</div><div class="stat-label" data-i18n="completed">完了済み</div></div>
+      <div class="stat-item"><div class="stat-value" id="completionRate">0%</div><div class="stat-label" data-i18n="rate">達成率</div></div>
+    </div>
+    <div class="export-section">
+      <button class="btn-success" onclick="exportAllTodos()" data-i18n="exportAllTasks">📥 すべてのタスクをエクスポート</button>
+      <button class="btn-primary" onclick="clearCompleted()"  data-i18n="clearCompleted">🗑️ 完了済みを削除</button>
+    </div>
+  </div>
+
+  <!-- Memo -->
+  <div class="memo-container">
+    <h1 data-i18n="memoManagement">メモ管理</h1>
+    <div class="memo-input-section">
+      <input type="text" id="memoTitleInput" style="width:100%;background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:0.875rem 1.25rem;color:#fff;font-size:1rem;transition:all 0.3s" data-i18n-placeholder="memoTitlePlaceholder">
+
+      <!-- WYSIWYG Toolbar -->
+      <div class="wysiwyg-toolbar" id="wysiwygToolbar">
+        <!-- Block format -->
+        <select class="tb-select" id="blockFormat" onchange="applyBlockFormat(this.value)">
+          <option value="p"   data-i18n="normalText">標準テキスト</option>
+          <option value="h1">H1</option>
+          <option value="h2">H2</option>
+          <option value="h3">H3</option>
+          <option value="pre" data-i18n="codeBlock">コードブロック</option>
+          <option value="blockquote" data-i18n="quote">引用</option>
+        </select>
+        <div class="toolbar-sep"></div>
+        <!-- Text style -->
+        <button class="tb-btn" id="btn-bold"          onclick="execCmd('bold')"          title="Bold (Ctrl+B)"><strong>B</strong></button>
+        <button class="tb-btn" id="btn-italic"        onclick="execCmd('italic')"        title="Italic (Ctrl+I)"><em>I</em></button>
+        <button class="tb-btn" id="btn-strikeThrough" onclick="execCmd('strikeThrough')" title="Strikethrough"><s>S</s></button>
+        <button class="tb-btn" id="btn-underline"     onclick="execCmd('underline')"     title="Underline (Ctrl+U)"><u>U</u></button>
+        <div class="toolbar-sep"></div>
+        <!-- Lists -->
+        <button class="tb-btn" id="btn-insertUnorderedList" onclick="execCmd('insertUnorderedList')" title="Bullet List">• List</button>
+        <button class="tb-btn" id="btn-insertOrderedList"   onclick="execCmd('insertOrderedList')"   title="Numbered List">1. List</button>
+        <div class="toolbar-sep"></div>
+        <!-- Align -->
+        <button class="tb-btn" id="btn-justifyLeft"   onclick="execCmd('justifyLeft')"   title="Align Left">⬅</button>
+        <button class="tb-btn" id="btn-justifyCenter" onclick="execCmd('justifyCenter')" title="Center">≡</button>
+        <button class="tb-btn" id="btn-justifyRight"  onclick="execCmd('justifyRight')"  title="Align Right">➡</button>
+        <div class="toolbar-sep"></div>
+        <!-- Link / HR -->
+        <button class="tb-btn" onclick="insertEditorLink()"          title="Insert Link">🔗</button>
+        <button class="tb-btn" onclick="execCmd('insertHorizontalRule')" title="Horizontal Rule">─</button>
+        <button class="tb-btn" onclick="insertEditorTable()"         title="Insert Table">⊞</button>
+        <div class="toolbar-sep"></div>
+        <!-- Clear -->
+        <button class="tb-btn" onclick="execCmd('removeFormat')" title="Clear Formatting" style="color:#ef4444">✕</button>
+      </div>
+
+      <!-- contenteditable editor -->
+      <div class="wysiwyg-editor" id="wysiwygEditor" contenteditable="true" data-i18n-placeholder="memoEditorPlaceholder" spellcheck="false"></div>
+      <div class="editor-footer"><span id="wordCount">0 <span data-i18n="chars">文字</span></span></div>
+
+      <div class="color-picker-row">
+        <span class="color-picker-label">🎨 <span data-i18n="label">ラベル</span>:</span>
+        <div class="color-options" id="memoColorPicker">
+          <div class="color-dot none selected" data-color=""></div>
+          <div class="color-dot label-red"    data-color="label-red"></div>
+          <div class="color-dot label-orange" data-color="label-orange"></div>
+          <div class="color-dot label-yellow" data-color="label-yellow"></div>
+          <div class="color-dot label-green"  data-color="label-green"></div>
+          <div class="color-dot label-blue"   data-color="label-blue"></div>
+          <div class="color-dot label-purple" data-color="label-purple"></div>
+        </div>
+      </div>
+      <input type="text" id="memoTags" style="width:100%;background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:0.875rem 1.25rem;color:#fff;font-size:1rem;transition:all 0.3s" data-i18n-placeholder="memoTagsPlaceholder">
+      <button class="btn-primary" id="addMemoBtn" data-i18n="saveMemo">メモを保存</button>
+    </div>
+
+    <div class="sort-controls">
+      <span class="sort-label" data-i18n="sort">並び替え</span>:
+      <select class="sort-select" id="memoSort">
+        <option value="newest"      data-i18n="newest">新しい順</option>
+        <option value="oldest"      data-i18n="oldest">古い順</option>
+        <option value="alphabetical"data-i18n="alphabetical">アルファベット順</option>
+        <option value="longest"     data-i18n="longest">長い順</option>
+      </select>
+    </div>
+    <div class="memo-filters" id="memoFilters">
+      <button class="filter-btn active" onclick="filterMemosByTag('all')" data-i18n="all">すべて</button>
+    </div>
+    <div class="export-section">
+      <button class="btn-success" onclick="exportAllMemos()" data-i18n="exportAllMemos">📥 すべてのメモをエクスポート</button>
+    </div>
+    <div class="memo-list" id="memoList"></div>
   </div>
 </main>
 
-<!-- Modals -->
+<!-- Memo view modal -->
+<div class="modal" id="memoViewModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeMemoViewModal()">✕</button>
+    <h2 class="modal-title" id="memoViewTitle"></h2>
+    <div class="memo-view-meta">
+      <div class="memo-tags-display" id="memoViewTags"></div>
+      <div class="memo-view-date" id="memoViewDate"></div>
+    </div>
+    <div class="memo-full-content" id="memoViewContent"></div>
+    <div class="modal-actions" style="margin-top:2rem">
+      <button class="modal-btn modal-btn-secondary" id="memoViewDuplicate">📋 <span data-i18n="duplicate">複製</span></button>
+      <button class="modal-btn modal-btn-secondary" id="memoViewEdit">✏️ <span data-i18n="edit">編集</span></button>
+      <button class="modal-btn modal-btn-secondary" id="memoViewExport">💾 <span data-i18n="export">エクスポート</span></button>
+      <button class="modal-btn modal-btn-danger"    id="memoViewDelete">🗑️ <span data-i18n="delete">削除</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Search modal -->
 <div class="modal" id="searchModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeSearch()">✕</button>
-    <h2 class="modal-title">🔍 検索</h2>
-    <input type="text" class="modal-input" id="searchInput" placeholder="タスクやメモを検索...">
+    <h2 class="modal-title">🔍 <span data-i18n="search">検索</span></h2>
+    <input type="text" class="modal-input" id="searchInput" data-i18n-placeholder="searchPlaceholder">
     <div class="search-results" id="searchResults"></div>
   </div>
 </div>
 
+<!-- Edit todo modal -->
 <div class="modal" id="editTodoModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeEditTodoModal()">✕</button>
-    <h2 class="modal-title">📝 タスクを編集</h2>
-    <input type="text" class="modal-input" id="editTodoText" placeholder="タスクの内容">
+    <h2 class="modal-title">📝 <span data-i18n="editTask">タスクを編集</span></h2>
+    <input type="text" class="modal-input" id="editTodoText" data-i18n-placeholder="taskContent">
     <select class="modal-select" id="editTodoPriority">
-      <option value="">優先度なし</option>
-      <option value="high">高</option>
-      <option value="medium">中</option>
-      <option value="low">低</option>
+      <option value=""       data-i18n="noPriority">優先度なし</option>
+      <option value="high"   data-i18n="high">高</option>
+      <option value="medium" data-i18n="medium">中</option>
+      <option value="low"    data-i18n="low">低</option>
     </select>
-    <input type="date" class="modal-input" id="editTodoDueDate" placeholder="期限">
-    <input type="text" class="modal-input" id="editTodoTags" placeholder="タグ (カンマ区切り)">
-    <textarea class="modal-textarea" id="editTodoNote" placeholder="メモ"></textarea>
+    <input type="date" class="modal-input" id="editTodoDueDate">
+    <input type="text" class="modal-input" id="editTodoTags" data-i18n-placeholder="tagsPlaceholder">
+    <div class="color-picker-row">
+      <span class="color-picker-label">🎨 <span data-i18n="label">ラベル</span>:</span>
+      <div class="color-options" id="editTodoColorPicker">
+        <div class="color-dot none selected" data-color=""></div>
+        <div class="color-dot label-red"    data-color="label-red"></div>
+        <div class="color-dot label-orange" data-color="label-orange"></div>
+        <div class="color-dot label-yellow" data-color="label-yellow"></div>
+        <div class="color-dot label-green"  data-color="label-green"></div>
+        <div class="color-dot label-blue"   data-color="label-blue"></div>
+        <div class="color-dot label-purple" data-color="label-purple"></div>
+      </div>
+    </div>
+    <textarea class="modal-textarea" id="editTodoNote" data-i18n-placeholder="note"></textarea>
     <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" onclick="closeEditTodoModal()">キャンセル</button>
-      <button class="modal-btn modal-btn-primary" onclick="saveEditedTodo()">保存</button>
+      <button class="modal-btn modal-btn-secondary" onclick="closeEditTodoModal()" data-i18n="cancel">キャンセル</button>
+      <button class="modal-btn modal-btn-primary"   onclick="saveEditedTodo()"     data-i18n="save">保存</button>
     </div>
   </div>
 </div>
 
+<!-- Stats modal -->
 <div class="modal" id="statsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeStats()">✕</button>
-    <h2 class="modal-title">📊 統計情報</h2>
+    <h2 class="modal-title">📊 <span data-i18n="statsTitle">統計情報</span></h2>
     <div id="statsContent"></div>
   </div>
 </div>
 
+<!-- Settings modal -->
 <div class="modal" id="settingsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeSettings()">✕</button>
-    <h2 class="modal-title">⚙️ 設定</h2>
+    <h2 class="modal-title">⚙️ <span data-i18n="settings">設定</span></h2>
     <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" onclick="importData()">📤 データをインポート</button>
-      <button class="modal-btn modal-btn-primary" onclick="exportAllData()">📥 すべてをエクスポート</button>
-      <button class="modal-btn modal-btn-secondary" onclick="clearAllData()">🗑️ すべてを削除</button>
+      <button class="modal-btn modal-btn-secondary" onclick="importData()"    data-i18n="import">📤 インポート</button>
+      <button class="modal-btn modal-btn-primary"   onclick="exportAllData()" data-i18n="exportAll">📥 エクスポート</button>
+      <button class="modal-btn modal-btn-danger"    onclick="clearAllData()"  data-i18n="deleteAll">🗑️ すべて削除</button>
     </div>
   </div>
 </div>
 
+<!-- Shortcuts modal -->
 <div class="modal" id="shortcutsModal">
   <div class="modal-content">
     <button class="close-modal" onclick="closeKeyboardShortcuts()">✕</button>
-    <h2 class="modal-title">⌨️ キーボードショートカット</h2>
+    <h2 class="modal-title">⌨️ <span data-i18n="shortcuts">ショートカット</span></h2>
     <div class="shortcuts-list">
       <div class="shortcut-section">
-        <h3>全般</h3>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + K</kbd><span>検索を開く</span></div>
-        <div class="shortcut-item"><kbd>Esc</kbd><span>モーダルを閉じる</span></div>
+        <h3 data-i18n="general">全般</h3>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + K</kbd><span data-i18n="openSearch">検索を開く</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + Z</kbd><span data-i18n="undoDelete">削除を元に戻す</span></div>
+        <div class="shortcut-item"><kbd>Esc</kbd><span data-i18n="closeModal">モーダルを閉じる</span></div>
       </div>
       <div class="shortcut-section">
-        <h3>メモ編集</h3>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + B</kbd><span>太字</span></div>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + I</kbd><span>斜体</span></div>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + K</kbd><span>リンク挿入</span></div>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + Shift + K</kbd><span>コードブロック</span></div>
-        <div class="shortcut-item"><kbd>Ctrl/Cmd + Enter</kbd><span>メモを保存</span></div>
+        <h3 data-i18n="memoEditing">メモ編集</h3>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + B</kbd><span data-i18n="bold">太字</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + I</kbd><span data-i18n="italic">斜体</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + U</kbd><span data-i18n="underline">下線</span></div>
+        <div class="shortcut-item"><kbd>Ctrl/Cmd + Enter</kbd><span data-i18n="saveMemo">メモを保存</span></div>
       </div>
       <div class="shortcut-section">
         <h3>Todo</h3>
-        <div class="shortcut-item"><kbd>Enter</kbd><span>タスクを追加</span></div>
+        <div class="shortcut-item"><kbd>Enter</kbd><span data-i18n="addTask">タスクを追加</span></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Confirm dialog -->
 <div class="confirm-dialog" id="confirmDialog">
   <div class="confirm-dialog-content">
     <div class="confirm-dialog-title" id="confirmTitle">確認</div>
-    <div class="confirm-dialog-message" id="confirmMessage">この操作を実行しますか？</div>
+    <div class="confirm-dialog-message" id="confirmMessage"></div>
     <div class="confirm-dialog-actions">
-      <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn">キャンセル</button>
+      <button class="confirm-btn confirm-btn-cancel" id="confirmCancelBtn" data-i18n="cancel">キャンセル</button>
       <button class="confirm-btn confirm-btn-danger" id="confirmOkBtn">OK</button>
     </div>
   </div>
 </div>
 
+<!-- Undo toast -->
+<div class="undo-toast" id="undoToast">
+  <span class="undo-toast-msg" id="undoMsg"></span>
+  <button class="undo-btn" id="undoBtn" data-i18n="undo">元に戻す</button>
+  <div class="undo-toast-bar"></div>
+</div>
+
+<!-- Info toast -->
+<div class="undo-toast" id="infoToast" style="bottom:5.5rem">
+  <span style="font-size:1.1rem" id="infoToastIcon">💾</span>
+  <span class="undo-toast-msg" id="infoMsg" style="margin-left:0.25rem"></span>
+  <div class="undo-toast-bar" style="background:linear-gradient(90deg,#3b82f6,#06b6d4)"></div>
+</div>
+
 <script>
-// ─── データ管理 ───────────────────────────────────────────────────
-let todos = [];
-let memos = [];
-let currentFilter = 'all';
-let currentMemoFilter = 'all';
-let editingTodoId = null;
+// ═══════════════════════════════════════════════════
+//  i18n
+// ═══════════════════════════════════════════════════
+const i18n = {
+  ja: {
+    appName:'Todo & Memo', search:'検索', stats:'統計', shortcuts:'ショートカット', settings:'設定',
+    dashboard:'ダッシュボード', todoList:'Todoリスト', memoList:'メモ',
+    urgentTasks:'要注意タスク', recentMemos:'最近のメモ',
+    taskManagement:'タスク管理', memoManagement:'メモ管理',
+    todoPlaceholder:'何をする必要がありますか？',
+    memoTitlePlaceholder:'メモタイトル...',
+    memoEditorPlaceholder:'ここに入力してください...',
+    memoTagsPlaceholder:'タグ (カンマ区切り: 仕事, アイデア, 重要)',
+    searchPlaceholder:'タスクやメモを検索...',
+    taskContent:'タスクの内容',
+    tagsPlaceholder:'タグ (カンマ区切り)',
+    note:'メモ',
+    label:'ラベル', sort:'並び替え',
+    newest:'新しい順', oldest:'古い順', byPriority:'優先度順', byDueDate:'期限順',
+    alphabetical:'アルファベット順', longest:'長い順',
+    all:'すべて', active:'未完了', completed:'完了済み',
+    highPriority:'優先度: 高', medPriority:'優先度: 中', lowPriority:'優先度: 低', overdue:'期限切れ',
+    total:'合計', rate:'達成率',
+    high:'高', medium:'中', low:'低', noPriority:'優先度なし',
+    addTask:'タスク追加', saveMemo:'メモを保存',
+    exportAllTasks:'📥 すべてのタスクをエクスポート', clearCompleted:'🗑️ 完了済みを削除',
+    exportAllMemos:'📥 すべてのメモをエクスポート',
+    editTask:'タスクを編集',
+    duplicate:'複製', edit:'編集', export:'エクスポート', delete:'削除',
+    cancel:'キャンセル', save:'保存',
+    statsTitle:'統計情報',
+    import:'📤 インポート', exportAll:'📥 エクスポート', deleteAll:'🗑️ すべて削除',
+    general:'全般', memoEditing:'メモ編集',
+    openSearch:'検索を開く', undoDelete:'削除を元に戻す', closeModal:'モーダルを閉じる',
+    bold:'太字', italic:'斜体', underline:'下線',
+    undo:'元に戻す', chars:'文字',
+    normalText:'標準テキスト', codeBlock:'コードブロック', quote:'引用',
+    noUrgent:'期限切れ・当日期限のタスクなし ✅', noMemos:'メモがまだありません',
+    noTasks:'タスクが見つかりません', noMemosYet:'まだメモがありません',
+    taskDeleted:'を削除しました', memoDeleted:'を削除しました',
+    totalTasks:'総タスク数', activeTasks:'未完了タスク', completedTasks:'完了済みタスク',
+    highPriorityTasks:'優先度:高', totalMemos:'総メモ数', totalTags:'タグ数',
+    taskCompletionStatus:'タスク完了状況', tasksByPriority:'優先度別タスク数',
+    importOverwrite:'インポートすると現在のデータが上書きされます。続けますか?',
+    importConfirm:'⚠️ インポート確認', importSuccess:'データをインポートしました!',
+    importSuccessTitle:'✅ 成功', importError:'ファイルの読み込みに失敗しました',
+    deleteAllConfirm:'すべてのデータを削除しますか? この操作は取り消せません。',
+    deleteAllTitle:'⚠️ 全データ削除', finalConfirm:'本当に削除しますか?',
+    finalTitle:'⚠️⚠️ 最終確認',
+    deleteTaskConfirm:'このタスクを削除しますか?', deleteTaskTitle:'⚠️ 削除確認',
+    deleteMemoConfirm:'このメモを削除しますか?', deleteMemoTitle:'⚠️ 削除確認',
+    clearCompletedConfirm:'完了済みのタスクをすべて削除しますか?', clearCompletedTitle:'⚠️ 一括削除確認',
+    noTasksExport:'エクスポートするタスクがありません', noMemosExport:'エクスポートするメモがありません',
+    copyOf:' (コピー)', taskList:'タスクリスト', memoCollection:'メモコレクション',
+    noResults:'検索結果が見つかりません',
+    todayDue:'今日', tomorrowDue:'明日', overdueLabel:'期限切れ',
+  },
+  en: {
+    appName:'Todo & Memo', search:'Search', stats:'Stats', shortcuts:'Shortcuts', settings:'Settings',
+    dashboard:'Dashboard', todoList:'Todo List', memoList:'Memos',
+    urgentTasks:'Urgent Tasks', recentMemos:'Recent Memos',
+    taskManagement:'Task Management', memoManagement:'Memo Management',
+    todoPlaceholder:'What needs to be done?',
+    memoTitlePlaceholder:'Memo title...',
+    memoEditorPlaceholder:'Start typing here...',
+    memoTagsPlaceholder:'Tags (comma-separated: work, idea, important)',
+    searchPlaceholder:'Search tasks and memos...',
+    taskContent:'Task content',
+    tagsPlaceholder:'Tags (comma-separated)',
+    note:'Note',
+    label:'Label', sort:'Sort',
+    newest:'Newest', oldest:'Oldest', byPriority:'By Priority', byDueDate:'By Due Date',
+    alphabetical:'Alphabetical', longest:'Longest',
+    all:'All', active:'Active', completed:'Completed',
+    highPriority:'Priority: High', medPriority:'Priority: Med', lowPriority:'Priority: Low', overdue:'Overdue',
+    total:'Total', rate:'Rate',
+    high:'High', medium:'Med', low:'Low', noPriority:'No Priority',
+    addTask:'Add Task', saveMemo:'Save Memo',
+    exportAllTasks:'📥 Export All Tasks', clearCompleted:'🗑️ Clear Completed',
+    exportAllMemos:'📥 Export All Memos',
+    editTask:'Edit Task',
+    duplicate:'Duplicate', edit:'Edit', export:'Export', delete:'Delete',
+    cancel:'Cancel', save:'Save',
+    statsTitle:'Statistics',
+    import:'📤 Import', exportAll:'📥 Export All', deleteAll:'🗑️ Delete All',
+    general:'General', memoEditing:'Memo Editing',
+    openSearch:'Open Search', undoDelete:'Undo Delete', closeModal:'Close Modal',
+    bold:'Bold', italic:'Italic', underline:'Underline',
+    undo:'Undo', chars:'chars',
+    normalText:'Normal Text', codeBlock:'Code Block', quote:'Quote',
+    noUrgent:'No overdue or due-today tasks ✅', noMemos:'No memos yet',
+    noTasks:'No tasks found', noMemosYet:'No memos yet',
+    taskDeleted:' deleted', memoDeleted:' deleted',
+    totalTasks:'Total Tasks', activeTasks:'Active Tasks', completedTasks:'Completed Tasks',
+    highPriorityTasks:'High Priority', totalMemos:'Total Memos', totalTags:'Tags',
+    taskCompletionStatus:'Task Completion', tasksByPriority:'Tasks by Priority',
+    importOverwrite:'Importing will overwrite current data. Continue?',
+    importConfirm:'⚠️ Confirm Import', importSuccess:'Data imported successfully!',
+    importSuccessTitle:'✅ Success', importError:'Failed to load file',
+    deleteAllConfirm:'Delete all data? This cannot be undone.',
+    deleteAllTitle:'⚠️ Clear All Data', finalConfirm:'Are you sure?',
+    finalTitle:'⚠️⚠️ Final Confirmation',
+    deleteTaskConfirm:'Delete this task?', deleteTaskTitle:'⚠️ Confirm Delete',
+    deleteMemoConfirm:'Delete this memo?', deleteMemoTitle:'⚠️ Confirm Delete',
+    clearCompletedConfirm:'Clear all completed tasks?', clearCompletedTitle:'⚠️ Confirm Clear',
+    noTasksExport:'No tasks to export', noMemosExport:'No memos to export',
+    copyOf:' (Copy)', taskList:'Task List', memoCollection:'Memo Collection',
+    noResults:'No results found',
+    todayDue:'Today', tomorrowDue:'Tomorrow', overdueLabel:'Overdue',
+  }
+};
+
 let currentLang = 'ja';
+
+function t(key) { return i18n[currentLang][key] || i18n['ja'][key] || key; }
+
+function applyI18n() {
+  // data-i18n text
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+  // wysiwyg placeholder
+  const editor = document.getElementById('wysiwygEditor');
+  if(editor) editor.setAttribute('data-placeholder', t('memoEditorPlaceholder'));
+  // select options
+  document.querySelectorAll('select option[data-i18n]').forEach(opt => {
+    opt.textContent = t(opt.getAttribute('data-i18n'));
+  });
+  // lang button
+  document.getElementById('langSwitcher').textContent = currentLang === 'ja' ? 'EN' : 'JA';
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'ja' ? 'en' : 'ja';
+  applyI18n();
+  renderTodos(); renderMemos(); renderDashboard(); updateMemoTags();
+}
+
+// ═══════════════════════════════════════════════════
+//  State
+// ═══════════════════════════════════════════════════
+let todos = [], memos = [], todoDetailOpen = false;
+let currentFilter = 'all', currentMemoFilter = 'all';
+let editingTodoId = null;
 let allMemoTags = new Set();
-let currentTodoSort = 'newest';
-let currentMemoSort = 'newest';
-let currentMemoView = 'edit';
+let currentTodoSort = 'newest', currentMemoSort = 'newest';
 let todoSortable = null;
+let newTodoColor = '', newMemoColor = '';
+let viewingMemoId = null;
+let undoStack = null, undoTimer = null;
+let editingMemoId = null;  // 編集中のメモID
+let infoTimer = null;
 
-const STORAGE_KEY_TODOS = 'todo_memo_todos';
-const STORAGE_KEY_MEMOS = 'todo_memo_memos';
+const STORAGE_KEY_TODOS = 'todo_memo_todos_v3';
+const STORAGE_KEY_MEMOS = 'todo_memo_memos_v3';
 
+// ═══════════════════════════════════════════════════
+//  Storage
+// ═══════════════════════════════════════════════════
 function saveData() {
   try {
     localStorage.setItem(STORAGE_KEY_TODOS, JSON.stringify(todos));
     localStorage.setItem(STORAGE_KEY_MEMOS, JSON.stringify(memos));
-  } catch (e) {
-    console.error('保存エラー:', e);
-  }
+  } catch(e) { console.error(e); }
 }
-
 function loadData() {
+  let isFirst = false;
   try {
-    const storedTodos = localStorage.getItem(STORAGE_KEY_TODOS);
-    const storedMemos = localStorage.getItem(STORAGE_KEY_MEMOS);
-    todos = storedTodos ? JSON.parse(storedTodos) : [];
-    memos = storedMemos ? JSON.parse(storedMemos) : [];
-  } catch (e) {
-    console.error('読み込みエラー:', e);
-    todos = [];
-    memos = [];
-  }
-  updateMemoTags();
-  renderTodos();
-  renderMemos();
+    const td = localStorage.getItem(STORAGE_KEY_TODOS);
+    const md = localStorage.getItem(STORAGE_KEY_MEMOS);
+    todos = td ? JSON.parse(td) : [];
+    memos = md ? JSON.parse(md) : [];
+    isFirst = !td && !md;
+  } catch(e) { todos=[]; memos=[]; isFirst=true; }
+  updateMemoTags(); renderTodos(); renderMemos(); renderDashboard();
+  setTimeout(() => {
+    if(isFirst) {
+      showInfo('👋', currentLang==='ja' ? 'ようこそ！！' : 'Welcome! Start by adding tasks or memos.');
+    } else {
+      const tc = todos.length, mc = memos.length;
+      const msg = currentLang==='ja'
+        ? `データを読み込みました：タスク ${tc}件、メモ ${mc}件`
+        : `Loaded: ${tc} task${tc!==1?'s':''}, ${mc} memo${mc!==1?'s':''}`;
+      showInfo('💾', msg);
+    }
+  }, 400);
 }
 
-// ─── marked 設定 ─────────────────────────────────────────────────
-if (typeof marked !== 'undefined') {
-  marked.setOptions({ breaks: true, gfm: true });
-}
-
-// ─── カスタム確認ダイアログ ───────────────────────────────────────
-function customConfirm(message, title = '確認', showCancel = true) {
-  return new Promise((resolve) => {
+// ═══════════════════════════════════════════════════
+//  Confirm dialog
+// ═══════════════════════════════════════════════════
+function customConfirm(message, title='確認', showCancel=true) {
+  return new Promise(resolve => {
     const dialog = document.getElementById('confirmDialog');
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmMessage').textContent = message;
-    const okBtn = document.getElementById('confirmOkBtn');
-    const cancelBtn = document.getElementById('confirmCancelBtn');
-    cancelBtn.style.display = showCancel ? 'block' : 'none';
+    const ok = document.getElementById('confirmOkBtn');
+    const cancel = document.getElementById('confirmCancelBtn');
+    cancel.style.display = showCancel ? 'block' : 'none';
     dialog.classList.add('active');
-
-    const cleanup = (result) => {
-      dialog.classList.remove('active');
-      document.removeEventListener('keydown', handleEsc);
-      okBtn.removeEventListener('click', handleOk);
-      cancelBtn.removeEventListener('click', handleCancel);
-      resolve(result);
-    };
-    const handleOk = () => cleanup(true);
-    const handleCancel = () => cleanup(false);
-    const handleEsc = (e) => { if (e.key === 'Escape') cleanup(showCancel ? false : true); };
-
-    okBtn.addEventListener('click', handleOk);
-    cancelBtn.addEventListener('click', handleCancel);
-    document.addEventListener('keydown', handleEsc);
+    const cleanup = r => { dialog.classList.remove('active'); ok.removeEventListener('click',yes); cancel.removeEventListener('click',no); document.removeEventListener('keydown',esc); resolve(r); };
+    const yes=()=>cleanup(true), no=()=>cleanup(false);
+    const esc=e=>{ if(e.key==='Escape') cleanup(showCancel?false:true); };
+    ok.addEventListener('click',yes); cancel.addEventListener('click',no); document.addEventListener('keydown',esc);
   });
 }
 
-// ─── メモプレビュー ───────────────────────────────────────────────
-function switchMemoView(view) {
-  currentMemoView = view;
-  const textarea = document.getElementById('memoContent');
-  const preview = document.getElementById('memoPreview');
-  const editBtn = document.getElementById('editViewBtn');
-  const previewBtn = document.getElementById('previewViewBtn');
-  if (view === 'edit') {
-    textarea.style.display = 'block';
-    preview.classList.remove('active');
-    editBtn.classList.add('active');
-    previewBtn.classList.remove('active');
-  } else {
-    textarea.style.display = 'none';
-    preview.classList.add('active');
-    editBtn.classList.remove('active');
-    previewBtn.classList.add('active');
-    updateMemoPreview();
+// ═══════════════════════════════════════════════════
+//  Undo Toast
+// ═══════════════════════════════════════════════════
+function showUndo(msg, type, item, index) {
+  if(undoTimer) { clearTimeout(undoTimer); }
+  undoStack = { type, item, index };
+  const toast = document.getElementById('undoToast');
+  document.getElementById('undoMsg').textContent = msg;
+  const bar = toast.querySelector('.undo-toast-bar');
+  bar.style.animation = 'none'; void bar.offsetWidth;
+  toast.classList.add('show');
+  bar.style.animation = '';
+  undoTimer = setTimeout(hideUndo, 5000);
+}
+function hideUndo() { document.getElementById('undoToast').classList.remove('show'); undoStack=null; undoTimer=null; }
+function showInfo(icon, msg, duration=3000) {
+  if(infoTimer) clearTimeout(infoTimer);
+  const toast = document.getElementById('infoToast');
+  document.getElementById('infoToastIcon').textContent = icon;
+  document.getElementById('infoMsg').textContent = msg;
+  const bar = toast.querySelector('.undo-toast-bar');
+  bar.style.animation = 'none'; void bar.offsetWidth;
+  bar.style.animationDuration = duration + 'ms';
+  toast.classList.add('show');
+  bar.style.animation = '';
+  infoTimer = setTimeout(() => { toast.classList.remove('show'); infoTimer = null; }, duration);
+}
+function doUndo() {
+  if(!undoStack) return;
+  const { type, item, index } = undoStack;
+  if(type==='todo') { todos.splice(index,0,item); saveData(); renderTodos(); renderDashboard(); }
+  else { memos.splice(index,0,item); saveData(); updateMemoTags(); renderMemos(); renderDashboard(); }
+  if(undoTimer) clearTimeout(undoTimer);
+  hideUndo();
+}
+document.getElementById('undoBtn').addEventListener('click', doUndo);
+
+// ═══════════════════════════════════════════════════
+//  Color pickers
+// ═══════════════════════════════════════════════════
+function initColorPicker(id, cb) {
+  const el = document.getElementById(id); if(!el) return;
+  el.querySelectorAll('.color-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      el.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+      dot.classList.add('selected'); cb(dot.dataset.color);
+    });
+  });
+}
+function setColorPicker(id, color) {
+  const el = document.getElementById(id); if(!el) return;
+  el.querySelectorAll('.color-dot').forEach(d => d.classList.toggle('selected', d.dataset.color===color));
+}
+
+// ═══════════════════════════════════════════════════
+//  WYSIWYG Editor
+// ═══════════════════════════════════════════════════
+function execCmd(cmd, value=null) {
+  const editor = document.getElementById('wysiwygEditor');
+  editor.focus();
+  document.execCommand(cmd, false, value);
+  updateToolbarState();
+  updateWordCount();
+}
+
+function applyBlockFormat(tag) {
+  const editor = document.getElementById('wysiwygEditor');
+  editor.focus();
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+
+  // Find the current block element
+  let block = range.commonAncestorContainer;
+  while(block && block !== editor && block.nodeType !== Node.ELEMENT_NODE) block = block.parentNode;
+  if(!block || block === editor) {
+    document.execCommand('formatBlock', false, `<${tag}>`);
+    updateToolbarState(); updateWordCount(); return;
   }
+
+  const currentTag = block.tagName ? block.tagName.toLowerCase() : '';
+  // Toggle: if already the same tag, revert to p
+  const targetTag = (currentTag === tag) ? 'p' : tag;
+  document.execCommand('formatBlock', false, `<${targetTag}>`);
+
+  // Reset select to reflect new state
+  setTimeout(updateToolbarState, 10);
+  updateWordCount();
+  // Reset select value if reverted
+  const fmt = document.getElementById('blockFormat');
+  if(targetTag === 'p') fmt.value = 'p';
 }
 
-function updateMemoPreview() {
-  const content = document.getElementById('memoContent').value;
-  const preview = document.getElementById('memoPreview');
-  preview.innerHTML = typeof marked !== 'undefined'
-    ? marked.parse(content || '*プレビューする内容がありません*')
-    : content.replace(/\n/g, '<br>');
+function updateToolbarState() {
+  const cmds = ['bold','italic','strikeThrough','underline','insertUnorderedList','insertOrderedList','justifyLeft','justifyCenter','justifyRight'];
+  cmds.forEach(cmd => {
+    const btn = document.getElementById(`btn-${cmd}`);
+    if(btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+  });
+  // Update block format select
+  const fmt = document.getElementById('blockFormat');
+  if(!fmt) return;
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return;
+  let node = sel.getRangeAt(0).commonAncestorContainer;
+  while(node && node.nodeType !== Node.ELEMENT_NODE) node = node.parentNode;
+  if(!node) return;
+  const tag = node.tagName ? node.tagName.toLowerCase() : 'p';
+  const validTags = ['p','h1','h2','h3','pre','blockquote'];
+  fmt.value = validTags.includes(tag) ? tag : 'p';
 }
 
-// ─── Todo 操作 ────────────────────────────────────────────────────
+function updateWordCount() {
+  const editor = document.getElementById('wysiwygEditor');
+  const text = editor.innerText || '';
+  document.getElementById('wordCount').innerHTML = `${text.length} <span data-i18n="chars">${t('chars')}</span>`;
+}
+
+function insertEditorLink() {
+  const url = prompt('URL:','https://');
+  if(!url) return;
+  const sel = window.getSelection();
+  const text = sel.toString() || url;
+  execCmd('insertHTML', `<a href="${url}" target="_blank">${text}</a>`);
+}
+
+function insertEditorTable() {
+  const html = `<table><thead><tr><th>Col 1</th><th>Col 2</th><th>Col 3</th></tr></thead><tbody><tr><td>Data</td><td>Data</td><td>Data</td></tr><tr><td>Data</td><td>Data</td><td>Data</td></tr></tbody></table><p></p>`;
+  execCmd('insertHTML', html);
+}
+
+function getEditorHTML() { return document.getElementById('wysiwygEditor').innerHTML; }
+function setEditorHTML(html) {
+  const editor = document.getElementById('wysiwygEditor');
+  editor.innerHTML = html || '';
+  updateWordCount();
+}
+function clearEditor() { setEditorHTML(''); }
+
+// ═══════════════════════════════════════════════════
+//  Memo view modal
+// ═══════════════════════════════════════════════════
+function openMemoViewModal(id) {
+  const memo = memos.find(m=>m.id===id); if(!memo) return;
+  viewingMemoId = id;
+  document.getElementById('memoViewTitle').textContent = memo.title;
+  document.getElementById('memoViewDate').textContent = memo.date;
+  document.getElementById('memoViewTags').innerHTML = (memo.tags||[]).map(tg=>`<span class="memo-tag-item">#${tg}</span>`).join('');
+  // Content is stored as HTML (from WYSIWYG)
+  document.getElementById('memoViewContent').innerHTML = memo.content || '';
+  document.getElementById('memoViewModal').classList.add('active');
+}
+function closeMemoViewModal() { document.getElementById('memoViewModal').classList.remove('active'); viewingMemoId=null; }
+
+document.getElementById('memoViewEdit').addEventListener('click', ()=>{ if(!viewingMemoId) return; closeMemoViewModal(); editMemo(viewingMemoId); });
+document.getElementById('memoViewDuplicate').addEventListener('click', ()=>{ if(!viewingMemoId) return; duplicateMemo(viewingMemoId); closeMemoViewModal(); });
+document.getElementById('memoViewExport').addEventListener('click', ()=>{ if(!viewingMemoId) return; exportMemo(viewingMemoId); });
+document.getElementById('memoViewDelete').addEventListener('click', async ()=>{ if(!viewingMemoId) return; closeMemoViewModal(); await deleteMemo(viewingMemoId); });
+
+// ═══════════════════════════════════════════════════
+//  Dashboard
+// ═══════════════════════════════════════════════════
+function renderDashboard() {
+  const total = todos.length, comp = todos.filter(x=>x.completed).length, active = total - comp;
+  const rate = total > 0 ? Math.round((comp/total)*100) : 0;
+  document.getElementById('dashStats').innerHTML = `
+    <div class="dash-card">
+      <div class="dash-card-title">📝 ${t('totalTasks')}</div>
+      <div class="dash-stat-big">${total}</div>
+      <div class="dash-stat-sub">${t('active')} ${active} / ${t('completed')} ${comp}</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${rate}%"></div></div>
+        <div class="progress-label"><span>${t('rate')}</span><span>${rate}%</span></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">📄 ${t('totalMemos')}</div>
+      <div class="dash-stat-big">${memos.length}</div>
+      <div class="dash-stat-sub">${t('totalTags')} ${allMemoTags.size}</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">🔴 ${t('overdue')}</div>
+      <div class="dash-stat-big" style="color:#ef4444;text-shadow:0 0 20px rgba(239,68,68,0.5)">${countOverdue()}</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">🟡 ${t('todayDue')}</div>
+      <div class="dash-stat-big" style="color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,0.5)">${countDueToday()}</div>
+    </div>`;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const urgent = todos.filter(x=>{ if(x.completed||!x.dueDate)return false; const d=new Date(x.dueDate);d.setHours(0,0,0,0);return d<=today; }).slice(0,8);
+  const urgentDiv = document.getElementById('dashUrgentTodos');
+  urgentDiv.innerHTML = urgent.length===0
+    ? `<div class="dash-empty">${t('noUrgent')}</div>`
+    : urgent.map(x=>{ const d=new Date(x.dueDate);d.setHours(0,0,0,0);const od=d<today; return `<div class="dash-todo-item ${od?'overdue':'today'} ${x.color||''}"><span>${od?'🔴':'🟡'}</span><span style="flex:1;font-size:0.9rem">${x.text}</span><span style="font-size:0.75rem;color:#6b7280">${new Date(x.dueDate).toLocaleDateString()}</span></div>`; }).join('');
+  const recentDiv = document.getElementById('dashRecentMemos');
+  recentDiv.innerHTML = memos.length===0
+    ? `<div class="dash-empty">${t('noMemos')}</div>`
+    : memos.slice(0,6).map(m=>`<div class="dash-memo-item ${m.color||''}" onclick="openMemoViewModal(${m.id})"><div class="dash-memo-title">${m.title}</div><div class="dash-memo-date">${m.date}</div></div>`).join('');
+}
+function countOverdue() { const today=new Date();today.setHours(0,0,0,0);return todos.filter(x=>{if(x.completed||!x.dueDate)return false;const d=new Date(x.dueDate);d.setHours(0,0,0,0);return d<today;}).length; }
+function countDueToday() { const today=new Date();today.setHours(0,0,0,0);return todos.filter(x=>{if(x.completed||!x.dueDate)return false;const d=new Date(x.dueDate);d.setHours(0,0,0,0);return d.getTime()===today.getTime();}).length; }
+
+// ═══════════════════════════════════════════════════
+//  Todo CRUD
+// ═══════════════════════════════════════════════════
+function toggleTodoDetail() {
+  todoDetailOpen = !todoDetailOpen;
+  document.getElementById('todoOptionsRow').classList.toggle('open', todoDetailOpen);
+  document.getElementById('toggleDetailBtn').classList.toggle('open', todoDetailOpen);
+  document.getElementById('toggleDetailLabel').textContent = todoDetailOpen ? '詳細を閉じる' : '詳細を設定';
+}
+function updateTodoBadges() {
+  const p = document.getElementById('newTodoPriority').value;
+  const d = document.getElementById('newTodoDueDate').value;
+  const tg = document.getElementById('newTodoTags').value.trim();
+  const c = newTodoColor;
+  const b = [];
+  if (p) { const pm = {high:'🔴 高', medium:'🟡 中', low:'🟢 低'}; b.push(`<span class="todo-add-badge">${pm[p]}</span>`); }
+  if (d) b.push(`<span class="todo-add-badge">📅 ${new Date(d).toLocaleDateString()}</span>`);
+  if (tg) tg.split(',').slice(0,3).map(s=>s.trim()).filter(Boolean).forEach(s => b.push(`<span class="todo-add-badge">#${s}</span>`));
+  if (c) { const cm = {'label-red':'🔴','label-orange':'🟠','label-yellow':'🟡','label-green':'🟢','label-blue':'🔵','label-purple':'🟣'}; if(cm[c]) b.push(`<span class="todo-add-badge">${cm[c]}</span>`); }
+  document.getElementById('todoBadges').innerHTML = b.join('');
+}
 function addTodo() {
-  const text = document.getElementById('todoInput').value.trim();
-  if (!text) return;
-  todos.unshift({
-    id: Date.now(),
-    text,
-    completed: false,
-    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
-    priority: '',
-    tags: [],
-    dueDate: null,
-    note: ''
-  });
+  const text = document.getElementById('todoInput').value.trim(); if (!text) return;
+  const priority = document.getElementById('newTodoPriority').value;
+  const dueDate  = document.getElementById('newTodoDueDate').value;
+  const tagsRaw  = document.getElementById('newTodoTags').value.trim();
+  const note     = document.getElementById('newTodoNote').value.trim();
+  const tags     = tagsRaw ? tagsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  todos.unshift({ id:Date.now(), text, completed:false, date:new Date().toLocaleString(), priority, dueDate:dueDate||null, tags, note, color:newTodoColor });
   document.getElementById('todoInput').value = '';
-  saveData();
-  renderTodos();
+  document.getElementById('newTodoPriority').value = '';
+  document.getElementById('newTodoDueDate').value = '';
+  document.getElementById('newTodoTags').value = '';
+  document.getElementById('newTodoNote').value = '';
+  newTodoColor = ''; setColorPicker('todoColorPicker', ''); updateTodoBadges();
+  saveData(); renderTodos(); renderDashboard();
 }
-
 function toggleTodo(id) {
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return;
-  todo.completed = !todo.completed;
-  if (todo.completed) {
-    todo.completedDate = new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US');
-  } else {
-    delete todo.completedDate;
-  }
-  saveData();
-  renderTodos();
+  const x=todos.find(x=>x.id===id); if(!x) return;
+  x.completed=!x.completed; if(x.completed) x.completedDate=new Date().toLocaleString(); else delete x.completedDate;
+  saveData(); renderTodos(); renderDashboard();
 }
-
 async function deleteTodo(id) {
-  const confirmed = await customConfirm(
-    currentLang === 'ja' ? 'このタスクを削除しますか?' : 'Delete this task?',
-    '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete')
-  );
-  if (confirmed) {
-    todos.splice(todos.findIndex(t => t.id === id), 1);
-    saveData();
-    renderTodos();
-  }
+  const idx=todos.findIndex(x=>x.id===id); if(idx<0) return;
+  const item=todos[idx];
+  if(!await customConfirm(t('deleteTaskConfirm'), t('deleteTaskTitle'))) return;
+  todos.splice(idx,1); saveData(); renderTodos(); renderDashboard();
+  showUndo(`「${item.text.substring(0,20)}」${t('taskDeleted')}`, 'todo', item, idx);
 }
-
 function duplicateTodo(id) {
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return;
-  todos.unshift({
-    ...todo,
-    id: Date.now(),
-    completed: false,
-    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
-    text: todo.text + (currentLang === 'ja' ? ' (コピー)' : ' (Copy)')
-  });
-  saveData();
-  renderTodos();
+  const x=todos.find(x=>x.id===id); if(!x) return;
+  todos.unshift({...x, id:Date.now(), completed:false, date:new Date().toLocaleString(), text:x.text+t('copyOf')});
+  saveData(); renderTodos(); renderDashboard();
 }
-
 function exportTodo(id) {
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return;
-  const t = translations[currentLang];
-  let content = `${currentLang === 'ja' ? 'タスク' : 'Task'}: ${todo.text}\n${'='.repeat(50)}\n\n`;
-  content += `${currentLang === 'ja' ? '状態' : 'Status'}: ${todo.completed ? '✓ ' + t.completed : '☐ ' + t.active}\n`;
-  if (todo.priority) content += `${currentLang === 'ja' ? '優先度' : 'Priority'}: ${t['priority_' + todo.priority]}\n`;
-  if (todo.dueDate) content += `${currentLang === 'ja' ? '期限' : 'Due Date'}: ${new Date(todo.dueDate).toLocaleDateString()}\n`;
-  if (todo.tags && todo.tags.length > 0) content += `${currentLang === 'ja' ? 'タグ' : 'Tags'}: ${todo.tags.join(', ')}\n`;
-  if (todo.note) content += `\n${currentLang === 'ja' ? 'メモ' : 'Note'}:\n${todo.note}\n`;
-  content += `\n${currentLang === 'ja' ? '作成日時' : 'Created'}: ${todo.date || ''}`;
-  if (todo.completedDate) content += `\n${currentLang === 'ja' ? '完了日時' : 'Completed'}: ${todo.completedDate}`;
-  downloadTextFile(todo.text.substring(0, 30).replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt', content);
+  const x=todos.find(x=>x.id===id); if(!x) return;
+  let c=`Task: ${x.text}\n${'='.repeat(50)}\n\n`;
+  c+=`Status: ${x.completed?'✓ '+t('completed'):'☐ '+t('active')}\n`;
+  if(x.priority) c+=`Priority: ${t(x.priority)}\n`;
+  if(x.dueDate) c+=`Due: ${new Date(x.dueDate).toLocaleDateString()}\n`;
+  if(x.tags&&x.tags.length) c+=`Tags: ${x.tags.join(', ')}\n`;
+  if(x.note) c+=`\nNote:\n${x.note}\n`;
+  downloadText(x.text.substring(0,30).replace(/[^\w\u3040-\u9FAF]/g,'_')+'.txt', c);
 }
-
 async function exportAllTodos() {
-  const t = translations[currentLang];
-  if (todos.length === 0) {
-    await customConfirm(t.no_tasks_export, 'ℹ️ Info', false);
-    return;
-  }
-  const header = currentLang === 'ja' ? 'タスクリスト' : 'Task List';
-  let content = header + '\n' + '='.repeat(50) + '\n\n';
-  const active = todos.filter(t => !t.completed);
-  const completed = todos.filter(t => t.completed);
-  if (active.length > 0) {
-    content += `【${currentLang === 'ja' ? '未完了' : 'Active'}】\n`;
-    active.forEach((todo, i) => {
-      content += `${i + 1}. ☐ ${todo.text}`;
-      if (todo.priority) content += ` [${t['priority_' + todo.priority]}]`;
-      if (todo.dueDate) content += ` (期限: ${new Date(todo.dueDate).toLocaleDateString()})`;
-      if (todo.tags && todo.tags.length > 0) content += ` #${todo.tags.join(' #')}`;
-      content += '\n';
-    });
-    content += '\n';
-  }
-  if (completed.length > 0) {
-    content += `【${currentLang === 'ja' ? '完了済み' : 'Completed'}】\n`;
-    completed.forEach((todo, i) => {
-      content += `${i + 1}. ☑ ${todo.text}\n`;
-    });
-  }
-  content += '\n' + '='.repeat(50) + '\n';
-  content += `合計: ${todos.length} | 未完了: ${active.length} | 完了済み: ${completed.length}\n`;
-  downloadTextFile(`todos_${new Date().toISOString().split('T')[0]}.txt`, content);
+  if(!todos.length){await customConfirm(t('noTasksExport'),'ℹ️',false);return;}
+  let c=t('taskList')+'\n'+'='.repeat(50)+'\n\n';
+  todos.filter(x=>!x.completed).forEach((x,i)=>{c+=`${i+1}. ☐ ${x.text}\n`;});
+  c+='\n'; todos.filter(x=>x.completed).forEach((x,i)=>{c+=`${i+1}. ☑ ${x.text}\n`;});
+  downloadText(`todos_${new Date().toISOString().split('T')[0]}.txt`,c);
 }
-
 async function clearCompleted() {
-  const confirmed = await customConfirm(
-    currentLang === 'ja' ? '完了済みのタスクをすべて削除しますか?' : 'Clear all completed tasks?',
-    '⚠️ ' + (currentLang === 'ja' ? '一括削除確認' : 'Confirm Clear')
-  );
-  if (confirmed) {
-    todos = todos.filter(t => !t.completed);
-    saveData();
-    renderTodos();
-  }
+  if(!await customConfirm(t('clearCompletedConfirm'),t('clearCompletedTitle'))) return;
+  todos=todos.filter(x=>!x.completed); saveData(); renderTodos(); renderDashboard();
 }
-
 function openEditTodoModal(id) {
-  editingTodoId = id;
-  const todo = todos.find(t => t.id === id);
-  if (!todo) return;
-  document.getElementById('editTodoText').value = todo.text;
-  document.getElementById('editTodoPriority').value = todo.priority || '';
-  document.getElementById('editTodoDueDate').value = todo.dueDate || '';
-  document.getElementById('editTodoTags').value = todo.tags ? todo.tags.join(', ') : '';
-  document.getElementById('editTodoNote').value = todo.note || '';
+  editingTodoId=id; const x=todos.find(x=>x.id===id); if(!x) return;
+  document.getElementById('editTodoText').value=x.text;
+  document.getElementById('editTodoPriority').value=x.priority||'';
+  document.getElementById('editTodoDueDate').value=x.dueDate||'';
+  document.getElementById('editTodoTags').value=x.tags?x.tags.join(', '):'';
+  document.getElementById('editTodoNote').value=x.note||'';
+  setColorPicker('editTodoColorPicker', x.color||'');
   document.getElementById('editTodoModal').classList.add('active');
 }
-
-function closeEditTodoModal() {
-  document.getElementById('editTodoModal').classList.remove('active');
-  editingTodoId = null;
-}
-
+function closeEditTodoModal(){document.getElementById('editTodoModal').classList.remove('active');editingTodoId=null;}
 function saveEditedTodo() {
-  if (!editingTodoId) return;
-  const todo = todos.find(t => t.id === editingTodoId);
-  if (!todo) return;
-  todo.text = document.getElementById('editTodoText').value.trim();
-  todo.priority = document.getElementById('editTodoPriority').value;
-  todo.dueDate = document.getElementById('editTodoDueDate').value;
-  todo.note = document.getElementById('editTodoNote').value.trim();
-  const tagInput = document.getElementById('editTodoTags').value.trim();
-  todo.tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
-  saveData();
-  renderTodos();
-  closeEditTodoModal();
+  if(!editingTodoId) return; const x=todos.find(x=>x.id===editingTodoId); if(!x) return;
+  x.text=document.getElementById('editTodoText').value.trim();
+  x.priority=document.getElementById('editTodoPriority').value;
+  x.dueDate=document.getElementById('editTodoDueDate').value;
+  x.note=document.getElementById('editTodoNote').value.trim();
+  const ti=document.getElementById('editTodoTags').value.trim();
+  x.tags=ti?ti.split(',').map(s=>s.trim()).filter(s=>s):[];
+  const sel=document.querySelector('#editTodoColorPicker .color-dot.selected');
+  x.color=sel?sel.dataset.color:'';
+  saveData(); renderTodos(); renderDashboard(); closeEditTodoModal();
 }
-
 function getDueDateStatus(dueDate) {
-  if (!dueDate) return null;
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const due = new Date(dueDate); due.setHours(0, 0, 0, 0);
-  const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return { text: currentLang === 'ja' ? '期限切れ' : 'Overdue', class: 'overdue' };
-  if (diffDays === 0) return { text: currentLang === 'ja' ? '今日' : 'Today', class: 'due-today' };
-  if (diffDays === 1) return { text: currentLang === 'ja' ? '明日' : 'Tomorrow', class: 'due-tomorrow' };
-  return { text: new Date(dueDate).toLocaleDateString(currentLang === 'ja' ? 'ja-JP' : 'en-US'), class: '' };
+  if(!dueDate) return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const due=new Date(dueDate);due.setHours(0,0,0,0);
+  const d=Math.ceil((due-today)/(864e5));
+  if(d<0) return {text:t('overdueLabel'),cls:'overdue'};
+  if(d===0) return {text:t('todayDue'),cls:''};
+  if(d===1) return {text:t('tomorrowDue'),cls:''};
+  return {text:due.toLocaleDateString(),cls:''};
 }
-
 function sortTodos(arr) {
-  const sorted = [...arr];
-  switch (currentTodoSort) {
-    case 'oldest': return sorted.reverse();
-    case 'priority':
-      const order = { 'high': 0, 'medium': 1, 'low': 2, '': 3 };
-      return sorted.sort((a, b) => order[a.priority || ''] - order[b.priority || '']);
-    case 'duedate':
-      return sorted.sort((a, b) => {
-        if (!a.dueDate && !b.dueDate) return 0;
-        if (!a.dueDate) return 1;
-        if (!b.dueDate) return -1;
-        return new Date(a.dueDate) - new Date(b.dueDate);
-      });
-    case 'alphabetical': return sorted.sort((a, b) => a.text.localeCompare(b.text));
-    default: return sorted;
-  }
+  const s=[...arr];
+  if(currentTodoSort==='oldest') return s.reverse();
+  if(currentTodoSort==='priority'){const o={high:0,medium:1,low:2,'':3};return s.sort((a,b)=>o[a.priority||'']-o[b.priority||'']);}
+  if(currentTodoSort==='duedate') return s.sort((a,b)=>{if(!a.dueDate&&!b.dueDate)return 0;if(!a.dueDate)return 1;if(!b.dueDate)return -1;return new Date(a.dueDate)-new Date(b.dueDate);});
+  if(currentTodoSort==='alphabetical') return s.sort((a,b)=>a.text.localeCompare(b.text));
+  return s;
 }
-
 function renderTodos() {
-  const t = translations[currentLang];
-  let filtered = todos.filter(todo => {
-    if (currentFilter === 'active') return !todo.completed;
-    if (currentFilter === 'completed') return todo.completed;
-    if (currentFilter === 'high') return todo.priority === 'high';
-    if (currentFilter === 'medium') return todo.priority === 'medium';
-    if (currentFilter === 'low') return todo.priority === 'low';
-    if (currentFilter === 'overdue') {
-      if (!todo.dueDate || todo.completed) return false;
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const due = new Date(todo.dueDate); due.setHours(0, 0, 0, 0);
-      return due < today;
-    }
+  let filtered=todos.filter(x=>{
+    if(currentFilter==='active') return !x.completed;
+    if(currentFilter==='completed') return x.completed;
+    if(currentFilter==='high') return x.priority==='high';
+    if(currentFilter==='medium') return x.priority==='medium';
+    if(currentFilter==='low') return x.priority==='low';
+    if(currentFilter==='overdue'){if(!x.dueDate||x.completed)return false;const today=new Date();today.setHours(0,0,0,0);const due=new Date(x.dueDate);due.setHours(0,0,0,0);return due<today;}
     return true;
   });
-  filtered = sortTodos(filtered);
-
-  const list = document.getElementById('todoList');
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">${t.no_tasks}</div></div>`;
+  filtered=sortTodos(filtered);
+  const list=document.getElementById('todoList');
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">${t('noTasks')}</div></div>`;
   } else {
-    list.innerHTML = filtered.map(todo => {
-      const dueStatus = getDueDateStatus(todo.dueDate);
-      return `
-        <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
-          <div class="todo-main-row">
-            <div class="checkbox ${todo.completed ? 'checked' : ''}" data-action="toggle" data-id="${todo.id}"></div>
-            <div class="todo-text">${todo.text}</div>
-            <div class="todo-actions">
-              ${todo.priority ? `<span class="priority-badge priority-${todo.priority}">${t['priority_' + todo.priority]}</span>` : ''}
-              ${dueStatus ? `<span class="due-date-badge ${dueStatus.class}">${dueStatus.text}</span>` : ''}
-              <button class="action-btn duplicate" data-action="duplicate" data-id="${todo.id}">📋</button>
-              <button class="action-btn edit" data-action="edit" data-id="${todo.id}">✏️</button>
-              <button class="action-btn export" data-action="export" data-id="${todo.id}">💾</button>
-              <button class="action-btn" data-action="delete" data-id="${todo.id}">🗑️</button>
-            </div>
+    list.innerHTML=filtered.map(x=>{
+      const ds=getDueDateStatus(x.dueDate);
+      const pLabel=x.priority==='high'?t('high'):x.priority==='medium'?t('medium'):x.priority==='low'?t('low'):'';
+      return `<li class="todo-item ${x.completed?'completed':''} ${x.color||''}" data-id="${x.id}">
+        <div class="todo-main-row">
+          <div class="checkbox ${x.completed?'checked':''}" data-action="toggle" data-id="${x.id}"></div>
+          <div class="todo-text">${x.text}</div>
+          <div class="todo-actions">
+            ${x.priority?`<span class="priority-badge priority-${x.priority}">${pLabel}</span>`:''}
+            ${ds?`<span class="due-date-badge ${ds.cls}">${ds.text}</span>`:''}
+            <button class="action-btn duplicate" data-action="duplicate" data-id="${x.id}">📋</button>
+            <button class="action-btn edit"      data-action="edit"      data-id="${x.id}">✏️</button>
+            <button class="action-btn export"    data-action="export"    data-id="${x.id}">💾</button>
+            <button class="action-btn"           data-action="delete"    data-id="${x.id}">🗑️</button>
           </div>
-          ${todo.tags && todo.tags.length > 0 ? `<div class="todo-meta">${todo.tags.map(tag => `<span class="todo-tag">#${tag}</span>`).join('')}</div>` : ''}
-          ${todo.note ? `<div class="todo-meta"><span style="color:#d1d5db">${todo.note}</span></div>` : ''}
-        </li>`;
+        </div>
+        ${x.tags&&x.tags.length?`<div class="todo-meta">${x.tags.map(tg=>`<span class="todo-tag">#${tg}</span>`).join('')}</div>`:''}
+        ${x.note?`<div class="todo-meta"><span style="color:#9ca3af;font-size:0.85rem">${x.note}</span></div>`:''}
+      </li>`;
     }).join('');
   }
   updateStats();
-
-  if (typeof Sortable !== 'undefined') {
-    if (todoSortable) todoSortable.destroy();
-    todoSortable = Sortable.create(list, {
-      animation: 150,
-      handle: '.todo-text',
-      onEnd: () => {
-        const newOrder = Array.from(list.children).map(el => parseInt(el.dataset.id));
-        const reordered = [];
-        newOrder.forEach(id => { const t = todos.find(t => t.id === id); if (t) reordered.push(t); });
-        todos = reordered;
-        saveData();
-      }
-    });
+  if(typeof Sortable!=='undefined'){
+    if(todoSortable) todoSortable.destroy();
+    todoSortable=Sortable.create(list,{animation:150,handle:'.todo-text',onEnd:()=>{
+      const ids=Array.from(list.children).map(el=>parseInt(el.dataset.id));
+      const re=[]; ids.forEach(id=>{const x=todos.find(x=>x.id===id);if(x)re.push(x);}); todos=re; saveData();
+    }});
   }
 }
-
-function updateStats() {
-  const total = todos.length;
-  const completed = todos.filter(t => t.completed).length;
-  const active = total - completed;
-  const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-  document.getElementById('totalTasks').textContent = total;
-  document.getElementById('activeTasks').textContent = active;
-  document.getElementById('completedTasks').textContent = completed;
-  document.getElementById('completionRate').textContent = rate + '%';
+function updateStats(){
+  const total=todos.length,comp=todos.filter(x=>x.completed).length;
+  document.getElementById('totalTasks').textContent=total;
+  document.getElementById('activeTasks').textContent=total-comp;
+  document.getElementById('completedTasks').textContent=comp;
+  document.getElementById('completionRate').textContent=(total>0?Math.round((comp/total)*100):0)+'%';
 }
 
-// ─── Memo 操作 ────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  Memo CRUD
+// ═══════════════════════════════════════════════════
 function addMemo() {
-  const title = document.getElementById('memoTitle').value.trim();
-  const content = document.getElementById('memoContent').value.trim();
-  if (!title && !content) return;
-  const tagInput = document.getElementById('memoTags').value.trim();
-  const tags = tagInput ? tagInput.split(',').map(t => t.trim()).filter(t => t) : [];
-  memos.unshift({
-    id: Date.now(),
-    title: title || (currentLang === 'ja' ? '無題' : 'Untitled'),
-    content,
-    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US'),
-    tags
-  });
-  document.getElementById('memoTitle').value = '';
-  document.getElementById('memoContent').value = '';
-  document.getElementById('memoTags').value = '';
-  saveData();
-  updateMemoTags();
-  renderMemos();
-}
+  const title=document.getElementById('memoTitleInput').value.trim();
+  const content=getEditorHTML().trim();
+  if(!title&&!content) return;
+  const ti=document.getElementById('memoTags').value.trim();
+  const tags = ti?ti.split(',').map(s=>s.trim()).filter(s=>s):[];
 
-async function deleteMemo(id) {
-  const confirmed = await customConfirm(
-    currentLang === 'ja' ? 'このメモを削除しますか?' : 'Delete this memo?',
-    '⚠️ ' + (currentLang === 'ja' ? '削除確認' : 'Confirm Delete')
-  );
-  if (confirmed) {
-    memos.splice(memos.findIndex(m => m.id === id), 1);
-    saveData();
-    updateMemoTags();
-    renderMemos();
-  }
-}
-
-function duplicateMemo(id) {
-  const memo = memos.find(m => m.id === id);
-  if (!memo) return;
-  memos.unshift({
-    ...memo,
-    id: Date.now(),
-    title: memo.title + (currentLang === 'ja' ? ' (コピー)' : ' (Copy)'),
-    date: new Date().toLocaleString(currentLang === 'ja' ? 'ja-JP' : 'en-US')
-  });
-  saveData();
-  updateMemoTags();
-  renderMemos();
-}
-
-function editMemo(id) {
-  const memo = memos.find(m => m.id === id);
-  if (!memo) return;
-  document.getElementById('memoTitle').value = memo.title;
-  document.getElementById('memoContent').value = memo.content;
-  document.getElementById('memoTags').value = memo.tags ? memo.tags.join(', ') : '';
-  memos.splice(memos.findIndex(m => m.id === id), 1);
-  saveData();
-  updateMemoTags();
-  renderMemos();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  document.getElementById('memoTitle').focus();
-}
-
-function exportMemo(id) {
-  const memo = memos.find(m => m.id === id);
-  if (!memo) return;
-  let content = memo.title + '\n' + '='.repeat(memo.title.length) + '\n\n' + memo.content + '\n\n';
-  if (memo.tags && memo.tags.length > 0) content += `タグ: ${memo.tags.join(', ')}\n\n`;
-  content += `---\n作成日時: ${memo.date}`;
-  downloadTextFile(memo.title.replace(/[^a-zA-Z0-9_\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_') + '.txt', content);
-}
-
-async function exportAllMemos() {
-  if (memos.length === 0) {
-    await customConfirm(currentLang === 'ja' ? 'エクスポートするメモがありません' : 'No memos to export', 'ℹ️ Info', false);
-    return;
-  }
-  let content = (currentLang === 'ja' ? 'メモコレクション' : 'Memo Collection') + '\n' + '='.repeat(50) + '\n\n';
-  memos.forEach((memo, i) => {
-    content += `${i + 1}. ${memo.title}\n${'-'.repeat(memo.title.length + 3)}\n${memo.content}\n`;
-    if (memo.tags && memo.tags.length > 0) content += `タグ: ${memo.tags.join(', ')}\n`;
-    content += `作成日時: ${memo.date}\n\n${'='.repeat(50)}\n\n`;
-  });
-  downloadTextFile(`all_memos_${new Date().toISOString().split('T')[0]}.txt`, content);
-}
-
-function updateMemoTags() {
-  allMemoTags.clear();
-  memos.forEach(memo => { if (memo.tags) memo.tags.forEach(tag => allMemoTags.add(tag)); });
-  const filtersDiv = document.getElementById('memoFilters');
-  const allLabel = currentLang === 'ja' ? 'すべて' : 'All';
-  filtersDiv.innerHTML =
-    `<button class="filter-btn ${currentMemoFilter === 'all' ? 'active' : ''}" onclick="filterMemosByTag('all')">${allLabel}</button>` +
-    Array.from(allMemoTags).map(tag =>
-      `<button class="filter-btn ${currentMemoFilter === tag ? 'active' : ''}" onclick="filterMemosByTag('${tag}')">#${tag}</button>`
-    ).join('');
-}
-
-function filterMemosByTag(tag) {
-  currentMemoFilter = tag;
-  updateMemoTags();
-  renderMemos();
-}
-
-function sortMemos(arr) {
-  const sorted = [...arr];
-  switch (currentMemoSort) {
-    case 'oldest': return sorted.reverse();
-    case 'alphabetical': return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'longest': return sorted.sort((a, b) => b.content.length - a.content.length);
-    default: return sorted;
-  }
-}
-
-function renderMemos() {
-  const t = translations[currentLang];
-  let filtered = memos.filter(memo => currentMemoFilter === 'all' || (memo.tags && memo.tags.includes(currentMemoFilter)));
-  filtered = sortMemos(filtered);
-  const list = document.getElementById('memoList');
-  if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📝</div><div class="empty-state-text">${t.no_memos}</div></div>`;
+  if(editingMemoId) {
+    // 上書き更新
+    const idx = memos.findIndex(m=>m.id===editingMemoId);
+    if(idx>=0) {
+      memos[idx] = { ...memos[idx], title:title||'無題', content, tags, color:newMemoColor,
+        updatedDate:new Date().toLocaleString() };
+    }
+    editingMemoId = null;
+    showInfo('✅', currentLang==='ja' ? 'メモを更新しました' : 'Memo updated');
   } else {
-    list.innerHTML = filtered.map(memo => `
-      <div class="memo-item" data-id="${memo.id}">
+    // 新規作成
+    memos.unshift({ id:Date.now(), title:title||'無題', content, date:new Date().toLocaleString(),
+      tags, color:newMemoColor });
+    showInfo('📝', currentLang==='ja' ? 'メモを保存しました' : 'Memo saved');
+  }
+
+  document.getElementById('memoTitleInput').value=''; clearEditor();
+  document.getElementById('memoTags').value='';
+  newMemoColor=''; setColorPicker('memoColorPicker','');
+  saveData(); updateMemoTags(); renderMemos(); renderDashboard();
+}
+async function deleteMemo(id) {
+  const idx=memos.findIndex(m=>m.id===id); if(idx<0) return;
+  const item=memos[idx];
+  if(!await customConfirm(t('deleteMemoConfirm'),t('deleteMemoTitle'))) return;
+  memos.splice(idx,1); saveData(); updateMemoTags(); renderMemos(); renderDashboard();
+  showUndo(`「${item.title.substring(0,20)}」${t('memoDeleted')}`, 'memo', item, idx);
+}
+function duplicateMemo(id) {
+  const m=memos.find(m=>m.id===id); if(!m) return;
+  memos.unshift({...m, id:Date.now(), title:m.title+t('copyOf'), date:new Date().toLocaleString()});
+  saveData(); updateMemoTags(); renderMemos(); renderDashboard();
+}
+function editMemo(id) {
+  const m=memos.find(m=>m.id===id); if(!m) return;
+  editingMemoId = id;  // 編集中IDを保持（削除しない）
+  // Switch to memo tab first
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('[data-mode="memo"]').classList.add('active');
+  ['todo-container','dashboard-container'].forEach(c=>document.querySelector('.'+c).classList.remove('active'));
+  document.querySelector('.memo-container').classList.add('active');
+  // Fill fields
+  document.getElementById('memoTitleInput').value = m.title;
+  document.getElementById('memoTags').value = m.tags ? m.tags.join(', ') : '';
+  newMemoColor = m.color||''; setColorPicker('memoColorPicker', newMemoColor);
+  // Set editor HTML after DOM is visible
+  setTimeout(() => { setEditorHTML(m.content); }, 0);
+  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('memoTitleInput').focus();
+  showInfo('✏️', currentLang==='ja' ? `「${m.title.substring(0,20)}」を編集中` : `Editing "${m.title.substring(0,20)}"`);
+}
+function exportMemo(id) {
+  const m=memos.find(m=>m.id===id); if(!m) return;
+  // Strip HTML for plain text export
+  const tmp=document.createElement('div'); tmp.innerHTML=m.content;
+  const text=tmp.innerText||tmp.textContent||'';
+  let c=m.title+'\n'+'='.repeat(m.title.length)+'\n\n'+text+'\n\n';
+  if(m.tags&&m.tags.length) c+=`Tags: ${m.tags.join(', ')}\n\n`;
+  c+=`---\nDate: ${m.date}`;
+  downloadText(m.title.replace(/[^\w\u3040-\u9FAF]/g,'_')+'.txt',c);
+}
+async function exportAllMemos() {
+  if(!memos.length){await customConfirm(t('noMemosExport'),'ℹ️',false);return;}
+  let c=t('memoCollection')+'\n'+'='.repeat(50)+'\n\n';
+  memos.forEach((m,i)=>{
+    const tmp=document.createElement('div'); tmp.innerHTML=m.content;
+    c+=`${i+1}. ${m.title}\n${'-'.repeat(m.title.length+3)}\n${tmp.innerText||''}\n---\n${m.date}\n\n${'='.repeat(50)}\n\n`;
+  });
+  downloadText(`all_memos_${new Date().toISOString().split('T')[0]}.txt`,c);
+}
+function updateMemoTags() {
+  allMemoTags.clear(); memos.forEach(m=>{if(m.tags)m.tags.forEach(tg=>allMemoTags.add(tg));});
+  const div=document.getElementById('memoFilters');
+  div.innerHTML=`<button class="filter-btn ${currentMemoFilter==='all'?'active':''}" onclick="filterMemosByTag('all')">${t('all')}</button>`+
+    Array.from(allMemoTags).map(tg=>`<button class="filter-btn ${currentMemoFilter===tg?'active':''}" onclick="filterMemosByTag('${tg}')">#${tg}</button>`).join('');
+}
+function filterMemosByTag(tag){currentMemoFilter=tag;updateMemoTags();renderMemos();}
+function sortMemos(arr){
+  const s=[...arr];
+  if(currentMemoSort==='oldest') return s.reverse();
+  if(currentMemoSort==='alphabetical') return s.sort((a,b)=>a.title.localeCompare(b.title));
+  if(currentMemoSort==='longest') return s.sort((a,b)=>b.content.length-a.content.length);
+  return s;
+}
+function renderMemos(){
+  let filtered=memos.filter(m=>currentMemoFilter==='all'||(m.tags&&m.tags.includes(currentMemoFilter)));
+  filtered=sortMemos(filtered);
+  const list=document.getElementById('memoList');
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📝</div><div class="empty-state-text">${t('noMemosYet')}</div></div>`;
+  } else {
+    list.innerHTML=filtered.map(m=>`
+      <div class="memo-item ${m.color||''}" data-id="${m.id}">
         <div class="memo-header">
-          <div class="memo-title">${memo.title}</div>
+          <div class="memo-title-display">${m.title}</div>
           <div class="memo-actions">
-            <button class="action-btn duplicate" data-action="duplicate" data-id="${memo.id}">📋</button>
-            <button class="action-btn edit" data-action="edit" data-id="${memo.id}">✏️</button>
-            <button class="action-btn export" data-action="export" data-id="${memo.id}">💾</button>
-            <button class="action-btn" data-action="delete" data-id="${memo.id}">🗑️</button>
+            <button class="action-btn duplicate" data-action="duplicate" data-id="${m.id}">📋</button>
+            <button class="action-btn edit"      data-action="edit"      data-id="${m.id}">✏️</button>
+            <button class="action-btn export"    data-action="export"    data-id="${m.id}">💾</button>
+            <button class="action-btn"           data-action="delete"    data-id="${m.id}">🗑️</button>
           </div>
         </div>
-        <div class="memo-content-preview">${typeof marked !== 'undefined' ? marked.parse(memo.content.substring(0, 200) + (memo.content.length > 200 ? '...' : '')) : memo.content.substring(0, 200)}</div>
-        ${memo.tags && memo.tags.length > 0 ? `<div class="memo-tags-display">${memo.tags.map(tag => `<span class="memo-tag-item">#${tag}</span>`).join('')}</div>` : ''}
-        <div class="memo-date">${memo.date}</div>
+        <div class="memo-content-preview">${m.content}</div>
+        ${m.tags&&m.tags.length?`<div class="memo-tags-display">${m.tags.map(tg=>`<span class="memo-tag-item">#${tg}</span>`).join('')}</div>`:''}
+        <div class="memo-date">${m.date}</div>
       </div>`).join('');
   }
 }
 
-// ─── Markdown 挿入ヘルパー ────────────────────────────────────────
-function insertText(text) {
-  const ta = document.getElementById('memoContent');
-  const start = ta.selectionStart, end = ta.selectionEnd;
-  const selected = ta.value.substring(start, end);
-  let inserted = text, cursor = text.length;
-  if (text === '**太字**' || text === '*斜体*' || text === '~~打ち消し線~~') {
-    let m = text === '**太字**' ? '**' : text === '*斜体*' ? '*' : '~~';
-    inserted = selected ? m + selected + m : text;
-    cursor = selected ? inserted.length : m.length;
-  } else if (text.includes('```')) {
-    inserted = selected ? '```\n' + selected + '\n```' : '```\n\n```';
-    cursor = selected ? inserted.length : 4;
-  }
-  ta.value = ta.value.substring(0, start) + inserted + ta.value.substring(end);
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = start + cursor;
+// ═══════════════════════════════════════════════════
+//  Utilities
+// ═══════════════════════════════════════════════════
+function downloadText(name, content) {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'}));
+  a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
 }
 
-function insertLink() {
-  const ta = document.getElementById('memoContent');
-  const start = ta.selectionStart, end = ta.selectionEnd;
-  const selected = ta.value.substring(start, end);
-  const inserted = selected ? `[${selected}](URL)` : '[リンクテキスト](URL)';
-  ta.value = ta.value.substring(0, start) + inserted + ta.value.substring(end);
-  ta.focus();
-  ta.selectionStart = start + (selected ? inserted.length - 4 : 1);
-  ta.selectionEnd = start + (selected ? inserted.length - 1 : 12);
-}
-
-function insertImage() {
-  const ta = document.getElementById('memoContent');
-  const s = ta.selectionStart;
-  const ins = '![画像の説明](画像のURL)';
-  ta.value = ta.value.substring(0, s) + ins + ta.value.substring(ta.selectionEnd);
-  ta.focus(); ta.selectionStart = s + 2; ta.selectionEnd = s + 8;
-}
-
-function insertTable() {
-  const ta = document.getElementById('memoContent');
-  const s = ta.selectionStart;
-  const tbl = `| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| データ1 | データ2 | データ3 |\n| データ4 | データ5 | データ6 |`;
-  ta.value = ta.value.substring(0, s) + tbl + ta.value.substring(ta.selectionEnd);
-  ta.focus(); ta.selectionStart = ta.selectionEnd = s + tbl.length;
-}
-
-function insertHorizontalRule() {
-  const ta = document.getElementById('memoContent');
-  const s = ta.selectionStart;
-  const hr = '\n---\n';
-  ta.value = ta.value.substring(0, s) + hr + ta.value.substring(ta.selectionEnd);
-  ta.focus(); ta.selectionStart = ta.selectionEnd = s + hr.length;
-}
-
-function downloadTextFile(filename, content) {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
-}
-
-// ─── 検索 ─────────────────────────────────────────────────────────
-function openSearch() {
-  document.getElementById('searchModal').classList.add('active');
-  document.getElementById('searchInput').focus();
-}
-
-function closeSearch() {
-  document.getElementById('searchModal').classList.remove('active');
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '';
-}
-
-function jumpTo(type, id) {
+// ═══════════════════════════════════════════════════
+//  Search
+// ═══════════════════════════════════════════════════
+function openSearch(){document.getElementById('searchModal').classList.add('active');document.getElementById('searchInput').focus();}
+function closeSearch(){document.getElementById('searchModal').classList.remove('active');document.getElementById('searchInput').value='';document.getElementById('searchResults').innerHTML='';}
+function jumpTo(type,id){
   closeSearch();
-  const modeButtons = document.querySelectorAll('.mode-btn');
-  const todoContainer = document.querySelector('.todo-container');
-  const memoContainer = document.querySelector('.memo-container');
-  modeButtons.forEach(btn => btn.classList.remove('active'));
-  if (type === 'todo') {
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.todo-container,.memo-container,.dashboard-container').forEach(c=>c.classList.remove('active'));
+  if(type==='todo'){
     document.querySelector('[data-mode="todo"]').classList.add('active');
-    todoContainer.classList.add('active');
-    memoContainer.classList.remove('active');
-    setTimeout(() => {
-      const el = document.querySelector(`[data-id="${id}"]`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.style.boxShadow = '0 0 30px rgba(103,6,118,0.8)';
-        setTimeout(() => el.style.boxShadow = '', 2000);
-      }
-    }, 100);
+    document.querySelector('.todo-container').classList.add('active');
+    setTimeout(()=>{const el=document.querySelector(`[data-id="${id}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 30px rgba(103,6,118,0.8)';setTimeout(()=>el.style.boxShadow='',2000);}},100);
   } else {
     document.querySelector('[data-mode="memo"]').classList.add('active');
-    todoContainer.classList.remove('active');
-    memoContainer.classList.add('active');
+    document.querySelector('.memo-container').classList.add('active');
+    setTimeout(()=>openMemoViewModal(id),100);
   }
 }
 
-// ─── 統計 ─────────────────────────────────────────────────────────
-function showStats() {
-  const modal = document.getElementById('statsModal');
-  const content = document.getElementById('statsContent');
-  const t = translations[currentLang];
-  const totalTodos = todos.length;
-  const activeTodos = todos.filter(t => !t.completed).length;
-  const completedTodos = todos.filter(t => t.completed).length;
-  const highPriority = todos.filter(t => t.priority === 'high').length;
-  const mediumPriority = todos.filter(t => t.priority === 'medium').length;
-  const lowPriority = todos.filter(t => t.priority === 'low').length;
-  const totalMemos = memos.length;
-
-  content.innerHTML = `
+// ═══════════════════════════════════════════════════
+//  Stats
+// ═══════════════════════════════════════════════════
+function showStats(){
+  const total=todos.length,comp=todos.filter(x=>x.completed).length,act=total-comp;
+  const hi=todos.filter(x=>x.priority==='high').length,mi=todos.filter(x=>x.priority==='medium').length,lo=todos.filter(x=>x.priority==='low').length;
+  document.getElementById('statsContent').innerHTML=`
     <div class="stats">
-      <div class="stat-item"><div class="stat-value">${totalTodos}</div><div class="stat-label">${t.total_tasks}</div></div>
-      <div class="stat-item"><div class="stat-value">${activeTodos}</div><div class="stat-label">${t.active_tasks}</div></div>
-      <div class="stat-item"><div class="stat-value">${completedTodos}</div><div class="stat-label">${t.completed_tasks}</div></div>
-      <div class="stat-item"><div class="stat-value">${highPriority}</div><div class="stat-label">${t.high_priority_tasks}</div></div>
-      <div class="stat-item"><div class="stat-value">${totalMemos}</div><div class="stat-label">${t.total_memos}</div></div>
-      <div class="stat-item"><div class="stat-value">${allMemoTags.size}</div><div class="stat-label">${t.tags_in_use}</div></div>
+      <div class="stat-item"><div class="stat-value">${total}</div><div class="stat-label">${t('totalTasks')}</div></div>
+      <div class="stat-item"><div class="stat-value">${act}</div><div class="stat-label">${t('activeTasks')}</div></div>
+      <div class="stat-item"><div class="stat-value">${comp}</div><div class="stat-label">${t('completedTasks')}</div></div>
+      <div class="stat-item"><div class="stat-value">${hi}</div><div class="stat-label">${t('highPriorityTasks')}</div></div>
+      <div class="stat-item"><div class="stat-value">${memos.length}</div><div class="stat-label">${t('totalMemos')}</div></div>
+      <div class="stat-item"><div class="stat-value">${allMemoTags.size}</div><div class="stat-label">${t('totalTags')}</div></div>
     </div>
     <div class="chart-container" style="margin-top:2rem"><canvas id="statsChart"></canvas></div>
     <div class="chart-container"><canvas id="priorityChart"></canvas></div>`;
-
-  modal.classList.add('active');
-
-  setTimeout(() => {
-    if (typeof Chart === 'undefined') return;
-    new Chart(document.getElementById('statsChart'), {
-      type: 'doughnut',
-      data: {
-        labels: [t.active_tasks, t.completed_tasks],
-        datasets: [{ data: [activeTodos, completedTodos], backgroundColor: ['#a855f7', '#10b981'], borderColor: ['#670676', '#059669'], borderWidth: 2 }]
-      },
-      options: { responsive: true, plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' }, title: { display: true, text: currentLang === 'ja' ? 'タスク完了状況' : 'Task Completion Status', color: '#a855f7', font: { size: 16, weight: 'bold' } } } }
-    });
-    new Chart(document.getElementById('priorityChart'), {
-      type: 'bar',
-      data: {
-        labels: [t.priority_high, t.priority_medium, t.priority_low],
-        datasets: [{ label: currentLang === 'ja' ? 'タスク数' : 'Tasks', data: [highPriority, mediumPriority, lowPriority], backgroundColor: ['#ef4444', '#fbbf24', '#10b981'], borderColor: ['#dc2626', '#f59e0b', '#059669'], borderWidth: 2 }]
-      },
-      options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } }, title: { display: true, text: currentLang === 'ja' ? '優先度別タスク数' : 'Tasks by Priority', color: '#a855f7', font: { size: 16, weight: 'bold' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(103,6,118,0.2)' } }, x: { ticks: { color: '#fff' }, grid: { color: 'rgba(103,6,118,0.2)' } } } }
-    });
-  }, 100);
+  document.getElementById('statsModal').classList.add('active');
+  setTimeout(()=>{
+    if(typeof Chart==='undefined') return;
+    new Chart(document.getElementById('statsChart'),{type:'doughnut',data:{labels:[t('activeTasks'),t('completedTasks')],datasets:[{data:[act,comp],backgroundColor:['#670676','#10b981'],borderColor:['#8800aa','#059669'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#fff'},position:'bottom'},title:{display:true,text:t('taskCompletionStatus'),color:'#fff',font:{size:16}}}}});
+    new Chart(document.getElementById('priorityChart'),{type:'bar',data:{labels:[t('high'),t('medium'),t('low')],datasets:[{label:t('total'),data:[hi,mi,lo],backgroundColor:['rgba(239,68,68,0.5)','rgba(251,191,36,0.5)','rgba(16,185,129,0.5)'],borderColor:['#ef4444','#fbbf24','#10b981'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#fff'}},title:{display:true,text:t('tasksByPriority'),color:'#fff',font:{size:16}}},scales:{y:{beginAtZero:true,ticks:{color:'#fff'},grid:{color:'rgba(103,6,118,0.2)'}},x:{ticks:{color:'#fff'},grid:{color:'rgba(103,6,118,0.2)'}}}}});
+  },100);
+}
+function closeStats(){document.getElementById('statsModal').classList.remove('active');}
+function openSettings(){document.getElementById('settingsModal').classList.add('active');}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('active');}
+function showKeyboardShortcuts(){document.getElementById('shortcutsModal').classList.add('active');}
+function closeKeyboardShortcuts(){document.getElementById('shortcutsModal').classList.remove('active');}
+function exportAllData(){downloadText(`todo-memo-backup-${new Date().toISOString().split('T')[0]}.json`,JSON.stringify({todos,memos,exportDate:new Date().toISOString()},null,2));}
+function importData(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    const r=new FileReader();
+    r.onload=async ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(!await customConfirm(t('importOverwrite'),t('importConfirm')))return;
+        if(data.todos)todos=data.todos;if(data.memos)memos=data.memos;
+        saveData();updateMemoTags();renderTodos();renderMemos();renderDashboard();
+        await customConfirm(t('importSuccess'),t('importSuccessTitle'),false);closeSettings();
+      }catch{await customConfirm(t('importError'),'❌ Error',false);}
+    };r.readAsText(file);
+  };inp.click();
+}
+async function clearAllData(){
+  if(!await customConfirm(t('deleteAllConfirm'),t('deleteAllTitle')))return;
+  if(!await customConfirm(t('finalConfirm'),t('finalTitle')))return;
+  todos=[];memos=[];saveData();updateMemoTags();renderTodos();renderMemos();renderDashboard();closeSettings();
 }
 
-function closeStats() { document.getElementById('statsModal').classList.remove('active'); }
-
-// ─── 設定 ─────────────────────────────────────────────────────────
-function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
-function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
-function showKeyboardShortcuts() { document.getElementById('shortcutsModal').classList.add('active'); }
-function closeKeyboardShortcuts() { document.getElementById('shortcutsModal').classList.remove('active'); }
-
-function exportAllData() {
-  const data = { todos, memos, exportDate: new Date().toISOString() };
-  downloadTextFile(`todo-memo-backup-${new Date().toISOString().split('T')[0]}.json`, JSON.stringify(data, null, 2));
-}
-
-function importData() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        const confirmed = await customConfirm(
-          currentLang === 'ja' ? 'インポートすると現在のデータが上書きされます。続けますか?' : 'Importing will overwrite current data. Continue?',
-          '⚠️ ' + (currentLang === 'ja' ? 'インポート確認' : 'Confirm Import')
-        );
-        if (confirmed) {
-          if (data.todos) todos = data.todos;
-          if (data.memos) memos = data.memos;
-          saveData();
-          updateMemoTags();
-          renderTodos();
-          renderMemos();
-          await customConfirm(currentLang === 'ja' ? 'データをインポートしました!' : 'Data imported successfully!', '✅ ' + (currentLang === 'ja' ? '成功' : 'Success'), false);
-          closeSettings();
-        }
-      } catch (err) {
-        await customConfirm(currentLang === 'ja' ? 'ファイルの読み込みに失敗しました' : 'Failed to load file', '❌ Error', false);
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
-}
-
-async function clearAllData() {
-  const c1 = await customConfirm(
-    currentLang === 'ja' ? 'すべてのデータを削除しますか? この操作は取り消せません。' : 'Delete all data? This cannot be undone.',
-    '⚠️ ' + (currentLang === 'ja' ? '全データ削除' : 'Clear All Data')
-  );
-  if (c1) {
-    const c2 = await customConfirm(
-      currentLang === 'ja' ? '本当に削除しますか?' : 'Are you sure?',
-      '⚠️⚠️ ' + (currentLang === 'ja' ? '最終確認' : 'Final Confirmation')
-    );
-    if (c2) {
-      todos = []; memos = [];
-      saveData();
-      updateMemoTags();
-      renderTodos();
-      renderMemos();
-      closeSettings();
-    }
-  }
-}
-
-// ─── 翻訳 ─────────────────────────────────────────────────────────
-const translations = {
-  ja: {
-    no_tasks: 'タスクが見つかりません', no_memos: 'まだメモがありません',
-    completed: '完了', active: '未完了',
-    priority_high: '高', priority_medium: '中', priority_low: '低',
-    total_tasks: '総タスク数', active_tasks: '未完了タスク', completed_tasks: '完了済みタスク',
-    high_priority_tasks: '高優先度タスク', total_memos: '総メモ数', tags_in_use: '使用中のタグ',
-    no_tasks_export: 'エクスポートするタスクがありません'
-  },
-  en: {
-    no_tasks: 'No tasks found', no_memos: 'No memos yet',
-    completed: 'Completed', active: 'Active',
-    priority_high: 'High', priority_medium: 'Medium', priority_low: 'Low',
-    total_tasks: 'Total Tasks', active_tasks: 'Active Tasks', completed_tasks: 'Completed Tasks',
-    high_priority_tasks: 'High Priority Tasks', total_memos: 'Total Memos', tags_in_use: 'Tags in Use',
-    no_tasks_export: 'No tasks to export'
-  }
-};
-
-// ─── イベントリスナー ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  Event listeners
+// ═══════════════════════════════════════════════════
 document.getElementById('addTodoBtn').addEventListener('click', addTodo);
-document.getElementById('todoInput').addEventListener('keypress', e => { if (e.key === 'Enter') addTodo(); });
+document.getElementById('todoInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addTodo(); }
+  if (e.key === 'Tab')   { e.preventDefault(); toggleTodoDetail(); }
+});
 
-document.getElementById('todoList').addEventListener('click', function(e) {
-  const target = e.target.closest('[data-action]');
-  if (!target) return;
+document.getElementById('todoList').addEventListener('click', function(e){
+  const target=e.target.closest('[data-action]');if(!target)return;
   e.stopPropagation();
-  const action = target.dataset.action, id = parseInt(target.dataset.id);
-  if (!action || !id) return;
-  switch (action) {
-    case 'toggle': toggleTodo(id); break;
-    case 'delete': deleteTodo(id); break;
-    case 'duplicate': duplicateTodo(id); break;
-    case 'edit': openEditTodoModal(id); break;
-    case 'export': exportTodo(id); break;
-  }
+  const action=target.dataset.action,id=parseInt(target.dataset.id);if(!action||!id)return;
+  switch(action){case 'toggle':toggleTodo(id);break;case 'delete':deleteTodo(id);break;case 'duplicate':duplicateTodo(id);break;case 'edit':openEditTodoModal(id);break;case 'export':exportTodo(id);break;}
 });
 
-document.querySelectorAll('.filter-tabs .filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-tabs .filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    currentFilter = this.dataset.filter;
-    renderTodos();
+document.querySelectorAll('.filter-tabs .filter-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.filter-tabs .filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');currentFilter=this.dataset.filter;renderTodos();
   });
 });
+document.getElementById('todoSort').addEventListener('change',function(){currentTodoSort=this.value;renderTodos();});
+document.getElementById('addMemoBtn').addEventListener('click',addMemo);
 
-document.getElementById('todoSort').addEventListener('change', function() {
-  currentTodoSort = this.value;
-  renderTodos();
-});
-
-document.getElementById('addMemoBtn').addEventListener('click', addMemo);
-
-document.getElementById('memoList').addEventListener('click', function(e) {
-  const target = e.target.closest('[data-action]');
-  if (!target) return;
-  e.stopPropagation();
-  const action = target.dataset.action, id = parseInt(target.dataset.id);
-  if (!action || !id) return;
-  switch (action) {
-    case 'delete': deleteMemo(id); break;
-    case 'duplicate': duplicateMemo(id); break;
-    case 'edit': editMemo(id); break;
-    case 'export': exportMemo(id); break;
-  }
-});
-
-document.getElementById('memoTitle').addEventListener('keypress', e => {
-  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('memoContent').focus(); }
-});
-
-document.getElementById('memoContent').addEventListener('keypress', e => {
-  if (e.key === 'Enter' && e.ctrlKey) addMemo();
-});
-
-document.getElementById('memoContent').addEventListener('input', () => {
-  if (currentMemoView === 'preview') updateMemoPreview();
-});
-
-document.getElementById('memoSort').addEventListener('change', function() {
-  currentMemoSort = this.value;
-  renderMemos();
-});
-
-document.querySelectorAll('.mode-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    const mode = this.dataset.mode;
-    document.querySelector('.todo-container').classList.toggle('active', mode === 'todo');
-    document.querySelector('.memo-container').classList.toggle('active', mode === 'memo');
-  });
-});
-
-document.getElementById('langSwitcher').addEventListener('click', () => {
-  currentLang = currentLang === 'ja' ? 'en' : 'ja';
-  document.getElementById('langSwitcher').textContent = currentLang === 'ja' ? 'EN' : 'JA';
-  renderTodos();
-  renderMemos();
-  updateMemoTags();
-});
-
-document.getElementById('searchInput').addEventListener('input', function() {
-  const query = this.value.toLowerCase().trim();
-  const resultsDiv = document.getElementById('searchResults');
-  const t = translations[currentLang];
-  if (!query) { resultsDiv.innerHTML = ''; return; }
-
-  const results = [];
-  todos.forEach(todo => {
-    if (todo.text.toLowerCase().includes(query) || (todo.tags && todo.tags.some(tag => tag.toLowerCase().includes(query))) || (todo.note && todo.note.toLowerCase().includes(query))) {
-      results.push({ type: 'todo', id: todo.id, title: todo.text, preview: todo.completed ? '✓ ' + t.completed : t.active });
+document.getElementById('memoList').addEventListener('click',function(e){
+  // Action buttons (.action-btn) take priority over card click
+  const actionTarget=e.target.closest('.action-btn[data-action]');
+  if(actionTarget){
+    e.stopPropagation();
+    const action=actionTarget.dataset.action, id=parseInt(actionTarget.dataset.id);
+    if(!id) return;
+    switch(action){
+      case 'delete':    deleteMemo(id);    break;
+      case 'duplicate': duplicateMemo(id); break;
+      case 'edit':      editMemo(id);      break;
+      case 'export':    exportMemo(id);    break;
     }
-  });
-  memos.forEach(memo => {
-    if (memo.title.toLowerCase().includes(query) || memo.content.toLowerCase().includes(query) || (memo.tags && memo.tags.some(tag => tag.toLowerCase().includes(query)))) {
-      results.push({ type: 'memo', id: memo.id, title: memo.title, preview: memo.content.substring(0, 100) + '...' });
-    }
-  });
-
-  if (results.length === 0) {
-    resultsDiv.innerHTML = `<p style="color:#9ca3af;text-align:center">${currentLang === 'ja' ? '検索結果が見つかりません' : 'No results found'}</p>`;
     return;
   }
-  resultsDiv.innerHTML = results.map(r => `
-    <div class="search-result-item" onclick="jumpTo('${r.type}', ${r.id})">
-      <div class="search-result-title">${r.type === 'todo' ? '📝' : '📄'} ${r.title}</div>
-      <div class="search-result-preview">${r.preview}</div>
-    </div>`).join('');
+  // Card click → open full view modal (only if not clicking a button)
+  const card=e.target.closest('.memo-item');
+  if(card && !e.target.closest('button')) openMemoViewModal(parseInt(card.dataset.id));
 });
 
-document.addEventListener('keydown', e => {
-  if (document.activeElement.id === 'memoContent') {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); insertText('**太字**'); return; }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); insertText('*斜体*'); return; }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); insertLink(); return; }
-    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'K') { e.preventDefault(); insertText('```\n\n```'); return; }
-  }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k' && document.activeElement.id !== 'memoContent') {
-    e.preventDefault(); openSearch(); return;
-  }
-  if (e.key === 'Escape') {
-    closeSearch(); closeEditTodoModal(); closeStats(); closeSettings(); closeKeyboardShortcuts();
-    document.getElementById('shortcutsModal').classList.remove('active');
-  }
+document.getElementById('memoSort').addEventListener('change',function(){currentMemoSort=this.value;renderMemos();});
+
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const mode=this.dataset.mode;
+    document.querySelector('.todo-container').classList.toggle('active',mode==='todo');
+    document.querySelector('.memo-container').classList.toggle('active',mode==='memo');
+    document.querySelector('.dashboard-container').classList.toggle('active',mode==='dashboard');
+    if(mode==='dashboard') renderDashboard();
+  });
 });
 
-// ─── 初期化 ───────────────────────────────────────────────────────
+// WYSIWYG toolbar state sync
+const editor=document.getElementById('wysiwygEditor');
+editor.addEventListener('keyup',updateToolbarState);
+editor.addEventListener('mouseup',updateToolbarState);
+editor.addEventListener('input',()=>{updateWordCount();updateToolbarState();});
+editor.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();addMemo();}
+});
+
+// Search input
+document.getElementById('searchInput').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  const div=document.getElementById('searchResults');
+  if(!q){div.innerHTML='';return;}
+  const results=[];
+  todos.forEach(x=>{if(x.text.toLowerCase().includes(q)||(x.note&&x.note.toLowerCase().includes(q))||(x.tags&&x.tags.some(tg=>tg.toLowerCase().includes(q))))results.push({type:'todo',id:x.id,title:x.text,preview:x.completed?'✓ '+t('completed'):t('active')});});
+  memos.forEach(m=>{
+    const tmp=document.createElement('div');tmp.innerHTML=m.content;const plainText=tmp.innerText||'';
+    if(m.title.toLowerCase().includes(q)||plainText.toLowerCase().includes(q)||(m.tags&&m.tags.some(tg=>tg.toLowerCase().includes(q))))results.push({type:'memo',id:m.id,title:m.title,preview:plainText.substring(0,80)+'...'});
+  });
+  if(!results.length){div.innerHTML=`<p style="color:#9ca3af;text-align:center">${t('noResults')}</p>`;return;}
+  div.innerHTML=results.map(r=>`<div class="search-result-item" onclick="jumpTo('${r.type}',${r.id})"><div class="search-result-title">${r.type==='todo'?'📝':'📄'} ${r.title}</div><div class="search-result-preview">${r.preview}</div></div>`).join('');
+});
+
+// Global keyboard
+document.addEventListener('keydown',e=>{
+  const inEditor=document.activeElement===document.getElementById('wysiwygEditor');
+  const inTodo=document.activeElement===document.getElementById('todoInput');
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'&&!inEditor){e.preventDefault();openSearch();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!inEditor&&!inTodo){e.preventDefault();doUndo();return;}
+  if(e.key==='Escape'){closeSearch();closeEditTodoModal();closeStats();closeSettings();closeKeyboardShortcuts();closeMemoViewModal();document.getElementById('shortcutsModal').classList.remove('active');}
+});
+
+// ═══════════════════════════════════════════════════
+//  Init
+// ═══════════════════════════════════════════════════
+initColorPicker('todoColorPicker', c=>{ newTodoColor=c; updateTodoBadges(); });
+['newTodoPriority','newTodoDueDate','newTodoTags'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updateTodoBadges);
+  document.getElementById(id).addEventListener('input',  updateTodoBadges);
+});
+initColorPicker('memoColorPicker', c=>{ newMemoColor=c; });
+initColorPicker('editTodoColorPicker', ()=>{});
+
+applyI18n();
 loadData();
 </script>
 </body>

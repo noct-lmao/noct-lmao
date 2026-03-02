@@ -5,1501 +5,1008 @@
   <title>???</title>
   <meta charset="UTF-8">
   <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Courier New', monospace;
-  }
-
-  body {
-    background: #000000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #three-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-
-  .game-container {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    gap: 30px;
-    align-items: center;
-  }
-
-  .left-panel,   .right-panel {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 20px;
-    border: 3px solid #660675;
-    box-shadow: 
-      0 0 30px rgba(102, 6, 117, 0.6),
-      inset 0 0 20px rgba(102, 6, 117, 0.2);
-  }
-
-  .reset-btn {
-    margin-top: 20px;
-    background: #660675;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-    transition: all 0.3s;
-    width: 100%;
-  }
-
-  .reset-btn:hover {
-    background: #8800aa;
-    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
-    transform: scale(1.05);
-  }
-
-  .reset-btn:active {
-    transform: scale(0.95);
-  }
-
-  .score-display {
-    color: #fff;
-    font-size: 24px;
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 10px #660675;
-  }
-
-  .score-number {
-    display: block;
-    font-size: 48px;
-    font-weight: bold;
-    color: #660675;
-    text-shadow: 
-      0 0 20px #660675,
-      0 0 40px #660675;
-  }
-
-  canvas {
-    border: 3px solid #660675;
-    border-radius: 10px;
-    box-shadow: 
-      0 0 40px rgba(102, 6, 117, 0.8),
-      inset 0 0 30px rgba(0, 0, 0, 0.9);
-    background: #000000;
-  }
-
-  .controls {
-    margin-top: 20px;
-    color: #660675;
-    font-size: 14px;
-    text-align: center;
-    font-weight: bold;
-    text-shadow: 0 0 10px #660675;
-  }
-
-  .controls div {
-    margin: 5px 0;
-  }
-
-  .game-title {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 72px;
-    font-weight: bold;
-    color: #660675;
-    text-shadow: 
-      0 0 20px #660675,
-      0 0 40px #660675,
-      0 0 60px #660675;
-    z-index: 2;
-    letter-spacing: 10px;
-  }
-
-  .particle {
-    position: fixed;
-    width: 5px;
-    height: 5px;
-    background: #660675;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    box-shadow: 0 0 10px #660675;
-  }
-
-  @keyframes pulse {
-    0%, 100% { 
-      box-shadow: 
-        0 0 30px rgba(102, 6, 117, 0.6),
-        inset 0 0 20px rgba(102, 6, 117, 0.2);
+    /* ホームページと同じシステムフォント・カラー変数 */
+    :root {
+      --accent: #670676;
+      --accent-hover: #8800aa;
+      --accent-bg: rgba(103, 6, 118, 0.2);
+      --accent-border: rgba(103, 6, 118, 0.3);
+      --accent-glow: rgba(103, 6, 118, 0.6);
+      --accent-shadow: 0 8px 32px rgba(103, 6, 118, 0.4);
     }
-    50% { 
-      box-shadow: 
-        0 0 50px rgba(102, 6, 117, 1),
-        inset 0 0 30px rgba(102, 6, 117, 0.4);
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
     }
-  }
 
-  .left-panel, .right-panel {
-    animation: pulse 2s infinite;
-  }
+    /* ホームページと同じ背景グラデーション */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom, #000, rgba(103, 6, 118, 0.1));
+      pointer-events: none;
+      z-index: 0;
+    }
 
-  .music-controls {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid #660675;
-    border-radius: 12px;
-    padding: 10px 15px;
-    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
-    cursor: move;
-    user-select: none;
-  }
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-  .music-controls:active {
-    cursor: grabbing;
-  }
+    /* タイトル：ホームページのh1グラデーションに揃える */
+    .game-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #670676, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+    }
 
-  .drag-handle {
-    text-align: center;
-    padding: 4px;
-    margin: -10px -15px 8px -15px;
-    background: #660675;
-    border-radius: 10px 10px 0 0;
-    cursor: grab;
-    font-size: 11px;
-    color: white;
-  }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-  .drag-handle:active {
-    cursor: grabbing;
-  }
+    .game-area {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
 
-  .music-controls button {
-    background: #660675;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    font-weight: bold;
-    margin: 3px;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-    transition: all 0.3s;
-  }
+    .side-panel {
+      width: 130px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-  .music-controls button:hover {
-    background: #8800aa;
-    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
-    transform: scale(1.05);
-  }
+    /* ホームページの .project-card と同じスタイル */
+    .panel-box {
+      background: linear-gradient(135deg, #111, #000);
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .panel-box:hover {
+      border-color: var(--accent);
+      box-shadow: var(--accent-shadow);
+    }
 
-  .music-controls input[type="range"] {
-    width: 120px;
-    margin: 6px 3px;
-    accent-color: #660675;
-  }
+    .panel-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: #9ca3af;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
 
-  .music-label {
-    color: #660675;
-    font-size: 11px;
-    font-weight: bold;
-    text-shadow: 0 0 10px #660675;
-    display: block;
-    margin-bottom: 3px;
-  }
+    .panel-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+      line-height: 1;
+    }
 
-  .volume-container {
-    margin-top: 10px;
-  }
+    @keyframes scoreFlash {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.2); color: #a855f7; }
+      100% { transform: scale(1); color: #fff; }
+    }
+    .score-flash { animation: scoreFlash 0.3s ease-out forwards; }
 
-  .music-status {
-    color: white;
-    font-size: 12px;
-    margin-top: 5px;
-    text-align: center;
-  }
+    #nextCanvas { display: block; margin: 0 auto; }
 
-  .playlist {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-top: 6px;
-    padding: 3px;
-  }
+    /* ゲームキャンバス：ホームページのカードborderに揃える */
+    #game {
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      background: #050005;
+      box-shadow: var(--accent-shadow);
+      display: block;
+      transition: box-shadow 0.3s;
+    }
 
-  .playlist-item {
-    background: rgba(102, 6, 117, 0.3);
-    border: 1px solid #660675;
-    border-radius: 4px;
-    padding: 5px;
-    margin: 3px 0;
-    color: white;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    /* ライン消去フラッシュ */
+    @keyframes lineFlash {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.15; }
+      100% { opacity: 1; }
+    }
+    .line-flash { animation: lineFlash 0.18s ease-out; }
 
-  .playlist-item:hover {
-    background: rgba(102, 6, 117, 0.6);
-    transform: translateX(5px);
-  }
+    /* ボタン：ホームページの .view-btn に揃える */
+    .btn {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+    .btn:hover::before { width: 200px; height: 200px; }
+    .btn:hover { background: rgba(103, 6, 118, 0.8); transform: scale(1.05); }
+    .btn:active { transform: scale(0.97); }
 
-  .playlist-item.active {
-    background: #660675;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.8);
-  }
+    .controls-hint {
+      font-size: 0.68rem;
+      color: #6b7280;
+      text-align: center;
+      line-height: 1.8;
+    }
 
-  .playlist-item .delete-btn {
-    background: rgba(255, 0, 0, 0.5);
-    border: none;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 9px;
-  }
+    /* ゲームオーバーオーバーレイ */
+    #gameOverlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-radius: 12px;
+      z-index: 10;
+    }
+    #gameOverlay.show { display: flex; }
+    #gameOverlay .go-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #670676, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    #gameOverlay .go-score {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+    #gameOverlay .go-btn {
+      margin-top: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    #gameOverlay .go-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+    }
 
-  .playlist-item .delete-btn:hover {
-    background: rgba(255, 0, 0, 0.8);
-  }
+    /* ミュージックプレイヤー：ホームページの .music-controls に揃える */
+    .music-player {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+      background: rgba(0,0,0,0.9);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 10px 15px;
+      width: 215px;
+      box-shadow: 0 0 30px var(--accent-glow);
+      cursor: move;
+      user-select: none;
+    }
 
-  .playlist::-webkit-scrollbar {
-    width: 8px;
-  }
+    .music-drag-handle {
+      text-align: center;
+      padding: 4px;
+      margin: -10px -15px 8px -15px;
+      background: var(--accent);
+      border-radius: 10px 10px 0 0;
+      cursor: grab;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+    }
+    .music-drag-handle:active { cursor: grabbing; }
 
-  .playlist::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-  }
+    .music-label {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 3px;
+    }
 
-  .playlist::-webkit-scrollbar-thumb {
-    background: #660675;
-    border-radius: 4px;
-  }
+    .music-status {
+      color: #fff;
+      font-size: 12px;
+      margin-top: 5px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  .playlist::-webkit-scrollbar-thumb:hover {
-    background: #8800aa;
-  }
+    .music-btns {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 6px;
+    }
 
-  .audio-visualizer {
-    margin: 15px 0;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #660675;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 0 20px rgba(102, 6, 117, 0.4);
-  }
+    /* ホームページと同じボタンスタイル */
+    .music-btns button, .music-add-btn {
+      flex: 1;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(103, 6, 118, 0.5);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .music-btns button:hover, .music-add-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 25px var(--accent-glow);
+      transform: scale(1.05);
+    }
 
-  #visualizerCanvas {
-    width: 100%;
-    height: 80px;
-  border-radius: 5px;
-  }
+    .music-add-btn {
+      flex: none;
+      width: 100%;
+      margin-bottom: 4px;
+    }
 
-  #youtubeUrl::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
+    .yt-input {
+      width: 100%;
+      padding: 5px 8px;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 11px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin-bottom: 3px;
+      transition: border-color 0.3s;
+    }
+    .yt-input:focus { outline: none; border-color: var(--accent); }
+    .yt-input::placeholder { color: rgba(255,255,255,0.5); }
 
-  #youtubePlayer {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 240px;
-    height: 160px;
-    z-index: 1001;
-    border: 2px solid #660675;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
-  }
+    .yt-note {
+      font-size: 10px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
 
-#addYoutubeBtn {
-  margin-top: 5px;
-  background: #660675;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  font-weight: bold;
-  box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-  transition: all 0.3s;
-}
-</style>
+    .vol-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .vol-row input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .visualizer-wrap {
+      margin: 10px 0;
+      background: rgba(0,0,0,0.8);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 0 20px rgba(103, 6, 118, 0.4);
+    }
+    #visualizerCanvas {
+      width: 100%;
+      height: 60px;
+      border-radius: 4px;
+      display: block;
+    }
+
+    /* プレイリスト */
+    .playlist {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 6px;
+      padding: 3px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) transparent;
+    }
+    .playlist::-webkit-scrollbar { width: 8px; }
+    .playlist::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); border-radius: 4px; }
+    .playlist::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    .playlist::-webkit-scrollbar-thumb:hover { background: var(--accent-hover); }
+
+    .pl-item {
+      background: rgba(103, 6, 118, 0.3);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 5px;
+      margin: 3px 0;
+      color: white;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pl-item:hover { background: rgba(103, 6, 118, 0.6); transform: translateX(5px); }
+    .pl-item.active { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    .pl-item .del {
+      background: rgba(255,0,0,0.5);
+      border: none;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 9px;
+    }
+    .pl-item .del:hover { background: rgba(255,0,0,0.8); }
+
+    #youtubePlayer {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 240px;
+      height: 160px;
+      z-index: 100;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+  </style>
 </head>
 <body>
-<div class="music-controls" id="musicControls">
-  <div class="drag-handle">⋮⋮ DRAG ME ⋮⋮</div>
-  <div class="music-label">🎵 MUSIC PLAYER</div>
-  <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
-  <button id="uploadBtn">📁 ADD MUSIC</button>
-  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(102, 6, 117, 0.2); border: 1px solid #660675; border-radius: 4px; color: white; font-size: 10px;">
-  <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
-  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube songs don't support audio spectrum.</div>
-  <button id="playBtn">▶ PLAY</button>
-  <button id="pauseBtn">⏸ PAUSE</button>
-  <button id="nextBtn">⏭ NEXT</button>
-  
-  <div class="audio-visualizer">
+
+<!-- Music Player -->
+<div class="music-player" id="musicPlayer">
+  <div class="music-drag-handle">⠿ MUSIC ⠿</div>
+  <input type="file" id="musicFile" accept="audio/*" multiple style="display:none">
+  <button class="music-add-btn" onclick="document.getElementById('musicFile').click()">＋ ADD FILE</button>
+  <input class="yt-input" type="text" id="youtubeUrl" placeholder="YouTube URL…">
+  <button class="music-add-btn" id="addYtBtn">📺 ADD YOUTUBE</button>
+  <div class="yt-note">※ YouTube はスペクトラム非対応</div>
+
+  <div class="visualizer-wrap">
     <canvas id="visualizerCanvas"></canvas>
   </div>
 
-  <div class="volume-container">
-    <label class="music-label" for="volumeSlider">VOLUME</label>
+  <div class="music-btns">
+    <button id="playBtn">▶</button>
+    <button id="pauseBtn">⏸</button>
+    <button id="nextBtn">⏭</button>
+  </div>
+
+  <div class="vol-row">
+    <span class="music-label" style="margin:0">VOL</span>
     <input type="range" id="volumeSlider" min="0" max="100" value="50">
   </div>
+
   <div class="music-status" id="musicStatus">No tracks</div>
   <div class="playlist" id="playlist"></div>
 </div>
-
-<audio id="bgMusic" loop></audio>
+<audio id="bgMusic"></audio>
 <div id="youtubePlayer"></div>
-<div id="three-bg"></div>
-<h1 class="game-title">TETRIS</h1>
 
-<div class="game-container">
-  <div class="left-panel">
-    <div class="score-display">
-      SCORE
-      <span class="score-number" id="score">0</span>
-    </div>
-    <div class="score-display">
-      LINES
-      <span class="score-number" id="lines">0</span>
-    </div>
-  </div>
+<!-- Game -->
+<div class="wrapper">
+  <div class="game-title">TETRIS</div>
+  <div class="game-area">
 
-  <div>
-    <canvas width="320" height="640" id="game"></canvas>
-    <div class="controls">
-      <div>← → : Move</div>
-      <div>↑ : Rotate</div>
-      <div>↓ : Soft Drop</div>
-      <div>SPACE : Hard Drop</div>
+    <!-- 左パネル -->
+    <div class="side-panel">
+      <div class="panel-box">
+        <div class="panel-label">SCORE</div>
+        <div class="panel-value" id="scoreEl">0</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-label">LINES</div>
+        <div class="panel-value" id="linesEl">0</div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-label">LEVEL</div>
+        <div class="panel-value" id="levelEl">1</div>
+      </div>
     </div>
-  </div>
 
-  <div class="right-panel">
-    <div class="score-display">
-      LEVEL
-      <span class="score-number" id="level">1</span>
+    <!-- キャンバス + オーバーレイ -->
+    <div style="position:relative; display:inline-block;">
+      <canvas id="game" width="300" height="600"></canvas>
+      <div id="gameOverlay">
+        <div class="go-title">GAME OVER</div>
+        <div class="go-score" id="goScore"></div>
+        <button class="go-btn" onclick="resetGame()">PLAY AGAIN</button>
+      </div>
     </div>
-    <button class="reset-btn" id="resetBtn">🔄 RESET GAME</button>
+
+    <!-- 右パネル -->
+    <div class="side-panel">
+      <div class="panel-box">
+        <div class="panel-label">NEXT</div>
+        <canvas id="nextCanvas" width="90" height="90"></canvas>
+      </div>
+      <div class="panel-box">
+        <button class="btn" id="pauseGameBtn">⏸ PAUSE</button>
+      </div>
+      <div class="panel-box">
+        <button class="btn" id="resetBtn">↺ RESET</button>
+      </div>
+      <div class="panel-box">
+        <button class="btn" onclick="location.reload()">⟳ RELOAD</button>
+      </div>
+      <div class="controls-hint">
+        ← → MOVE<br>
+        ↑ ROTATE<br>
+        ↓ SOFT DROP<br>
+        SPC HARD DROP<br>
+        P &nbsp; PAUSE
+      </div>
+    </div>
+
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-
 <script>
-//Youtube Iframe APIを動的に読み込む
-var tag = document.createElement ('script');
+// ===================== YouTube API =====================
+var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+document.head.appendChild(tag);
 
-// Background Music Player
-const audio = document.getElementById('bgMusic');
-const uploadBtn = document.getElementById('uploadBtn');
-const musicFile = document.getElementById('musicFile');
-const addYoutubeBtn = document.getElementById('addYoutubeBtn');
-const youtubeUrl = document.getElementById('youtubeUrl')
-const playBtn = document.getElementById('playBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const nextBtn = document.getElementById('nextBtn');
-const volumeSlider = document.getElementById('volumeSlider');
-const musicStatus = document.getElementById('musicStatus');
-const playlistDiv = document.getElementById('playlist');
-const youtubePlayerDiv = document.getElementById('youtubePlayer');
+let ytPlayer = null, ytReady = false, ytCheckInterval = null, isYouTube = false;
 
-let youtubePlayer = null;
-let isYoutubeReady = false;
-let youtubeReadyCheckInterval = null;
-let isPlayingYouTube = false;
-
-// Audio Visualizer Setup
-const visualizerCanvas = document.getElementById('visualizerCanvas');
-const canvasCtx = visualizerCanvas.getContext('2d');
-let audioContext, analyser, dataArray, bufferLength, source;
-
-function setupAudioContext() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    
-    source = audioContext.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
-    
-    drawVisualizer();
-  }
-}
-
-let randomDataArray = new Uint8Array(128);
-function drawRandomVisualizer() {
-  if (!isPlayingYouTube) {
-    return;
-  }
-
-  for (let i = 0; i < randomDataArray.length; i++) {
-    randomDataArray[i] =  Math.random() * 255;
-  }
-
-  const width = visualizerCanvas.width;
-  const height = visualizerCanvas.height;
-
-  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  canvasCtx.fillRect (0, 0, width, height);
-
-  const barWidth = (width / randomDataArray.length) * 2.5;
-  let barHeight;
-  let x = 0;
-
-  for (let i = 0; i < randomDataArray.length; i++) {
-    barHeight = (randomDataArray[i] / 255) * height;
-
-    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-    gradient.addColorStop(0, '#660675');
-    gradient.addColorStop(0.5, '#8800aa');
-    gradient.addColorStop(1, '#aa00dd');
-    
-    canvasCtx.fillStyle = gradient;
-    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-    
-    canvasCtx.shadowBlur = 10;
-    canvasCtx.shadowColor = '#660675';
-    
-    x += barWidth + 1;
-  }
-}
-
-function drawVisualizer() {
-  requestAnimationFrame(drawVisualizer);
-
-  if (isPlayingYouTube) {
-    drawRandomVisualizer();
-    return;
-  }
-  
-  if (!analyser || !dataArray) return;
-
-  analyser.getByteFrequencyData(dataArray);
-  
-  const width = visualizerCanvas.width;
-  const height = visualizerCanvas.height;
-  
-  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  canvasCtx.fillRect(0, 0, width, height);
-  
-  const barWidth = (width / bufferLength) * 2.5;
-  let barHeight;
-  let x = 0;
-  
-  for (let i = 0; i < bufferLength; i++) {
-    barHeight = (dataArray[i] / 255) * height;
-    
-    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-    gradient.addColorStop(0, '#660675');
-    gradient.addColorStop(0.5, '#8800aa');
-    gradient.addColorStop(1, '#aa00dd');
-    
-    canvasCtx.fillStyle = gradient;
-    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-    
-    // Glow effect
-    canvasCtx.shadowBlur = 10;
-    canvasCtx.shadowColor = '#660675';
-    
-    x += barWidth + 1;
-  }
-  
-  canvasCtx.shadowBlur = 0;
-}
-
-// Set canvas size
-function resizeCanvas() {
-  const rect = visualizerCanvas.getBoundingClientRect();
-  visualizerCanvas.width = rect.width;
-  visualizerCanvas.height = rect.height;
-}
-
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-window.onYouTubeIframeAPIReady = function() {
-  console.log('YouTube API is ready');
-  isYoutubeReady = true;
-  if (youtubeReadyCheckInterval) {
-    clearInterval(youtubeReadyCheckInterval);
-    youtubeReadyCheckInterval = null;
-  }
-  if (playlist.length > 0 && currentTrackIndex >= 0) {
-    const currentTrack = playlist[currentTrackIndex];
-    if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
-      loadYouTubePlayer(currentTrack.url);
-    }
-  }
+window.onYouTubeIframeAPIReady = () => {
+  ytReady = true;
+  if (ytCheckInterval) { clearInterval(ytCheckInterval); ytCheckInterval = null; }
 };
 
-function checkYouTubeAPI() {
-  if (typeof YT !== 'undefined' && YT.Player) {
-    console.log('YouTube API already loaded');
-    isYoutubeReady = true;
-    if (playlist.length > 0 && currentTrackIndex >= 0) {
-      const currentTrack = playlist[currentTrackIndex];
-      if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
-        loadYouTubePlayer(currentTrack.url);
-      }
-    }
-  }
-}
+const isYTUrl = u => u && /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(u);
+const extractVid = u => { const m = u.match(/(?:youtu\.be\/|v=)([^#&?]{11})/); return m ? m[1] : null; };
 
-window.addEventListener('load', function() {
-  setTimeout(checkYouTubeAPI, 1000);
-});
-
-function isYouTubeUrl(url) {
-  if (!url) return false;
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
-  return youtubeRegex.test(url);
-}
-
-function extractVideoId(url) {
-  if (!url) return null;
-  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[7].length === 11) ? match[7] : null;
-}
-
-function loadYouTubePlayer(url) {
-  if (typeof YT === 'undefined' || !YT.Player) {
-    console.error('YouTube API is not loaded');
-    musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-    if (!youtubeReadyCheckInterval) {
-      youtubeReadyCheckInterval = setInterval(function() {
-        if (typeof YT !== 'undefined' && YT.Player) {
-          clearInterval(youtubeReadyCheckInterval);
-          youtubeReadyCheckInterval = null;
-          isYoutubeReady = true;
-          loadYouTubePlayer(url);
-        }
-      }, 100);
-    }
+function loadYTPlayer(url) {
+  const vid = extractVid(url);
+  if (!vid) return;
+  if (!ytReady) {
+    if (!ytCheckInterval) ytCheckInterval = setInterval(() => { if (ytReady) { clearInterval(ytCheckInterval); ytCheckInterval=null; loadYTPlayer(url); } }, 100);
     return;
   }
+  if (ytPlayer) { ytPlayer.loadVideoById(vid); return; }
+  ytPlayer = new YT.Player('youtubePlayer', {
+    height: '130', width: '200', videoId: vid,
+    playerVars: { autoplay: 0, controls: 1, rel: 0, modestbranding: 1 },
+    events: {
+      onReady: e => e.target.setVolume(+volumeSlider.value),
+      onStateChange: e => { if (e.data === YT.PlayerState.ENDED) { nextTrack(); if (ytPlayer) setTimeout(() => ytPlayer.playVideo(), 400); } }
+    }
+  });
+  document.getElementById('youtubePlayer').style.display = 'block';
+}
 
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    musicStatus.textContent = 'Invalid YouTube URL';
-    return;
-  }
+// ===================== Audio Visualizer =====================
+const visCanvas = document.getElementById('visualizerCanvas');
+const visCtx = visCanvas.getContext('2d');
+let audioCtx, analyser, visData, visLen, audioSrc;
+let visRAF = null;
 
-  if (youtubePlayer) {
-    youtubePlayer.loadVideoById(videoId);
+function resizeVis() {
+  const r = visCanvas.getBoundingClientRect();
+  visCanvas.width = r.width; visCanvas.height = r.height;
+}
+resizeVis();
+window.addEventListener('resize', resizeVis);
+
+function setupAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 128;
+  visLen = analyser.frequencyBinCount;
+  visData = new Uint8Array(visLen);
+  audioSrc = audioCtx.createMediaElementSource(bgAudio);
+  audioSrc.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+const randBuf = new Float32Array(64).fill(0);
+
+function drawVis() {
+  requestAnimationFrame(drawVis); // FIX: returnより前にRAFを登録してループを保証
+  const W = visCanvas.width, H = visCanvas.height;
+  visCtx.fillStyle = 'rgba(0,0,0,0.25)';
+  visCtx.fillRect(0, 0, W, H);
+
+  let buf, len;
+  if (isYouTube) {
+    for (let i = 0; i < randBuf.length; i++) {
+      randBuf[i] = randBuf[i] * 0.82 + Math.random() * 0.18;
+    }
+    buf = randBuf; len = randBuf.length;
   } else {
-    try {
-      youtubePlayer = new YT.Player('youtubePlayer', {
-        height: '160',
-        width: '240',
-        videoId: videoId,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 1,
-          'rel': 0,
-          'modestbranding': 1
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
-      youtubePlayerDiv.style.display = 'block';
-    } catch (error) {
-      console.error('Error creating YouTube player:', error);
-      musicStatus.textContent = 'Error loading YouTube player';
-    }
+    if (!analyser) return; // analyser未初期化ならここで抜けてもRAFは継続
+    analyser.getByteFrequencyData(visData);
+    buf = visData; len = visLen;
+  }
+
+  const bw = W / len;
+  for (let i = 0; i < len; i++) {
+    const v = isYouTube ? buf[i] : buf[i] / 255;
+    const bh = v * H;
+    visCtx.fillStyle = `hsl(${280 + v * 60}, 90%, ${35 + v * 35}%)`;
+    visCtx.fillRect(i * bw, H - bh, bw - 1, bh);
   }
 }
+drawVis();
 
-function onPlayerReady(event) {
-  if (volumeSlider) {
-    event.target.setVolume(volumeSlider.value);
+// ===================== Music Player =====================
+const bgAudio = document.getElementById('bgMusic');
+const volumeSlider = document.getElementById('volumeSlider');
+const musicStatus = document.getElementById('musicStatus');
+const playlistEl = document.getElementById('playlist');
+
+let tracks = [
+    { name: 'ShakeThat', url: 'music/ShakeThat.mp3' },  
+    { name: 'FFNM', url: 'music/FFNM.mp3' },
+  ];
+let curIdx = 0;
+
+function loadTrack(i) {
+  curIdx = i;
+  const t = tracks[i];
+  if (!t) return;
+
+  if (isYTUrl(t.url)) {
+    isYouTube = true;
+    bgAudio.pause(); bgAudio.src = '';
+    loadYTPlayer(t.url);
+  } else {
+    isYouTube = false;
+    if (ytPlayer) { ytPlayer.stopVideo(); document.getElementById('youtubePlayer').style.display = 'none'; }
+    bgAudio.src = t.url;
   }
+  musicStatus.textContent = `${i+1}/${tracks.length}: ${t.name}`;
+  renderPlaylist();
 }
 
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.ENDED) {
-    if (playlist.length > 0) {
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      loadTrack(currentTrackIndex);
-      if (youtubePlayer) {
-        youtubePlayer.playVideo();
-      }
-    }
-  }
+function nextTrack() {
+  if (!tracks.length) return;
+  loadTrack((curIdx + 1) % tracks.length);
+  const t = tracks[curIdx];
+  if (isYTUrl(t.url)) { if (ytPlayer) setTimeout(() => ytPlayer.playVideo(), 400); }
+  else { setupAudio(); bgAudio.play(); } // FIX: nextTrackでもsetupAudio
 }
 
-let playlist = [];
-let currentTrackIndex = -1;
-
-// 既存のMP3ファイルのURLをここに追加してください
-const defaultPlaylist = [
-  { name: 'shakethat', url:'music/ShakeThat.mp3'}
-  // 例: { name: '曲名1', url: 'music/song1.mp3' },
-  // 例: { name: '曲名2', url: 'https://example.com/song2.mp3' },
-  // 追加したい曲のURLをここに書いてください
-];
-
-// 初期プレイリストを読み込み
-if (defaultPlaylist.length > 0) {
-  playlist = [...defaultPlaylist];
-  currentTrackIndex = 0;
-  loadTrack(0);
-  updatePlaylist();
-}
-
-// Upload button click
-uploadBtn.addEventListener('click', () => {
-  musicFile.click();
-});
-
-// File selection (multiple files)
-musicFile.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  
-  files.forEach(file => {
-    const url = URL.createObjectURL(file);
-    playlist.push({
-      name: file.name,
-      url: url,
-      type: 'audio'
-    });
-  });
-  
-  updatePlaylist();
-  
-  if (currentTrackIndex === -1 && playlist.length > 0) {
-    currentTrackIndex = 0;
-    loadTrack(0);
-  }
-  
-  anime({
-    targets: '.music-controls',
-    scale: [1, 1.1, 1],
-    duration: 300
-  });
-});
-
-function addYouTubeTrack() {
-  const url = youtubeUrl.value.trim();
-  if (!url) {
-    musicStatus.textContent = 'Please enter a YouTube URL';
-    return;
-  }
-
-  if (!isYouTubeUrl(url)) {
-    musicStatus.textContent = 'Invalid YouTube URL';
-    return;
-  }
-
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    musicStatus.textContent = 'Could not extract video ID';
-    return;
-  }
-
-  playlist.push({
-    name: 'YouTube: ' + videoId,
-    url: url,
-    type: 'youtube',
-    videoId: videoId
-  });
-
-  youtubeUrl.value = '';
-  updatePlaylist();
-
-  if (currentTrackIndex === -1 && playlist.length > 0) {
-    currentTrackIndex = playlist.length - 1;
-    loadTrack(currentTrackIndex);
-  }
-
-  anime({
-    targets: '.music-controls',
-    scale: [1, 1.1, 1],
-    duration: 300
-  });
-}
-
-addYoutubeBtn.addEventListener('click', addYouTubeTrack);
-
-youtubeUrl.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    addYouTubeTrack();
-  }
-});
-
-// Update playlist display
-function updatePlaylist() {
-  playlistDiv.innerHTML = '';
-  
-  playlist.forEach((track, index) => {
-    const item = document.createElement('div');
-    item.className = 'playlist-item';
-    if (index === currentTrackIndex) {
-      item.classList.add('active');
-    }
-    
-    const name = document.createElement('span');
-    name.textContent = `${index + 1}. ${track.name}`;
-    
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.textContent = '✕';
-    deleteBtn.onclick = (e) => {
-      e.stopPropagation();
-      deleteTrack(index);
-    };
-    
-    item.appendChild(name);
-    item.appendChild(deleteBtn);
-    
-    item.onclick = function() {
-      loadTrack(index);
-      const track = playlist[index];
-      if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-        if (youtubePlayer) {
-          setTimeout(function() {
-            youtubePlayer.playVideo();
-          }, 500);
-        }
+function renderPlaylist() {
+  playlistEl.innerHTML = '';
+  tracks.forEach((t, i) => {
+    const d = document.createElement('div');
+    d.className = 'pl-item' + (i === curIdx ? ' active' : '');
+    d.innerHTML = `<span>${i+1}. ${t.name.slice(0,22)}${t.name.length>22?'…':''}</span><button class="del">✕</button>`;
+    d.querySelector('.del').onclick = e => { e.stopPropagation(); tracks.splice(i,1); if (i<=curIdx&&curIdx>0) curIdx--; renderPlaylist(); };
+    d.onclick = () => {
+      loadTrack(i);
+      if (isYTUrl(tracks[i].url)) {
+        ytPlayer && setTimeout(() => ytPlayer.playVideo(), 400);
       } else {
-        audio.play();
+        setupAudio(); // FIX: プレイリストクリック時もAudioContext初期化
+        bgAudio.play();
       }
     };
-    
-    playlistDiv.appendChild(item);
+    playlistEl.appendChild(d);
   });
-  
-  if (playlist.length === 0) {
-    musicStatus.textContent = 'No tracks';
-  }
+  if (!tracks.length) musicStatus.textContent = 'No tracks';
 }
 
-// Load a track
-function loadTrack(index) {
-  if (index >= 0 && index < playlist.length) {
-    currentTrackIndex = index;
-    const track = playlist[index];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      isPlayingYouTube = true;
-      if (audio.src) {
-        audio.pause();
-        audio.src = '';
-      }
-      
-      if (isYoutubeReady) {
-        loadYouTubePlayer(track.url);
-      } else {
-        if (youtubeReadyCheckInterval) {
-          clearInterval(youtubeReadyCheckInterval);
-          youtubeReadyCheckInterval = null;
-        }
-        youtubeReadyCheckInterval = setInterval(function() {
-          if (isYoutubeReady) {
-            clearInterval(youtubeReadyCheckInterval);
-            youtubeReadyCheckInterval = null;
-            loadYouTubePlayer(track.url);
-          }
-        }, 100);
-      }
-      
-      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
-    } else {
-      isPlayingYouTube = false;
-      if (youtubePlayer) {
-        youtubePlayer.stopVideo();
-        youtubePlayerDiv.style.display = 'none';
-      }
-      audio.src = track.url;
-      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
-    }
-    
-    updatePlaylist();
-  }
-}
+document.getElementById('musicFile').onchange = e => {
+  Array.from(e.target.files).forEach(f => tracks.push({ name: f.name, url: URL.createObjectURL(f) }));
+  renderPlaylist();
+  if (curIdx < 0) loadTrack(0);
+};
 
-// Delete a track
-function deleteTrack(index) {
-  playlist.splice(index, 1);
-  
-  if (index === currentTrackIndex) {
-    if (playlist.length > 0) {
-      currentTrackIndex = Math.min(index, playlist.length - 1);
-      loadTrack(currentTrackIndex);
-    } else {
-      currentTrackIndex = -1;
-      audio.src = '';
-      musicStatus.textContent = 'No tracks';
-    }
-  } else if (index < currentTrackIndex) {
-    currentTrackIndex--;
-  }
-  
-  updatePlaylist();
-}
+document.getElementById('addYtBtn').onclick = () => {
+  const url = document.getElementById('youtubeUrl').value.trim();
+  if (!isYTUrl(url)) { musicStatus.textContent = 'Invalid YouTube URL'; return; }
+  const vid = extractVid(url);
+  tracks.push({ name: 'YT: ' + (vid||url), url, type: 'youtube' });
+  document.getElementById('youtubeUrl').value = '';
+  renderPlaylist();
+};
 
-playBtn.addEventListener('click', function() {
-  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
-    const track = playlist[currentTrackIndex];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        youtubePlayer.playVideo();
-        musicStatus.textContent = '♪ Playing: ' + track.name;
-      } else if (isYoutubeReady) {
-        loadYouTubePlayer(track.url);
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          }
-        }, 500);
-      } else {
-        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-      }
-    } else {
-      if (audio.src) {
-        setupAudioContext();
-        audio.play();
-        musicStatus.textContent = '♪ Playing: ' + track.name;
-      } else {
-        musicStatus.textContent = 'Please add music first';
-        return;
-      }
-    }
-    
-    anime({
-      targets: '#playBtn',
-      scale: [1, 1.2, 1],
-      duration: 200
-    });
-  } else {
-    musicStatus.textContent = 'Please add music first';
-  }
-});
+document.getElementById('playBtn').onclick = () => {
+  const t = tracks[curIdx];
+  if (!t) return;
+  if (isYTUrl(t.url)) { ytPlayer && ytPlayer.playVideo(); }
+  else { setupAudio(); bgAudio.play(); }
+};
+document.getElementById('pauseBtn').onclick = () => {
+  const t = tracks[curIdx];
+  if (!t) return;
+  if (isYTUrl(t.url)) { ytPlayer && ytPlayer.pauseVideo(); }
+  else bgAudio.pause();
+  musicStatus.textContent = 'Paused';
+};
+document.getElementById('nextBtn').onclick = nextTrack;
 
-pauseBtn.addEventListener('click', function() {
-  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
-    const track = playlist[currentTrackIndex];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        youtubePlayer.pauseVideo();
-        musicStatus.textContent = 'Paused';
-      } else {
-        musicStatus.textContent = '⏳ YouTube player is not ready yet';
-      }
-    } else {
-      audio.pause();
-      musicStatus.textContent = 'Paused';
-    }
-  }
-  
-  anime({
-    targets: '#pauseBtn',
-    scale: [1, 1.2, 1],
-    duration: 200
+bgAudio.onended = nextTrack;
+
+volumeSlider.oninput = e => {
+  bgAudio.volume = e.target.value / 100;
+  if (ytPlayer) ytPlayer.setVolume(+e.target.value);
+};
+bgAudio.volume = 0.5;
+
+// 初期ロード
+loadTrack(0);
+renderPlaylist();
+
+// ===================== Draggable Player =====================
+(function(){
+  const el = document.getElementById('musicPlayer');
+  let drag = false, ox = 0, oy = 0, dx = 0, dy = 0;
+  el.addEventListener('mousedown', e => {
+    if (e.target.tagName==='BUTTON'||e.target.tagName==='INPUT') return;
+    drag=true; ox=e.clientX-dx; oy=e.clientY-dy;
   });
-});
-
-nextBtn.addEventListener('click', function() {
-  if (playlist.length > 0) {
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-    loadTrack(currentTrackIndex);
-    
-    const track = playlist[currentTrackIndex];
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        setTimeout(function() {
-          youtubePlayer.playVideo();
-        }, 500);
-      } else if (isYoutubeReady) {
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          } else {
-            musicStatus.textContent = '⏳ Loading YouTube player...';
-          }
-        }, 1000);
-      } else {
-        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-      }
-    } else {
-      audio.play();
-    }
-    
-    anime({
-      targets: '#nextBtn',
-      scale: [1, 1.2, 1],
-      duration: 200
-    });
-  }
-});
-
-audio.addEventListener('ended', function() {
-  if (playlist.length > 0) {
-    const nextIndex = (currentTrackIndex + 1) % playlist.length;
-    currentTrackIndex = nextIndex;
-    loadTrack(currentTrackIndex);
-    
-    const track = playlist[currentTrackIndex];
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        setTimeout(function() {
-          youtubePlayer.playVideo();
-        }, 500);
-      } else if (isYoutubeReady) {
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          }
-        }, 1000);
-      }
-    } else {
-      audio.play();
-    }
-  }
-});
-
-volumeSlider.addEventListener('input', function(e) {
-  const volume = e.target.value;
-  audio.volume = volume / 100;
-  if (youtubePlayer) {
-    youtubePlayer.setVolume(volume);
-  }
-});
-
-audio.volume = 0.5;
-
-// Draggable Music Controls
-(function() {
-  const musicControls = document.getElementById('musicControls');
-  let isDragging = false;
-  let currentX, currentY, initialX, initialY;
-  let xOffset = 0, yOffset = 0;
-
-  musicControls.addEventListener('mousedown', dragStart);
-  document.addEventListener('mousemove', drag);
-  document.addEventListener('mouseup', dragEnd);
-
-  musicControls.addEventListener('touchstart', dragStart);
-  document.addEventListener('touchmove', drag);
-  document.addEventListener('touchend', dragEnd);
-
-  function dragStart(e) {
-    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
-      return;
-    }
-
-    if (e.type === 'touchstart') {
-      initialX = e.touches[0].clientX - xOffset;
-      initialY = e.touches[0].clientY - yOffset;
-    } else {
-      initialX = e.clientX - xOffset;
-      initialY = e.clientY - yOffset;
-    }
-
-    isDragging = true;
-  }
-
-  function drag(e) {
-    if (isDragging) {
-      e.preventDefault();
-
-      if (e.type === 'touchmove') {
-        currentX = e.touches[0].clientX - initialX;
-        currentY = e.touches[0].clientY - initialY;
-      } else {
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-      }
-
-      xOffset = currentX;
-      yOffset = currentY;
-
-      setTranslate(currentX, currentY, musicControls);
-    }
-  }
-
-  function dragEnd(e) {
-    initialX = currentX;
-    initialY = currentY;
-    isDragging = false;
-  }
-
-  function setTranslate(xPos, yPos, el) {
-    el.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
-  }
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    dx=e.clientX-ox; dy=e.clientY-oy;
+    el.style.transform=`translate(${dx}px,${dy}px)`;
+  });
+  document.addEventListener('mouseup', () => drag=false);
 })();
 
-// Three.js Background
-function initThreeBackground() {
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.getElementById('three-bg').appendChild(renderer.domElement);
+// ===================== TETRIS =====================
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const nextCanvas = document.getElementById('nextCanvas');
+const nextCtx = nextCanvas.getContext('2d');
 
-  // Create floating cubes in purple
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const cubes = [];
-  
-  for (let i = 0; i < 50; i++) {
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x660675,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3
-    });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.x = (Math.random() - 0.5) * 50;
-    cube.position.y = (Math.random() - 0.5) * 50;
-    cube.position.z = (Math.random() - 0.5) * 50;
-    cube.rotation.x = Math.random() * Math.PI;
-    cube.rotation.y = Math.random() * Math.PI;
-    cubes.push(cube);
-    scene.add(cube);
+const COLS = 10, ROWS = 20, CELL = 30;
+
+// 本家テトリスカラー
+const COLORS = {
+  I: '#00cfcf',  // シアン
+  O: '#f5d000',  // 黄
+  T: '#a000f0',  // 紫
+  S: '#00c000',  // 緑
+  Z: '#f00000',  // 赤
+  J: '#0000f0',  // 青
+  L: '#f0a000',  // オレンジ
+};
+
+const SHAPES = {
+  I: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+  O: [[1,1],[1,1]],
+  T: [[0,1,0],[1,1,1],[0,0,0]],
+  S: [[0,1,1],[1,1,0],[0,0,0]],
+  Z: [[1,1,0],[0,1,1],[0,0,0]],
+  J: [[1,0,0],[1,1,1],[0,0,0]],
+  L: [[0,0,1],[1,1,1],[0,0,0]],
+};
+
+// フィールド（0〜19 の配列、-1〜-2はバッファ）
+let field = [];
+function initField() {
+  field = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+  field[-1] = Array(COLS).fill(0);
+  field[-2] = Array(COLS).fill(0);
+}
+initField();
+
+let seq = [], nextPiece = null;
+function genSeq() {
+  const names = Object.keys(SHAPES);
+  for (let i = names.length-1; i > 0; i--) {
+    const j = Math.random()*i|0;
+    [names[i],names[j]] = [names[j],names[i]];
   }
-
-  camera.position.z = 20;
-
-  function animate() {
-    requestAnimationFrame(animate);
-    
-    cubes.forEach(cube => {
-      cube.rotation.x += 0.001;
-      cube.rotation.y += 0.001;
-    });
-    
-    renderer.render(scene, camera);
-  }
-  
-  animate();
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
+  seq.push(...names);
+}
+function getNext() {
+  if (seq.length < 2) genSeq();
+  const name = seq.shift();
+  const m = SHAPES[name].map(r => [...r]);
+  const col = Math.floor(COLS/2) - Math.ceil(m[0].length/2);
+  const row = name==='I' ? -1 : -2;
+  return { name, m, row, col };
 }
 
-initThreeBackground();
-
-// Animate title
-gsap.fromTo('.game-title', 
-  { y: -100, opacity: 0 },
-  { y: 0, opacity: 1, duration: 1.5, ease: 'bounce.out' }
-);
-
-// Animate panels
-gsap.fromTo('.left-panel', 
-  { x: -200, opacity: 0 },
-  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
-);
-
-gsap.fromTo('.right-panel', 
-  { x: 200, opacity: 0 },
-  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
-);
-
-// Create floating particles
-function createParticles() {
-  for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * window.innerWidth + 'px';
-    particle.style.top = Math.random() * window.innerHeight + 'px';
-    document.body.appendChild(particle);
-
-    anime({
-      targets: particle,
-      translateY: [0, -1000],
-      opacity: [0, 1, 0],
-      duration: Math.random() * 3000 + 2000,
-      delay: Math.random() * 1000,
-      loop: true,
-      easing: 'linear'
-    });
-  }
+function rotate(m) {
+  const N = m.length-1;
+  return m.map((r,i) => r.map((_,j) => m[N-j][i]));
 }
 
-createParticles();
-
-// Tetris Game Code
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function generateSequence() {
-  const sequence = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-  while (sequence.length) {
-    const rand = getRandomInt(0, sequence.length - 1);
-    const name = sequence.splice(rand, 1)[0];
-    tetrominoSequence.push(name);
-  }
-}
-
-function getNextTetromino() {
-  if (tetrominoSequence.length === 0) {
-    generateSequence();
-  }
-  const name = tetrominoSequence.pop();
-  const matrix = tetrominos[name];
-  const col = playfield[0].length / 2 - Math.ceil(matrix[0].length / 2);
-  const row = name === 'I' ? -1 : -2;
-  return { name, matrix, row, col };
-}
-
-function rotate(matrix) {
-  const N = matrix.length - 1;
-  return matrix.map((row, i) =>
-    row.map((val, j) => matrix[N - j][i])
-  );
-}
-
-function isValidMove(matrix, cellRow, cellCol) {
-  for (let row = 0; row < matrix.length; row++) {
-    for (let col = 0; col < matrix[row].length; col++) {
-      if (matrix[row][col] && (
-          cellCol + col < 0 ||
-          cellCol + col >= playfield[0].length ||
-          cellRow + row >= playfield.length ||
-          playfield[cellRow + row][cellCol + col])
-        ) {
-        return false;
-      }
-    }
+function valid(m, row, col) {
+  for (let r=0; r<m.length; r++) for (let c=0; c<m[r].length; c++) {
+    if (!m[r][c]) continue;
+    const nr = row+r, nc = col+c;
+    if (nc<0||nc>=COLS||nr>=ROWS) return false;
+    if (nr>=0 && field[nr][nc]) return false;
   }
   return true;
 }
 
-function placeTetromino() {
-  for (let row = 0; row < tetromino.matrix.length; row++) {
-    for (let col = 0; col < tetromino.matrix[row].length; col++) {
-      if (tetromino.matrix[row][col]) {
-        if (tetromino.row + row < 0) {
-          return showGameOver();
-        }
-        playfield[tetromino.row + row][tetromino.col + col] = tetromino.name;
-      }
-    }
-  }
+let cur, rAF, gameOver=false, paused=false, score=0, lines=0, level=1, dropCnt=0;
+// lock delay: 着地後に固定するまでの猶予フレーム数
+// ユーザー要望「-0.5秒」→ 30フレーム(約500ms@60fps)短縮
+const LOCK_REDUCTION = 30;
+let lockCnt = 0, isLocking = false;
 
-  let linesCleared = 0;
-  for (let row = playfield.length - 1; row >= 0; ) {
-    if (playfield[row].every(cell => !!cell)) {
-      linesCleared++;
-      
-      // Line clear animation
-      anime({
-        targets: '.game-container',
-        scale: [1, 1.05, 1],
-        duration: 200,
-        easing: 'easeInOutQuad'
-      });
-
-      for (let r = row; r >= 0; r--) {
-        for (let c = 0; c < playfield[r].length; c++) {
-          playfield[r][c] = playfield[r-1][c];
-        }
-      }
-    } else {
-      row--;
-    }
-  }
-
-  if (linesCleared > 0) {
-    score += linesCleared * 100;
-    lines += linesCleared;
-    level = Math.floor(lines / 10) + 1;
-    
-    // Animate score
-    anime({
-      targets: '#score',
-      innerHTML: [score - linesCleared * 100, score],
-      round: 1,
-      duration: 500,
-      easing: 'easeOutExpo'
-    });
-    
-    document.getElementById('lines').textContent = lines;
-    document.getElementById('level').textContent = level;
-  }
-
-  tetromino = getNextTetromino();
+function spawn() {
+  cur = nextPiece || getNext();
+  nextPiece = getNext();
+  drawNext();
+  if (!valid(cur.m, cur.row, cur.col)) { endGame(); }
 }
 
-function showGameOver() {
+function place() {
+  for (let r=0; r<cur.m.length; r++) for (let c=0; c<cur.m[r].length; c++) {
+    if (cur.m[r][c] && cur.row+r >= 0) {
+      field[cur.row+r][cur.col+c] = cur.name;
+    }
+  }
+
+  // ライン消去
+  let cleared = 0;
+  for (let r=ROWS-1; r>=0;) {
+    if (field[r].every(v=>v)) {
+      cleared++;
+      for (let rr=r; rr>0; rr--) field[rr] = [...field[rr-1]];
+      field[0] = Array(COLS).fill(0);
+    } else r--;
+  }
+
+  if (cleared) {
+    score += [0,100,300,500,800][cleared] * level;
+    lines += cleared;
+    level = Math.floor(lines/10)+1;
+    updateUI();
+    // 軽いフラッシュ（CSS class toggle）
+    canvas.classList.add('line-flash');
+    setTimeout(() => canvas.classList.remove('line-flash'), 180);
+  }
+
+  spawn();
+}
+
+function updateUI() {
+  const scoreEl = document.getElementById('scoreEl');
+  const old = +scoreEl.textContent;
+  scoreEl.textContent = score;
+  document.getElementById('linesEl').textContent = lines;
+  document.getElementById('levelEl').textContent = level;
+  if (score !== old) {
+    scoreEl.classList.remove('score-flash');
+    void scoreEl.offsetWidth;
+    scoreEl.classList.add('score-flash');
+  }
+}
+
+function endGame() {
   cancelAnimationFrame(rAF);
   gameOver = true;
-
-  context.fillStyle = 'black';
-  context.globalAlpha = 0.9;
-  context.fillRect(0, canvas.height / 2 - 50, canvas.width, 100);
-  context.globalAlpha = 1;
-  context.fillStyle = '#660675';
-  context.font = '36px monospace';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.shadowBlur = 20;
-  context.shadowColor = '#660675';
-  context.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
-  context.shadowBlur = 0;
-
-  // Game over animation
-  gsap.to('.game-container', {
-    scale: 0.95,
-    duration: 0.5,
-    yoyo: true,
-    repeat: 3
-  });
+  document.getElementById('goScore').textContent = `SCORE: ${score}  LINES: ${lines}`;
+  document.getElementById('gameOverlay').classList.add('show');
 }
 
-const canvas = document.getElementById('game');
-const context = canvas.getContext('2d');
-const grid = 32;
-const tetrominoSequence = [];
-const playfield = [];
-
-for (let row = -2; row < 20; row++) {
-  playfield[row] = [];
-  for (let col = 0; col < 10; col++) {
-    playfield[row][col] = 0;
-  }
-}
-
-const tetrominos = {
-  'I': [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
-  'J': [[1,0,0],[1,1,1],[0,0,0]],
-  'L': [[0,0,1],[1,1,1],[0,0,0]],
-  'O': [[1,1],[1,1]],
-  'S': [[0,1,1],[1,1,0],[0,0,0]],
-  'Z': [[1,1,0],[0,1,1],[0,0,0]],
-  'T': [[0,1,0],[1,1,1],[0,0,0]]
-};
-
-const colors = {
-  'I': '#660675',
-  'O': '#660675',
-  'T': '#660675',
-  'S': '#660675',
-  'Z': '#660675',
-  'J': '#660675',
-  'L': '#660675'
-};
-
-let count = 0;
-let tetromino = getNextTetromino();
-let rAF = null;
-let gameOver = false;
-let score = 0;
-let lines = 0;
-let level = 1;
-
-// Reset Game Function
 function resetGame() {
-  // Stop current game loop
-  if (rAF) {
-    cancelAnimationFrame(rAF);
-  }
-  
-  // Clear playfield
-  for (let row = -2; row < 20; row++) {
-    for (let col = 0; col < 10; col++) {
-      playfield[row][col] = 0;
+  cancelAnimationFrame(rAF);
+  initField();
+  seq = []; nextPiece = null;
+  score=0; lines=0; level=1; dropCnt=0; lockCnt=0; isLocking=false; gameOver=false; paused=false;
+  updateUI();
+  document.getElementById('gameOverlay').classList.remove('show');
+  document.getElementById('pauseGameBtn').textContent = '⏸ PAUSE';
+  spawn();
+  rAF = requestAnimationFrame(loop);
+}
+
+// ── 描画 ──
+function drawCell(ctx, c, r, name, alpha=1) {
+  const col = COLORS[name];
+  ctx.globalAlpha = alpha;
+  // 塗り
+  ctx.fillStyle = col;
+  ctx.fillRect(c*CELL+1, r*CELL+1, CELL-2, CELL-2);
+  // ハイライト（上・左辺）
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.fillRect(c*CELL+1, r*CELL+1, CELL-2, 3);
+  ctx.fillRect(c*CELL+1, r*CELL+1, 3, CELL-2);
+  // シャドウ（下・右辺）
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(c*CELL+1, r*CELL+CELL-4, CELL-2, 3);
+  ctx.fillRect(c*CELL+CELL-4, r*CELL+1, 3, CELL-2);
+  ctx.globalAlpha = 1;
+}
+
+function drawGhost() {
+  let gr = cur.row;
+  while (valid(cur.m, gr+1, cur.col)) gr++;
+  if (gr === cur.row) return;
+  for (let r=0; r<cur.m.length; r++) for (let c=0; c<cur.m[r].length; c++) {
+    if (cur.m[r][c] && gr+r >= 0) {
+      const x = (cur.col+c)*CELL, y = (gr+r)*CELL;
+      // 塗り（明るめ）
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = COLORS[cur.name];
+      ctx.fillRect(x+1, y+1, CELL-2, CELL-2);
+      // 枠線（さらに目立たせる）
+      ctx.globalAlpha = 0.85;
+      ctx.strokeStyle = COLORS[cur.name];
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x+1.5, y+1.5, CELL-3, CELL-3);
+      ctx.globalAlpha = 1;
     }
   }
-  
-  // Reset variables
-  count = 0;
-  gameOver = false;
-  score = 0;
-  lines = 0;
-  level = 1;
-  tetrominoSequence.length = 0;
-  
-  // Update display
-  document.getElementById('score').textContent = '0';
-  document.getElementById('lines').textContent = '0';
-  document.getElementById('level').textContent = '1';
-  
-  // Get new tetromino
-  tetromino = getNextTetromino();
-  
-  // Restart game loop
-  rAF = requestAnimationFrame(loop);
-  
-  // Reset animation
-  anime({
-    targets: '.game-container',
-    scale: [0.95, 1.05, 1],
-    duration: 500,
-    easing: 'easeOutElastic(1, .5)'
-  });
 }
 
-// Reset button event
-document.getElementById('resetBtn').addEventListener('click', () => {
-  resetGame();
-  
-  anime({
-    targets: '#resetBtn',
-    rotate: [0, 360],
-    duration: 500,
-    easing: 'easeInOutQuad'
-  });
-});
+function drawField() {
+  for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) {
+    if (field[r][c]) drawCell(ctx, c, r, field[r][c]);
+    else {
+      // 薄いグリッド線
+      ctx.fillStyle = 'rgba(78,4,101,0.07)';
+      ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+      ctx.strokeStyle = 'rgba(78,4,101,0.12)';
+      ctx.strokeRect(c*CELL+0.5, r*CELL+0.5, CELL-1, CELL-1);
+    }
+  }
+}
 
+function drawCurrent() {
+  for (let r=0; r<cur.m.length; r++) for (let c=0; c<cur.m[r].length; c++) {
+    if (cur.m[r][c] && cur.row+r >= 0) drawCell(ctx, cur.col+c, cur.row+r, cur.name);
+  }
+}
+
+function drawNext() {
+  nextCtx.clearRect(0,0,nextCanvas.width,nextCanvas.height);
+  if (!nextPiece) return;
+  const m = nextPiece.m;
+  const s = 18;
+  const ox = Math.floor((nextCanvas.width  - m[0].length*s) / 2);
+  const oy = Math.floor((nextCanvas.height - m.length*s) / 2);
+  for (let r=0; r<m.length; r++) for (let c=0; c<m[r].length; c++) {
+    if (!m[r][c]) continue;
+    const col = COLORS[nextPiece.name];
+    nextCtx.fillStyle = col;
+    nextCtx.fillRect(ox+c*s+1, oy+r*s+1, s-2, s-2);
+    nextCtx.fillStyle = 'rgba(255,255,255,0.2)';
+    nextCtx.fillRect(ox+c*s+1, oy+r*s+1, s-2, 3);
+  }
+}
+
+// ── ゲームループ ──
 function loop() {
   rAF = requestAnimationFrame(loop);
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw playfield with purple glow
-  for (let row = 0; row < 20; row++) {
-    for (let col = 0; col < 10; col++) {
-      if (playfield[row][col]) {
-        const name = playfield[row][col];
-        context.fillStyle = colors[name];
-        context.shadowBlur = 20;
-        context.shadowColor = '#660675';
-        context.fillRect(col * grid, row * grid, grid-1, grid-1);
-        context.shadowBlur = 0;
-      }
-    }
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawField();
+  if (paused) {
+    // ポーズ中オーバーレイ
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 1.4rem -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('PAUSED', canvas.width/2, canvas.height/2 - 16);
+    ctx.font = '0.75rem -apple-system, sans-serif';
+    ctx.fillStyle = '#9ca3af';
+    ctx.fillText('Press P to resume', canvas.width/2, canvas.height/2 + 16);
+    return;
   }
+  if (!gameOver && cur) {
+    const speed = Math.max(48 - level*3, 8);
+    // 着地判定
+    const onGround = !valid(cur.m, cur.row+1, cur.col);
 
-  // Draw active tetromino
-  if (tetromino) {
-    const dropSpeed = Math.max(35 - level * 2, 10);
-    
-    if (++count > dropSpeed) {
-      tetromino.row++;
-      count = 0;
-
-      if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
-        tetromino.row--;
-        placeTetromino();
+    if (onGround) {
+      // 着地中: lock delay カウント（猶予 = speed - 30フレーム、最低1）
+      const lockDelay = Math.max(speed - LOCK_REDUCTION, 1);
+      if (++lockCnt >= lockDelay) {
+        lockCnt = 0;
+        place();
+        return;
+      }
+    } else {
+      // 空中: 通常落下
+      lockCnt = 0;
+      if (++dropCnt >= speed) {
+        dropCnt = 0;
+        cur.row++;
       }
     }
-
-    context.fillStyle = colors[tetromino.name];
-    context.shadowBlur = 30;
-    context.shadowColor = '#660675';
-
-    for (let row = 0; row < tetromino.matrix.length; row++) {
-      for (let col = 0; col < tetromino.matrix[row].length; col++) {
-        if (tetromino.matrix[row][col]) {
-          context.fillRect((tetromino.col + col) * grid, (tetromino.row + row) * grid, grid-1, grid-1);
-        }
-      }
-    }
-    context.shadowBlur = 0;
+    drawGhost();
+    drawCurrent();
   }
 }
 
-document.addEventListener('keydown', function(e) {
-  if (gameOver) return;
-
-  // 左右の矢印キー (移動)
-  if (e.which === 37 || e.which === 39) {
-    const col = e.which === 37 ? tetromino.col - 1 : tetromino.col + 1;
-    if (isValidMove(tetromino.matrix, tetromino.row, col)) {
-      tetromino.col = col;
-    }
+// ── キー入力 ──
+document.addEventListener('keydown', e => {
+  // P キーでポーズトグル
+  if (e.code === 'KeyP' && !gameOver) {
+    togglePause();
+    return;
   }
-
-  // 上矢印キー (回転)
-  if (e.which === 38) {
-    e.preventDefault(); // ページスクロール防止
-    const matrix = rotate(tetromino.matrix);
-    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
-      tetromino.matrix = matrix;
-      // 回転アニメーション
-      anime({
-        targets: canvas,
-        rotate: [0, 5, 0],
-        duration: 100
-      });
-    }
-  }
-
-  // 下矢印キー (1マス下へ)
-  if (e.which === 40) {
-    e.preventDefault(); // ページスクロール防止
-    const row = tetromino.row + 1;
-    if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
-      tetromino.row = row - 1;
-      placeTetromino();
-      return;
-    }
-    tetromino.row = row;
-  }
-
-  // スペースキー (一番下まで落とす)
-  if (e.which === 32) {
-    e.preventDefault(); // ページスクロール防止
-    
-    // 一番下まで落とす
-    while (isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col)) {
-      tetromino.row++;
-    }
-    
-    // 落下アニメーション
-    anime({
-      targets: canvas,
-      translateY: [0, 10, 0],
-      duration: 150,
-      easing: 'easeOutBounce'
-    });
-    
-    placeTetromino();
+  if (gameOver || paused) return;
+  switch(e.code) {
+    case 'ArrowLeft':
+      if (valid(cur.m, cur.row, cur.col-1)) { cur.col--; lockCnt = 0; } break;
+    case 'ArrowRight':
+      if (valid(cur.m, cur.row, cur.col+1)) { cur.col++; lockCnt = 0; } break;
+    case 'ArrowUp':
+      e.preventDefault();
+      const rm = rotate(cur.m);
+      if (valid(rm, cur.row, cur.col)) { cur.m = rm; lockCnt = 0; }
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      if (valid(cur.m, cur.row+1, cur.col)) { cur.row++; lockCnt = 0; }
+      else place();
+      break;
+    case 'Space':
+      e.preventDefault();
+      while (valid(cur.m, cur.row+1, cur.col)) cur.row++;
+      place();
+      break;
   }
 });
 
+function togglePause() {
+  if (gameOver) return;
+  paused = !paused;
+  const btn = document.getElementById('pauseGameBtn');
+  btn.textContent = paused ? '▶ RESUME' : '⏸ PAUSE';
+}
+
+document.getElementById('pauseGameBtn').onclick = togglePause;
+document.getElementById('resetBtn').onclick = resetGame;
+
+// ── スタート ──
+genSeq();
+nextPiece = getNext();
+spawn();
 rAF = requestAnimationFrame(loop);
 </script>
 </body>

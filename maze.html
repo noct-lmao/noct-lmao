@@ -4,364 +4,139 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./images/icon.png?v=2">
   <title>???</title>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  body { background:#000; display:flex; align-items:center; justify-content:center; color:#fff; }
+
+  ::-webkit-scrollbar{width:8px} ::-webkit-scrollbar-track{background:rgba(0,0,0,0.5);border-radius:4px}
+  ::-webkit-scrollbar-thumb{background:#670676;border-radius:4px} ::-webkit-scrollbar-thumb:hover{background:#8800aa}
+
+  #three-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;}
+
+  .game-container{position:relative;z-index:1;display:flex;gap:20px;align-items:center;}
+
+  /* Panels */
+  .left-panel,.right-panel{
+    background:linear-gradient(135deg,#111,#000);backdrop-filter:blur(10px);
+    border-radius:12px;padding:16px;border:1px solid rgba(103,6,118,0.3);
+    box-shadow:0 8px 32px rgba(103,6,118,0.3);transition:all 0.3s;
+    animation:panelPulse 2s infinite;min-width:140px;
+  }
+  .left-panel:hover,.right-panel:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.5);transform:translateY(-4px);}
+
+  @keyframes panelPulse{0%,100%{box-shadow:0 8px 32px rgba(103,6,118,0.3);}50%{box-shadow:0 8px 40px rgba(103,6,118,0.6);}}
+
+  .score-display{color:#9ca3af;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;text-align:center;}
+  .score-number{display:block;font-size:2rem;font-weight:bold;color:#670676;text-shadow:0 0 20px rgba(103,6,118,0.5);margin-top:0.2rem;}
+  .score-number.best{font-size:1.1rem;color:#a855f7;}
+
+  /* Canvas wrapper */
+  .canvas-wrapper{position:relative;}
+  #game{border:1px solid rgba(103,6,118,0.3);border-radius:12px;box-shadow:0 8px 32px rgba(103,6,118,0.4);background:#000;display:block;touch-action:none;}
+  #game:focus{outline:none;border-color:#670676;box-shadow:0 0 30px rgba(103,6,118,0.6);}
+
+  .controls{margin-top:0.6rem;color:#6b7280;font-size:0.75rem;text-align:center;font-weight:600;letter-spacing:0.05em;}
+
+  /* Game title */
+  .game-title{
+    position:absolute;top:30px;left:50%;transform:translateX(-50%);
+    font-size:3.5rem;font-weight:bold;
+    background:linear-gradient(90deg,#670676,#a855f7);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    z-index:2;letter-spacing:10px;white-space:nowrap;
   }
 
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Courier New', monospace;
+  /* Buttons */
+  .game-btn{
+    margin-top:8px;background:linear-gradient(135deg,#670676,#8800aa);color:#fff;border:none;
+    padding:0.6rem 1rem;border-radius:8px;cursor:pointer;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:0.8rem;font-weight:bold;box-shadow:0 4px 16px rgba(103,6,118,0.3);
+    transition:all 0.3s;width:100%;position:relative;overflow:hidden;
   }
+  .game-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.2);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s;}
+  .game-btn:hover::before{width:200px;height:200px;}
+  .game-btn:hover{background:rgba(103,6,118,0.8);box-shadow:0 8px 32px rgba(103,6,118,0.5);transform:scale(1.05);}
+  .game-btn:active{transform:scale(0.97);}
+  .game-btn.hint-active{background:linear-gradient(135deg,#b45309,#d97706);box-shadow:0 4px 16px rgba(180,83,9,0.5);}
 
-  body {
-    background: #000000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Difficulty selector */
+  .diff-section{margin-bottom:12px;}
+  .diff-label{color:#9ca3af;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;display:block;text-align:center;}
+  .diff-btns{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+  .diff-btn{
+    background:rgba(103,6,118,0.1);border:1px solid rgba(103,6,118,0.2);
+    color:#9ca3af;padding:4px;border-radius:6px;cursor:pointer;font-size:0.65rem;
+    font-weight:700;transition:all 0.2s;font-family:inherit;text-align:center;
   }
+  .diff-btn:hover{background:rgba(103,6,118,0.3);border-color:#670676;color:#fff;}
+  .diff-btn.active{background:rgba(103,6,118,0.5);border-color:#670676;color:#fff;box-shadow:0 0 10px rgba(103,6,118,0.4);}
 
-  #three-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
+  /* Minimap */
+  .minimap-section{margin-top:12px;}
+  .minimap-label{color:#9ca3af;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;display:block;text-align:center;}
+  #minimap{border:1px solid rgba(103,6,118,0.3);border-radius:6px;display:block;margin:0 auto;}
 
-  .game-container {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    gap: 30px;
-    align-items: center;
-  }
+  /* Highscore */
+  .hs-section{margin-top:10px;padding-top:10px;border-top:1px solid rgba(103,6,118,0.2);}
+  .hs-label{color:#9ca3af;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;display:block;text-align:center;}
+  .hs-row{display:flex;justify-content:space-between;align-items:center;font-size:0.65rem;color:#6b7280;padding:2px 0;}
+  .hs-row span:last-child{color:#a855f7;font-weight:700;}
+  .hs-none{text-align:center;color:#4b5563;font-size:0.65rem;}
 
-  .left-panel, .right-panel {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 20px;
-    border: 3px solid #660675;
-    box-shadow: 
-      0 0 30px rgba(102, 6, 117, 0.6),
-      inset 0 0 20px rgba(102, 6, 117, 0.2);
-    animation: pulse 2s infinite;
-  }
+  /* Particle */
+  .particle{position:fixed;width:3px;height:3px;background:#670676;border-radius:50%;pointer-events:none;z-index:0;box-shadow:0 0 6px rgba(103,6,118,0.8);}
 
-  .score-display {
-    color: #fff;
-    font-size: 24px;
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 10px #660675;
+  /* Win Message */
+  .win-message{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:linear-gradient(135deg,#111,#000);border:1px solid #670676;
+    border-radius:12px;padding:2rem;text-align:center;
+    box-shadow:0 20px 60px rgba(103,6,118,0.5);display:none;z-index:100;
+    backdrop-filter:blur(10px);min-width:300px;
   }
+  .win-message h2{font-size:2rem;margin-bottom:1rem;background:linear-gradient(90deg,#670676,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .win-message p{color:#9ca3af;font-size:1rem;margin-bottom:0.4rem;font-weight:600;}
+  .win-message p span{color:#fff;font-size:1.2rem;}
+  .win-new-record{color:#fbbf24!important;font-size:0.9rem!important;animation:recordPulse 1s infinite;}
+  @keyframes recordPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
-  .score-number {
-    display: block;
-    font-size: 48px;
-    font-weight: bold;
-    color: #660675;
-    text-shadow: 
-      0 0 20px #660675,
-      0 0 40px #660675;
+  /* Music Controls */
+  .music-controls{
+    position:fixed;top:20px;right:20px;z-index:1000;
+    background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);
+    border:1px solid rgba(103,6,118,0.3);border-radius:12px;padding:10px 15px;
+    box-shadow:0 8px 32px rgba(103,6,118,0.4);cursor:move;user-select:none;
+    transition:border-color 0.3s,box-shadow 0.3s;min-width:180px;
   }
-
-  canvas {
-    border: 3px solid #660675;
-    border-radius: 10px;
-    box-shadow: 
-      0 0 40px rgba(102, 6, 117, 0.8),
-      inset 0 0 30px rgba(0, 0, 0, 0.9);
-    background: #000000;
-  }
-
-  .controls {
-    margin-top: 20px;
-    color: #660675;
-    font-size: 14px;
-    text-align: center;
-    font-weight: bold;
-    text-shadow: 0 0 10px #660675;
-  }
-
-  .controls div {
-    margin: 5px 0;
-  }
-
-  .game-title {
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 72px;
-    font-weight: bold;
-    color: #660675;
-    text-shadow: 
-      0 0 20px #660675,
-      0 0 40px #660675,
-      0 0 60px #660675;
-    z-index: 2;
-    letter-spacing: 10px;
-  }
-
-  .reset-btn, .new-maze-btn {
-    margin-top: 10px;
-    background: #660675;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-    transition: all 0.3s;
-    width: 100%;
-  }
-
-  .reset-btn:hover, .new-maze-btn:hover {
-    background: #8800aa;
-    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
-    transform: scale(1.05);
-  }
-
-  .reset-btn:active, .new-maze-btn:active {
-    transform: scale(0.95);
-  }
-
-  .particle {
-    position: fixed;
-    width: 5px;
-    height: 5px;
-    background: #660675;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    box-shadow: 0 0 10px #660675;
-  }
-
-  @keyframes pulse {
-    0%, 100% { 
-      box-shadow: 
-        0 0 30px rgba(102, 6, 117, 0.6),
-        inset 0 0 20px rgba(102, 6, 117, 0.2);
-    }
-    50% { 
-      box-shadow: 
-        0 0 50px rgba(102, 6, 117, 1),
-        inset 0 0 30px rgba(102, 6, 117, 0.4);
-    }
-  }
-
-  .music-controls {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid #660675;
-    border-radius: 12px;
-    padding: 10px 15px;
-    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
-    cursor: move;
-    user-select: none;
-  }
-
-  .music-controls:active {
-    cursor: grabbing;
-  }
-
-  .drag-handle {
-    text-align: center;
-    padding: 4px;
-    margin: -10px -15px 8px -15px;
-    background: #660675;
-    border-radius: 10px 10px 0 0;
-    cursor: grab;
-    font-size: 11px;
-    color: white;
-  }
-
-  .drag-handle:active {
-    cursor: grabbing;
-  }
-
-  .music-controls button {
-    background: #660675;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    font-size: 11px;
-    font-weight: bold;
-    margin: 3px;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-    transition: all 0.3s;
-  }
-
-  .music-controls button:hover {
-    background: #8800aa;
-    box-shadow: 0 0 25px rgba(102, 6, 117, 0.9);
-    transform: scale(1.05);
-  }
-
-  .music-controls input[type="range"] {
-    width: 120px;
-    margin: 6px 3px;
-    accent-color: #660675;
-  }
-
-  .music-label {
-    color: #660675;
-    font-size: 11px;
-    font-weight: bold;
-    text-shadow: 0 0 10px #660675;
-    display: block;
-    margin-bottom: 3px;
-  }
-
-  .volume-container {
-    margin-top: 10px;
-  }
-
-  .music-status {
-    color: white;
-    font-size: 12px;
-    margin-top: 5px;
-    text-align: center;
-  }
-
-  .playlist {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-top: 6px;
-    padding: 3px;
-  }
-
-  .playlist-item {
-    background: rgba(102, 6, 117, 0.3);
-    border: 1px solid #660675;
-    border-radius: 4px;
-    padding: 5px;
-    margin: 3px 0;
-    color: white;
-    font-size: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .playlist-item:hover {
-    background: rgba(102, 6, 117, 0.6);
-    transform: translateX(5px);
-  }
-
-  .playlist-item.active {
-    background: #660675;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.8);
-  }
-
-  .playlist-item .delete-btn {
-    background: rgba(255, 0, 0, 0.5);
-    border: none;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 9px;
-  }
-
-  .playlist-item .delete-btn:hover {
-    background: rgba(255, 0, 0, 0.8);
-  }
-
-  .audio-visualizer {
-    margin: 15px 0;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #660675;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 0 20px rgba(102, 6, 117, 0.4);
-  }
-
-  #visualizerCanvas {
-    width: 100%;
-    height: 80px;
-    border-radius: 5px;
-  }
-
-  .playlist::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .playlist::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-  }
-
-  .playlist::-webkit-scrollbar-thumb {
-    background: #660675;
-    border-radius: 4px;
-  }
-
-  .playlist::-webkit-scrollbar-thumb:hover {
-    background: #8800aa;
-  }
-
-  .win-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
-    border: 3px solid #660675;
-    border-radius: 20px;
-    padding: 40px;
-    text-align: center;
-    box-shadow: 0 0 50px rgba(102, 6, 117, 0.8);
-    display: none;
-    z-index: 100;
-  }
-
-  .win-message h2 {
-    color: #660675;
-    font-size: 48px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 30px #660675;
-  }
-
-  .win-message p {
-    color: white;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  #youtubeUrl::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-  }
-
-  #youtubePlayer {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 240px;
-    height: 160px;
-    z-index: 1001;
-    border: 2px solid #660675;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(102, 6, 117, 0.6);
-  }
+  .music-controls:hover{border-color:#670676;box-shadow:0 8px 32px rgba(103,6,118,0.6);}
+  .music-controls:active{cursor:grabbing;}
+  .drag-handle{text-align:center;padding:4px;margin:-10px -15px 8px -15px;background:rgba(103,6,118,0.3);border-bottom:1px solid rgba(103,6,118,0.3);border-radius:10px 10px 0 0;cursor:grab;font-size:11px;color:#9ca3af;font-weight:600;letter-spacing:0.05em;transition:background 0.2s;}
+  .drag-handle:hover{background:rgba(103,6,118,0.5);color:#fff;}
+  .drag-handle:active{cursor:grabbing;}
+  .music-controls button{background:rgba(103,6,118,0.2);color:#fff;border:1px solid rgba(103,6,118,0.3);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:11px;font-weight:600;margin:3px;transition:all 0.3s;position:relative;overflow:hidden;}
+  .music-controls button::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.15);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s;}
+  .music-controls button:hover::before{width:200px;height:200px;}
+  .music-controls button:hover{background:rgba(103,6,118,0.8);border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.4);transform:scale(1.05);}
+  .music-controls input[type="range"]{width:120px;margin:6px 3px;accent-color:#670676;}
+  .music-controls input[type="text"]{background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;transition:all 0.3s;}
+  .music-controls input[type="text"]:focus{outline:none;border-color:#670676;box-shadow:0 0 20px rgba(103,6,118,0.3);}
+  .music-label{color:#9ca3af;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:3px;}
+  .volume-container{margin-top:10px;}
+  .music-status{color:#6b7280;font-size:11px;margin-top:5px;text-align:center;font-weight:600;}
+  .playlist{max-height:150px;overflow-y:auto;margin-top:6px;padding:3px;}
+  .playlist-item{background:rgba(103,6,118,0.1);border:1px solid rgba(103,6,118,0.2);border-radius:8px;padding:5px;margin:3px 0;color:#d1d5db;font-size:10px;cursor:pointer;transition:all 0.3s;display:flex;justify-content:space-between;align-items:center;font-weight:600;}
+  .playlist-item:hover{background:rgba(103,6,118,0.3);border-color:#670676;transform:translateX(4px);color:#fff;}
+  .playlist-item.active{background:rgba(103,6,118,0.4);border-color:#670676;box-shadow:0 0 12px rgba(103,6,118,0.4);color:#fff;}
+  .playlist-item .delete-btn{background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);color:#ef4444;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:9px;transition:all 0.2s;}
+  .playlist-item .delete-btn:hover{background:rgba(220,38,38,0.4);border-color:#ef4444;}
+  .audio-visualizer{margin:10px 0;background:rgba(0,0,0,0.6);border:1px solid rgba(103,6,118,0.3);border-radius:8px;padding:8px;transition:border-color 0.3s;}
+  .audio-visualizer:hover{border-color:#670676;}
+  #visualizerCanvas{width:100%;height:80px;border-radius:4px;}
+  #youtubeUrl::placeholder{color:rgba(255,255,255,0.3);}
+  #youtubePlayer{display:none;position:fixed;bottom:20px;right:20px;width:240px;height:160px;z-index:1001;border:1px solid rgba(103,6,118,0.3);border-radius:12px;box-shadow:0 8px 32px rgba(103,6,118,0.4);}
   </style>
 </head>
 <body>
@@ -370,28 +145,26 @@
 
 <div class="win-message" id="winMessage">
   <h2>🎉 YOU WIN! 🎉</h2>
+  <p id="winNewRecord" class="win-new-record" style="display:none">🏆 NEW RECORD!</p>
   <p>Time: <span id="finalTime">0</span>s</p>
   <p>Moves: <span id="finalMoves">0</span></p>
+  <button class="game-btn" onclick="startNewGame()" style="margin-top:1rem;">🎲 NEXT MAZE</button>
 </div>
 
 <div class="music-controls" id="musicControls">
   <div class="drag-handle">⋮⋮ DRAG ME ⋮⋮</div>
-  <div class="music-label">🎵 MUSIC PLAYER</div>
-  <input type="file" id="musicFile" accept="audio/*" multiple style="display: none;">
+  <div class="music-label">🎵 Music Player</div>
+  <input type="file" id="musicFile" accept="audio/*" multiple style="display:none;">
   <button id="uploadBtn">📁 ADD MUSIC</button>
-  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width: 100%; padding: 5px; margin: 3px 0; background: rgba(102, 6, 117, 0.2); border: 1px solid #660675; border-radius: 4px; color: white; font-size: 10px;">
+  <input type="text" id="youtubeUrl" placeholder="YouTube URL" style="width:100%;padding:5px;margin:3px 0;font-size:10px;">
   <button id="addYoutubeBtn">📺 ADD YOUTUBE</button>
-  <div class="music-label" style="font-size: 9px; margin-top: 3px; color: rgba(255, 255, 255, 0.7);">※YouTube songs don't support audio spectrum.</div>
+  <div class="music-label" style="font-size:9px;margin-top:3px;color:#6b7280;text-transform:none;letter-spacing:0;">※YouTube songs don't support audio spectrum.</div>
   <button id="playBtn">▶ PLAY</button>
   <button id="pauseBtn">⏸ PAUSE</button>
   <button id="nextBtn">⏭ NEXT</button>
-  
-  <div class="audio-visualizer">
-    <canvas id="visualizerCanvas"></canvas>
-  </div>
-  
+  <div class="audio-visualizer"><canvas id="visualizerCanvas"></canvas></div>
   <div class="volume-container">
-    <label class="music-label" for="volumeSlider">VOLUME</label>
+    <label class="music-label" for="volumeSlider">Volume</label>
     <input type="range" id="volumeSlider" min="0" max="100" value="50">
   </div>
   <div class="music-status" id="musicStatus">No tracks</div>
@@ -399,145 +172,110 @@
 </div>
 
 <audio id="bgMusic" loop></audio>
-
-<div id="youtubePlayer" ></div>
+<div id="youtubePlayer"></div>
 
 <div class="game-container">
+  <!-- Left Panel -->
   <div class="left-panel">
-    <div class="score-display">
-      TIME
-      <span class="score-number" id="time">0</span>
-    </div>
-    <div class="score-display">
-      MOVES
-      <span class="score-number" id="moves">0</span>
-    </div>
+    <div class="score-display">Time<span class="score-number" id="time">0</span></div>
+    <div class="score-display">Moves<span class="score-number" id="moves">0</span></div>
+    <div class="score-display">Best Time<span class="score-number best" id="bestTime">--</span></div>
+    <div class="score-display">Best Moves<span class="score-number best" id="bestMoves">--</span></div>
   </div>
 
-  <div>
-    <canvas width="600" height="600" id="game"></canvas>
-    <div class="controls">
-      <div>↑ ↓ ← → : Move</div>
-      <div>WASD : Move</div>
-    </div>
+  <!-- Canvas -->
+  <div class="canvas-wrapper">
+    <canvas id="game" tabindex="0"></canvas>
+    <div class="controls">↑↓←→ / WASD : Move &nbsp;|&nbsp; H : Hint &nbsp;|&nbsp; Swipe on mobile</div>
   </div>
 
+  <!-- Right Panel -->
   <div class="right-panel">
-    <div class="score-display">
-      DIFFICULTY
-      <span class="score-number" id="difficulty">EASY</span>
+    <div class="diff-section">
+      <span class="diff-label">Difficulty</span>
+      <div class="diff-btns">
+        <button class="diff-btn active" data-diff="easy">EASY</button>
+        <button class="diff-btn" data-diff="normal">NORMAL</button>
+        <button class="diff-btn" data-diff="hard">HARD</button>
+        <button class="diff-btn" data-diff="extreme">EXTREME</button>
+      </div>
     </div>
-    <button class="reset-btn" id="resetBtn">🔄 RESET</button>
-    <button class="new-maze-btn" id="newMazeBtn">🎲 NEW MAZE</button>
+    <button class="game-btn" id="resetBtn">🔄 RESET</button>
+    <button class="game-btn" id="newMazeBtn">🎲 NEW MAZE</button>
+    <button class="game-btn" id="hintBtn">💡 HINT</button>
+
+    <div class="minimap-section">
+      <span class="minimap-label">Minimap</span>
+      <canvas id="minimap" width="108" height="108"></canvas>
+    </div>
+
+    <div class="hs-section">
+      <span class="hs-label">🏆 Highscores</span>
+      <div id="hsList"></div>
+    </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-
 <script>
-// Three.js Background
+// ─── Three.js Background ───────────────────────────────────────────────────
 function initThreeBackground() {
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha:true, antialias:true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.getElementById('three-bg').appendChild(renderer.domElement);
-
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const geo = new THREE.BoxGeometry(1,1,1);
   const cubes = [];
-  
   for (let i = 0; i < 50; i++) {
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x660675,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3
-    });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.x = (Math.random() - 0.5) * 50;
-    cube.position.y = (Math.random() - 0.5) * 50;
-    cube.position.z = (Math.random() - 0.5) * 50;
-    cube.rotation.x = Math.random() * Math.PI;
-    cube.rotation.y = Math.random() * Math.PI;
-    cubes.push(cube);
-    scene.add(cube);
+    const mat = new THREE.MeshBasicMaterial({ color:0x670676, wireframe:true, transparent:true, opacity:0.3 });
+    const cube = new THREE.Mesh(geo, mat);
+    cube.position.set((Math.random()-0.5)*50,(Math.random()-0.5)*50,(Math.random()-0.5)*50);
+    cube.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+    cubes.push(cube); scene.add(cube);
   }
-
   camera.position.z = 20;
-
   function animate() {
     requestAnimationFrame(animate);
-    cubes.forEach(cube => {
-      cube.rotation.x += 0.001;
-      cube.rotation.y += 0.001;
-    });
+    cubes.forEach(c => { c.rotation.x+=0.001; c.rotation.y+=0.001; });
     renderer.render(scene, camera);
   }
-  
   animate();
-
   window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 }
-
 initThreeBackground();
 
-// Animate title
-gsap.fromTo('.game-title', 
-  { y: -100, opacity: 0 },
-  { y: 0, opacity: 1, duration: 1.5, ease: 'bounce.out' }
-);
+gsap.fromTo('.game-title', {y:-100,opacity:0}, {y:0,opacity:1,duration:1.5,ease:'bounce.out'});
+gsap.fromTo('.left-panel',  {x:-200,opacity:0}, {x:0,opacity:1,duration:1,delay:0.5,ease:'power3.out'});
+gsap.fromTo('.right-panel', {x:200,opacity:0},  {x:0,opacity:1,duration:1,delay:0.5,ease:'power3.out'});
 
-gsap.fromTo('.left-panel', 
-  { x: -200, opacity: 0 },
-  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
-);
-
-gsap.fromTo('.right-panel', 
-  { x: 200, opacity: 0 },
-  { x: 0, opacity: 1, duration: 1, delay: 0.5, ease: 'power3.out' }
-);
-
-// Create particles
 function createParticles() {
   for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.left = Math.random() * window.innerWidth + 'px';
-    particle.style.top = Math.random() * window.innerHeight + 'px';
-    document.body.appendChild(particle);
-
-    anime({
-      targets: particle,
-      translateY: [0, -1000],
-      opacity: [0, 1, 0],
-      duration: Math.random() * 3000 + 2000,
-      delay: Math.random() * 1000,
-      loop: true,
-      easing: 'linear'
-    });
+    const p = document.createElement('div'); p.className = 'particle';
+    p.style.left = Math.random()*window.innerWidth+'px';
+    p.style.top  = Math.random()*window.innerHeight+'px';
+    document.body.appendChild(p);
+    anime({ targets:p, translateY:[0,-1000], opacity:[0,1,0], duration:Math.random()*3000+2000, delay:Math.random()*1000, loop:true, easing:'linear' });
   }
 }
-
 createParticles();
 
-// YouTube IFrame APIを動的に読み込む
+// ─── YouTube IFrame API ────────────────────────────────────────────────────
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
 const audio = document.getElementById('bgMusic');
 const uploadBtn = document.getElementById('uploadBtn');
 const musicFile = document.getElementById('musicFile');
 const addYoutubeBtn = document.getElementById('addYoutubeBtn');
-const youtubeUrl = document.getElementById('youtubeUrl');
+const youtubeUrlInput = document.getElementById('youtubeUrl');
 const playBtn = document.getElementById('playBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -546,868 +284,547 @@ const musicStatus = document.getElementById('musicStatus');
 const playlistDiv = document.getElementById('playlist');
 const youtubePlayerDiv = document.getElementById('youtubePlayer');
 
-let youtubePlayer = null;
-let isYoutubeReady = false;
-let youtubeReadyCheckInterval = null;
-let isPlayingYouTube = false;
-
-const visualizerCanvas = document.getElementById('visualizerCanvas');
-const canvasCtx = visualizerCanvas.getContext('2d');
-let audioContext, analyser, dataArray, bufferLength, source;
+let youtubePlayer=null, isYoutubeReady=false, youtubeReadyCheckInterval=null, isPlayingYouTube=false;
+const visualizerCanvas=document.getElementById('visualizerCanvas'), canvasCtx=visualizerCanvas.getContext('2d');
+let audioContext, analyser, dataArray, bufferLength;
 
 function setupAudioContext() {
   if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    
-    source = audioContext.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
-    
+    audioContext = new (window.AudioContext||window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser(); analyser.fftSize=256;
+    bufferLength = analyser.frequencyBinCount; dataArray = new Uint8Array(bufferLength);
+    const src = audioContext.createMediaElementSource(audio);
+    src.connect(analyser); analyser.connect(audioContext.destination);
     drawVisualizer();
   }
 }
 
-// YouTube再生用のランダムアニメーション
 let randomDataArray = new Uint8Array(128);
-function drawRandomVisualizer() {
-  if (!isPlayingYouTube) {
-    return;
-  }
-  
-  for (let i = 0; i < randomDataArray.length; i++) {
-    randomDataArray[i] = Math.random() * 255;
-  }
-  
-  const width = visualizerCanvas.width;
-  const height = visualizerCanvas.height;
-  
-  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  canvasCtx.fillRect(0, 0, width, height);
-  
-  const barWidth = (width / randomDataArray.length) * 2.5;
-  let barHeight;
-  let x = 0;
-  
-  for (let i = 0; i < randomDataArray.length; i++) {
-    barHeight = (randomDataArray[i] / 255) * height;
-    
-    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-    gradient.addColorStop(0, '#660675');
-    gradient.addColorStop(0.5, '#8800aa');
-    gradient.addColorStop(1, '#aa00dd');
-    
-    canvasCtx.fillStyle = gradient;
-    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-    
-    canvasCtx.shadowBlur = 10;
-    canvasCtx.shadowColor = '#660675';
-    
-    x += barWidth + 1;
-  }
-}
-
 function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
-  
-  if (isPlayingYouTube) {
-    drawRandomVisualizer();
-    return;
+  const w=visualizerCanvas.width, h=visualizerCanvas.height;
+  canvasCtx.fillStyle='rgba(0,0,0,0.2)'; canvasCtx.fillRect(0,0,w,h);
+  let arr = isPlayingYouTube ? randomDataArray : (analyser ? dataArray : null);
+  if (!arr) return;
+  if (isPlayingYouTube) for (let i=0;i<arr.length;i++) arr[i]=Math.random()*255;
+  else analyser.getByteFrequencyData(arr);
+  const bw=(w/arr.length)*2.5; let x=0;
+  for (let i=0;i<arr.length;i++) {
+    const bh=(arr[i]/255)*h;
+    const g=canvasCtx.createLinearGradient(0,h-bh,0,h);
+    g.addColorStop(0,'#670676'); g.addColorStop(0.5,'#8800aa'); g.addColorStop(1,'#a855f7');
+    canvasCtx.fillStyle=g; canvasCtx.shadowBlur=10; canvasCtx.shadowColor='#670676';
+    canvasCtx.fillRect(x,h-bh,bw,bh); x+=bw+1;
   }
-  
-  if (!analyser || !dataArray) return;
-  
-  analyser.getByteFrequencyData(dataArray);
-  
-  const width = visualizerCanvas.width;
-  const height = visualizerCanvas.height;
-  
-  canvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  canvasCtx.fillRect(0, 0, width, height);
-  
-  const barWidth = (width / bufferLength) * 2.5;
-  let barHeight;
-  let x = 0;
-  
-  for (let i = 0; i < bufferLength; i++) {
-    barHeight = (dataArray[i] / 255) * height;
-    
-    const gradient = canvasCtx.createLinearGradient(0, height - barHeight, 0, height);
-    gradient.addColorStop(0, '#660675');
-    gradient.addColorStop(0.5, '#8800aa');
-    gradient.addColorStop(1, '#aa00dd');
-    
-    canvasCtx.fillStyle = gradient;
-    canvasCtx.fillRect(x, height - barHeight, barWidth, barHeight);
-    
-    canvasCtx.shadowBlur = 10;
-    canvasCtx.shadowColor = '#660675';
-    
-    x += barWidth + 1;
-  }
-  
-  canvasCtx.shadowBlur = 0;
+  canvasCtx.shadowBlur=0;
 }
 
-function resizeCanvas() {
-  const rect = visualizerCanvas.getBoundingClientRect();
-  visualizerCanvas.width = rect.width;
-  visualizerCanvas.height = rect.height;
-}
+function resizeVCanvas() { const r=visualizerCanvas.getBoundingClientRect(); visualizerCanvas.width=r.width; visualizerCanvas.height=r.height; }
+resizeVCanvas(); window.addEventListener('resize', resizeVCanvas);
 
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-// YouTube IFrame API の準備
 window.onYouTubeIframeAPIReady = function() {
-  console.log('YouTube API is ready');
-  isYoutubeReady = true;
-  if (youtubeReadyCheckInterval) {
-    clearInterval(youtubeReadyCheckInterval);
-    youtubeReadyCheckInterval = null;
-  }
-  if (playlist.length > 0 && currentTrackIndex >= 0) {
-    const currentTrack = playlist[currentTrackIndex];
-    if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
-      loadYouTubePlayer(currentTrack.url);
-    }
-  }
+  isYoutubeReady=true;
+  if (youtubeReadyCheckInterval) { clearInterval(youtubeReadyCheckInterval); youtubeReadyCheckInterval=null; }
 };
 
-function checkYouTubeAPI() {
-  if (typeof YT !== 'undefined' && YT.Player) {
-    console.log('YouTube API already loaded');
-    isYoutubeReady = true;
-    if (playlist.length > 0 && currentTrackIndex >= 0) {
-      const currentTrack = playlist[currentTrackIndex];
-      if (currentTrack && (currentTrack.type === 'youtube' || isYouTubeUrl(currentTrack.url))) {
-        loadYouTubePlayer(currentTrack.url);
-      }
-    }
-  }
-}
-
-window.addEventListener('load', function() {
-  setTimeout(checkYouTubeAPI, 1000);
-});
-
-function isYouTubeUrl(url) {
-  if (!url) return false;
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
-  return youtubeRegex.test(url);
-}
-
+function isYouTubeUrl(url) { return url && /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/.test(url); }
 function extractVideoId(url) {
   if (!url) return null;
-  const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[7].length === 11) ? match[7] : null;
+  const m = url.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
+  return (m && m[7].length===11) ? m[7] : null;
 }
-
 function loadYouTubePlayer(url) {
-  if (typeof YT === 'undefined' || !YT.Player) {
-    console.error('YouTube API is not loaded');
-    musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-    if (!youtubeReadyCheckInterval) {
-      youtubeReadyCheckInterval = setInterval(function() {
-        if (typeof YT !== 'undefined' && YT.Player) {
-          clearInterval(youtubeReadyCheckInterval);
-          youtubeReadyCheckInterval = null;
-          isYoutubeReady = true;
-          loadYouTubePlayer(url);
-        }
-      }, 100);
-    }
+  if (typeof YT==='undefined'||!YT.Player) {
+    musicStatus.textContent='⏳ Loading YouTube API...';
+    if (!youtubeReadyCheckInterval) youtubeReadyCheckInterval=setInterval(()=>{ if(typeof YT!=='undefined'&&YT.Player){clearInterval(youtubeReadyCheckInterval);youtubeReadyCheckInterval=null;isYoutubeReady=true;loadYouTubePlayer(url);}},100);
     return;
   }
-
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    musicStatus.textContent = 'Invalid YouTube URL';
-    return;
-  }
-
-  if (youtubePlayer) {
-    youtubePlayer.loadVideoById(videoId);
-  } else {
-    try {
-      youtubePlayer = new YT.Player('youtubePlayer', {
-        height: '160',
-        width: '240',
-        videoId: videoId,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 1,
-          'rel': 0,
-          'modestbranding': 1
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
-      youtubePlayerDiv.style.display = 'block';
-    } catch (error) {
-      console.error('Error creating YouTube player:', error);
-      musicStatus.textContent = 'Error loading YouTube player';
-    }
-  }
+  const id=extractVideoId(url); if(!id){musicStatus.textContent='Invalid YouTube URL';return;}
+  if (youtubePlayer) { youtubePlayer.loadVideoById(id); return; }
+  try {
+    youtubePlayer=new YT.Player('youtubePlayer',{height:'160',width:'240',videoId:id,
+      playerVars:{autoplay:0,controls:1,rel:0,modestbranding:1},
+      events:{onReady:e=>{if(volumeSlider)e.target.setVolume(volumeSlider.value);},
+        onStateChange:e=>{if(e.data===YT.PlayerState.ENDED&&playlist.length>0){currentTrackIndex=(currentTrackIndex+1)%playlist.length;loadTrack(currentTrackIndex);if(youtubePlayer)youtubePlayer.playVideo();}}}});
+    youtubePlayerDiv.style.display='block';
+  } catch(e){musicStatus.textContent='Error loading YouTube player';}
 }
 
-function onPlayerReady(event) {
-  if (volumeSlider) {
-    event.target.setVolume(volumeSlider.value);
-  }
-}
-
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.ENDED) {
-    if (playlist.length > 0) {
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      loadTrack(currentTrackIndex);
-      if (youtubePlayer) {
-        youtubePlayer.playVideo();
-      }
-    }
-  }
-}
-
-let playlist = [];
-let currentTrackIndex = -1;
-
-const defaultPlaylist = [
-  { name: 'shakethat', url: 'music/ShakeThat.mp3', type: 'audio'}
+let playlist=[], currentTrackIndex=-1;
+const defaultPlaylist=[
+  {name:'ShakeThat', url:'music/ShakeThat.mp3', type:'audio'},
+  {name:'FFNM', url:'music/FFNM.mp3', type:'audio'},
 ];
+if(defaultPlaylist.length>0){playlist=[...defaultPlaylist];currentTrackIndex=0;loadTrack(0);updatePlaylist();}
 
-if (defaultPlaylist.length > 0) {
-  playlist = [...defaultPlaylist];
-  currentTrackIndex = 0;
-  loadTrack(0);
+uploadBtn.addEventListener('click',()=>musicFile.click());
+musicFile.addEventListener('change',function(e){
+  Array.from(e.target.files).forEach(f=>playlist.push({name:f.name,url:URL.createObjectURL(f),type:'audio'}));
   updatePlaylist();
+  if(currentTrackIndex===-1&&playlist.length>0){currentTrackIndex=0;loadTrack(0);}
+  anime({targets:'.music-controls',scale:[1,1.05,1],duration:300});
+});
+function addYouTubeTrack(){
+  const url=youtubeUrlInput.value.trim();
+  if(!url){musicStatus.textContent='Please enter a YouTube URL';return;}
+  if(!isYouTubeUrl(url)){musicStatus.textContent='Invalid YouTube URL';return;}
+  const id=extractVideoId(url);if(!id){musicStatus.textContent='Could not extract video ID';return;}
+  playlist.push({name:'YouTube: '+id,url,type:'youtube',videoId:id});
+  youtubeUrlInput.value='';updatePlaylist();
+  if(currentTrackIndex===-1){currentTrackIndex=playlist.length-1;loadTrack(currentTrackIndex);}
+  anime({targets:'.music-controls',scale:[1,1.05,1],duration:300});
 }
+addYoutubeBtn.addEventListener('click',addYouTubeTrack);
+youtubeUrlInput.addEventListener('keypress',e=>{if(e.key==='Enter')addYouTubeTrack();});
 
-uploadBtn.addEventListener('click', function() {
-  musicFile.click();
-});
-
-musicFile.addEventListener('change', function(e) {
-  const files = Array.from(e.target.files);
-  
-  files.forEach(function(file) {
-    const url = URL.createObjectURL(file);
-    playlist.push({
-      name: file.name,
-      url: url,
-      type: 'audio'
-    });
-  });
-  
-  updatePlaylist();
-  
-  if (currentTrackIndex === -1 && playlist.length > 0) {
-    currentTrackIndex = 0;
-    loadTrack(0);
-  }
-  
-  anime({
-    targets: '.music-controls',
-    scale: [1, 1.1, 1],
-    duration: 300
-  });
-});
-
-function addYouTubeTrack() {
-  const url = youtubeUrl.value.trim();
-  if (!url) {
-    musicStatus.textContent = 'Please enter a YouTube URL';
-    return;
-  }
-
-  if (!isYouTubeUrl(url)) {
-    musicStatus.textContent = 'Invalid YouTube URL';
-    return;
-  }
-
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    musicStatus.textContent = 'Could not extract video ID';
-    return;
-  }
-
-  playlist.push({
-    name: 'YouTube: ' + videoId,
-    url: url,
-    type: 'youtube',
-    videoId: videoId
-  });
-
-  youtubeUrl.value = '';
-  updatePlaylist();
-
-  if (currentTrackIndex === -1 && playlist.length > 0) {
-    currentTrackIndex = playlist.length - 1;
-    loadTrack(currentTrackIndex);
-  }
-
-  anime({
-    targets: '.music-controls',
-    scale: [1, 1.1, 1],
-    duration: 300
-  });
-}
-
-addYoutubeBtn.addEventListener('click', addYouTubeTrack);
-
-youtubeUrl.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    addYouTubeTrack();
-  }
-});
-
-function updatePlaylist() {
-  playlistDiv.innerHTML = '';
-  
-  playlist.forEach(function(track, index) {
-    const item = document.createElement('div');
-    item.className = 'playlist-item';
-    if (index === currentTrackIndex) {
-      item.classList.add('active');
-    }
-    
-    const name = document.createElement('span');
-    name.textContent = (index + 1) + '. ' + track.name;
-    
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.textContent = '✕';
-    deleteBtn.onclick = function(e) {
-      e.stopPropagation();
-      deleteTrack(index);
-    };
-    
-    item.appendChild(name);
-    item.appendChild(deleteBtn);
-    
-    item.onclick = function() {
-      loadTrack(index);
-      const track = playlist[index];
-      if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-        if (youtubePlayer) {
-          setTimeout(function() {
-            youtubePlayer.playVideo();
-          }, 500);
-        }
-      } else {
-        audio.play();
-      }
-    };
-    
+function updatePlaylist(){
+  playlistDiv.innerHTML='';
+  playlist.forEach((t,i)=>{
+    const item=document.createElement('div'); item.className='playlist-item'+(i===currentTrackIndex?' active':'');
+    const nm=document.createElement('span'); nm.textContent=(i+1)+'. '+t.name;
+    const db=document.createElement('button'); db.className='delete-btn'; db.textContent='✕';
+    db.onclick=e=>{e.stopPropagation();deleteTrack(i);};
+    item.appendChild(nm); item.appendChild(db);
+    item.onclick=()=>{loadTrack(i);const tr=playlist[i];if(tr.type==='youtube'||isYouTubeUrl(tr.url)){if(youtubePlayer)setTimeout(()=>youtubePlayer.playVideo(),500);}else audio.play();};
     playlistDiv.appendChild(item);
   });
-  
-  if (playlist.length === 0) {
-    musicStatus.textContent = 'No tracks';
-  }
+  if(!playlist.length)musicStatus.textContent='No tracks';
 }
-
-function loadTrack(index) {
-  if (index >= 0 && index < playlist.length) {
-    currentTrackIndex = index;
-    const track = playlist[index];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      isPlayingYouTube = true;
-      if (audio.src) {
-        audio.pause();
-        audio.src = '';
-      }
-      
-      if (isYoutubeReady) {
-        loadYouTubePlayer(track.url);
-      } else {
-        if (youtubeReadyCheckInterval) {
-          clearInterval(youtubeReadyCheckInterval);
-          youtubeReadyCheckInterval = null;
-        }
-        youtubeReadyCheckInterval = setInterval(function() {
-          if (isYoutubeReady) {
-            clearInterval(youtubeReadyCheckInterval);
-            youtubeReadyCheckInterval = null;
-            loadYouTubePlayer(track.url);
-          }
-        }, 100);
-      }
-      
-      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
-    } else {
-      isPlayingYouTube = false;
-      if (youtubePlayer) {
-        youtubePlayer.stopVideo();
-        youtubePlayerDiv.style.display = 'none';
-      }
-      audio.src = track.url;
-      musicStatus.textContent = (index + 1) + '/' + playlist.length + ': ' + track.name;
-    }
-    
-    updatePlaylist();
+function loadTrack(i){
+  if(i<0||i>=playlist.length)return;
+  currentTrackIndex=i; const t=playlist[i];
+  if(t.type==='youtube'||isYouTubeUrl(t.url)){
+    isPlayingYouTube=true;if(audio.src){audio.pause();audio.src='';}
+    if(isYoutubeReady)loadYouTubePlayer(t.url);
+    else{if(youtubeReadyCheckInterval)clearInterval(youtubeReadyCheckInterval);youtubeReadyCheckInterval=setInterval(()=>{if(isYoutubeReady){clearInterval(youtubeReadyCheckInterval);youtubeReadyCheckInterval=null;loadYouTubePlayer(t.url);}},100);}
+  }else{
+    isPlayingYouTube=false;if(youtubePlayer){youtubePlayer.stopVideo();youtubePlayerDiv.style.display='none';}
+    audio.src=t.url;
   }
-}
-
-function deleteTrack(index) {
-  playlist.splice(index, 1);
-  
-  if (index === currentTrackIndex) {
-    if (playlist.length > 0) {
-      currentTrackIndex = Math.min(index, playlist.length - 1);
-      loadTrack(currentTrackIndex);
-    } else {
-      currentTrackIndex = -1;
-      audio.src = '';
-      musicStatus.textContent = 'No tracks';
-    }
-  } else if (index < currentTrackIndex) {
-    currentTrackIndex--;
-  }
-  
+  musicStatus.textContent=(i+1)+'/'+playlist.length+': '+t.name;
   updatePlaylist();
 }
-
-playBtn.addEventListener('click', function() {
-  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
-    const track = playlist[currentTrackIndex];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        youtubePlayer.playVideo();
-        musicStatus.textContent = '♪ Playing: ' + track.name;
-      } else if (isYoutubeReady) {
-        loadYouTubePlayer(track.url);
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          }
-        }, 500);
-      } else {
-        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-      }
-    } else {
-      if (audio.src) {
-        setupAudioContext();
-        audio.play();
-        musicStatus.textContent = '♪ Playing: ' + track.name;
-      } else {
-        musicStatus.textContent = 'Please add music first';
-        return;
-      }
-    }
-    
-    anime({
-      targets: '#playBtn',
-      scale: [1, 1.2, 1],
-      duration: 200
-    });
-  } else {
-    musicStatus.textContent = 'Please add music first';
-  }
+function deleteTrack(i){
+  playlist.splice(i,1);
+  if(i===currentTrackIndex){if(playlist.length>0){currentTrackIndex=Math.min(i,playlist.length-1);loadTrack(currentTrackIndex);}else{currentTrackIndex=-1;audio.src='';musicStatus.textContent='No tracks';}}
+  else if(i<currentTrackIndex)currentTrackIndex--;
+  updatePlaylist();
+}
+playBtn.addEventListener('click',()=>{
+  if(currentTrackIndex<0||currentTrackIndex>=playlist.length){musicStatus.textContent='Please add music first';return;}
+  const t=playlist[currentTrackIndex];
+  if(t.type==='youtube'||isYouTubeUrl(t.url)){if(youtubePlayer){youtubePlayer.playVideo();musicStatus.textContent='♪ '+t.name;}else if(isYoutubeReady){loadYouTubePlayer(t.url);setTimeout(()=>{if(youtubePlayer)youtubePlayer.playVideo();},500);}else{musicStatus.textContent='⏳ YouTube API loading...';}}
+  else{if(!audio.src){musicStatus.textContent='Please add music first';return;}setupAudioContext();audio.play();musicStatus.textContent='♪ '+t.name;}
+  anime({targets:'#playBtn',scale:[1,1.2,1],duration:200});
 });
-
-pauseBtn.addEventListener('click', function() {
-  if (currentTrackIndex >= 0 && currentTrackIndex < playlist.length) {
-    const track = playlist[currentTrackIndex];
-    
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        youtubePlayer.pauseVideo();
-        musicStatus.textContent = 'Paused';
-      } else {
-        musicStatus.textContent = '⏳ YouTube player is not ready yet';
-      }
-    } else {
-      audio.pause();
-      musicStatus.textContent = 'Paused';
-    }
-  }
-  
-  anime({
-    targets: '#pauseBtn',
-    scale: [1, 1.2, 1],
-    duration: 200
-  });
+pauseBtn.addEventListener('click',()=>{
+  if(currentTrackIndex>=0&&currentTrackIndex<playlist.length){const t=playlist[currentTrackIndex];if(t.type==='youtube'||isYouTubeUrl(t.url)){if(youtubePlayer){youtubePlayer.pauseVideo();musicStatus.textContent='Paused';}}else{audio.pause();musicStatus.textContent='Paused';}}
+  anime({targets:'#pauseBtn',scale:[1,1.2,1],duration:200});
 });
-
-nextBtn.addEventListener('click', function() {
-  if (playlist.length > 0) {
-    currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-    loadTrack(currentTrackIndex);
-    
-    const track = playlist[currentTrackIndex];
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        setTimeout(function() {
-          youtubePlayer.playVideo();
-        }, 500);
-      } else if (isYoutubeReady) {
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          } else {
-            musicStatus.textContent = '⏳ Loading YouTube player...';
-          }
-        }, 1000);
-      } else {
-        musicStatus.textContent = '⏳ YouTube API is loading. Please wait...';
-      }
-    } else {
-      audio.play();
-    }
-    
-    anime({
-      targets: '#nextBtn',
-      scale: [1, 1.2, 1],
-      duration: 200
-    });
-  }
+nextBtn.addEventListener('click',()=>{
+  if(!playlist.length)return;
+  currentTrackIndex=(currentTrackIndex+1)%playlist.length;loadTrack(currentTrackIndex);
+  const t=playlist[currentTrackIndex];if(t.type==='youtube'||isYouTubeUrl(t.url)){if(youtubePlayer)setTimeout(()=>youtubePlayer.playVideo(),500);}else audio.play();
+  anime({targets:'#nextBtn',scale:[1,1.2,1],duration:200});
 });
-
-audio.addEventListener('ended', function() {
-  if (playlist.length > 0) {
-    const nextIndex = (currentTrackIndex + 1) % playlist.length;
-    currentTrackIndex = nextIndex;
-    loadTrack(currentTrackIndex);
-    
-    const track = playlist[currentTrackIndex];
-    if (track.type === 'youtube' || isYouTubeUrl(track.url)) {
-      if (youtubePlayer) {
-        setTimeout(function() {
-          youtubePlayer.playVideo();
-        }, 500);
-      } else if (isYoutubeReady) {
-        setTimeout(function() {
-          if (youtubePlayer) {
-            youtubePlayer.playVideo();
-          }
-        }, 1000);
-      }
-    } else {
-      audio.play();
-    }
-  }
+audio.addEventListener('ended',()=>{
+  if(!playlist.length)return;
+  currentTrackIndex=(currentTrackIndex+1)%playlist.length;loadTrack(currentTrackIndex);
+  const t=playlist[currentTrackIndex];if(t.type==='youtube'||isYouTubeUrl(t.url)){if(youtubePlayer)setTimeout(()=>youtubePlayer.playVideo(),500);}else audio.play();
 });
-
-volumeSlider.addEventListener('input', function(e) {
-  const volume = e.target.value;
-  audio.volume = volume / 100;
-  if (youtubePlayer) {
-    youtubePlayer.setVolume(volume);
-  }
-});
-
-audio.volume = 0.5;
+volumeSlider.addEventListener('input',e=>{audio.volume=e.target.value/100;if(youtubePlayer)youtubePlayer.setVolume(e.target.value);});
+audio.volume=0.5;
 
 // Draggable Music Controls
-(function() {
-  const musicControls = document.getElementById('musicControls');
-  let isDragging = false;
-  let currentX, currentY, initialX, initialY;
-  let xOffset = 0, yOffset = 0;
-
-  musicControls.addEventListener('mousedown', dragStart);
-  document.addEventListener('mousemove', drag);
-  document.addEventListener('mouseup', dragEnd);
-
-  musicControls.addEventListener('touchstart', dragStart);
-  document.addEventListener('touchmove', drag);
-  document.addEventListener('touchend', dragEnd);
-
-  function dragStart(e) {
-    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
-      return;
-    }
-
-    if (e.type === 'touchstart') {
-      initialX = e.touches[0].clientX - xOffset;
-      initialY = e.touches[0].clientY - yOffset;
-    } else {
-      initialX = e.clientX - xOffset;
-      initialY = e.clientY - yOffset;
-    }
-
-    isDragging = true;
-  }
-
-  function drag(e) {
-    if (isDragging) {
-      e.preventDefault();
-
-      if (e.type === 'touchmove') {
-        currentX = e.touches[0].clientX - initialX;
-        currentY = e.touches[0].clientY - initialY;
-      } else {
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-      }
-
-      xOffset = currentX;
-      yOffset = currentY;
-
-      setTranslate(currentX, currentY, musicControls);
-    }
-  }
-
-  function dragEnd(e) {
-    initialX = currentX;
-    initialY = currentY;
-    isDragging = false;
-  }
-
-  function setTranslate(xPos, yPos, el) {
-    el.style.transform = 'translate(' + xPos + 'px, ' + yPos + 'px)';
-  }
+(function(){
+  const mc=document.getElementById('musicControls');
+  let isDragging=false,cX,cY,iX,iY,xO=0,yO=0;
+  mc.addEventListener('mousedown',s); document.addEventListener('mousemove',d); document.addEventListener('mouseup',e);
+  mc.addEventListener('touchstart',s); document.addEventListener('touchmove',d); document.addEventListener('touchend',e);
+  function s(e){if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT')return;if(e.type==='touchstart'){iX=e.touches[0].clientX-xO;iY=e.touches[0].clientY-yO;}else{iX=e.clientX-xO;iY=e.clientY-yO;}isDragging=true;}
+  function d(e){if(!isDragging)return;e.preventDefault();if(e.type==='touchmove'){cX=e.touches[0].clientX-iX;cY=e.touches[0].clientY-iY;}else{cX=e.clientX-iX;cY=e.clientY-iY;}xO=cX;yO=cY;mc.style.transform=`translate(${cX}px,${cY}px)`;}
+  function e(){iX=cX;iY=cY;isDragging=false;}
 })();
 
-// Maze Game
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
+// ─── MAZE GAME ─────────────────────────────────────────────────────────────
+const DIFFICULTIES = {
+  easy:    { cols:15, rows:15, cellSize:40 },
+  normal:  { cols:20, rows:20, cellSize:30 },
+  hard:    { cols:30, rows:30, cellSize:20 },
+  extreme: { cols:40, rows:40, cellSize:15 },
+};
 
-const cellSize = 30;
-const cols = canvas.width / cellSize;
-const rows = canvas.height / cellSize;
-
+let mazeCache = null;
+let currentDiff = 'easy';
+let cols, rows, cellSize;
 let maze = [];
-let player = { x: 0, y: 0 };
-let goal = { x: cols - 1, y: rows - 1 };
-let moves = 0;
-let startTime = Date.now();
-let timerInterval;
+let player = { x:0, y:0, px:0, py:0, animX:0, animY:0 }; // px/py = pixel position for smooth anim
+let goal = { x:0, y:0 };
+let moves = 0, startTime = Date.now(), timerInterval;
+let hintPath = [], showHint = false, hintTimer = null;
+let isAnimating = false;
+let moveQueue = [];
 
-// Maze generation using recursive backtracking
+const gameCanvas = document.getElementById('game');
+const ctx = gameCanvas.getContext('2d');
+const minimapCanvas = document.getElementById('minimap');
+const mmCtx = minimapCanvas.getContext('2d');
+
+function setDifficulty(diff) {
+  currentDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.diff===diff));
+  const d = DIFFICULTIES[diff];
+  cols = d.cols; rows = d.rows; cellSize = d.cellSize;
+  gameCanvas.width  = cols * cellSize;
+  gameCanvas.height = rows * cellSize;
+  updateHighscoreUI();
+}
+
+// ── Maze generation (recursive backtracking) ──
 function generateMaze() {
   maze = [];
+  for (let y=0;y<rows;y++){
+    maze[y]=[];
+    for (let x=0;x<cols;x++) maze[y][x]={top:true,right:true,bottom:true,left:true,visited:false};
+  }
+  const stack=[];
+  maze[0][0].visited=true; let cx=0,cy=0;
+  while(true){
+    const nb=[];
+    if(cy>0      &&!maze[cy-1][cx].visited) nb.push({x:cx,  y:cy-1,dir:'top'});
+    if(cx<cols-1 &&!maze[cy][cx+1].visited) nb.push({x:cx+1,y:cy,  dir:'right'});
+    if(cy<rows-1 &&!maze[cy+1][cx].visited) nb.push({x:cx,  y:cy+1,dir:'bottom'});
+    if(cx>0      &&!maze[cy][cx-1].visited) nb.push({x:cx-1,y:cy,  dir:'left'});
+    if(nb.length>0){
+      const nxt=nb[Math.floor(Math.random()*nb.length)];
+      stack.push({x:cx,y:cy});
+      if(nxt.dir==='top')   {maze[cy][cx].top=false;   maze[nxt.y][nxt.x].bottom=false;}
+      if(nxt.dir==='right') {maze[cy][cx].right=false;  maze[nxt.y][nxt.x].left=false;}
+      if(nxt.dir==='bottom'){maze[cy][cx].bottom=false; maze[nxt.y][nxt.x].top=false;}
+      if(nxt.dir==='left')  {maze[cy][cx].left=false;   maze[nxt.y][nxt.x].right=false;}
+      cx=nxt.x;cy=nxt.y;maze[cy][cx].visited=true;
+    } else if(stack.length>0){const prev=stack.pop();cx=prev.x;cy=prev.y;}
+    else break;
+  }
+  player={x:0,y:0,px:cellSize/2,py:cellSize/2,animX:cellSize/2,animY:cellSize/2};
+  goal={x:cols-1,y:rows-1};
+  moves=0; startTime=Date.now();
+  document.getElementById('moves').textContent='0';
+  document.getElementById('winMessage').style.display='none';
+  hintPath=[]; showHint=false;
+  moveQueue=[];
+  mazeCache = null;
+  document.getElementById('hintBtn').classList.remove('hint-active');
+}
+
+// ── BFS hint ──
+function computeHint() {
+  const visited=Array.from({length:rows},()=>Array(cols).fill(false));
+  const prev=Array.from({length:rows},()=>Array(cols).fill(null));
+  const queue=[{x:player.x,y:player.y}];
+  visited[player.y][player.x]=true;
+  while(queue.length>0){
+    const cur=queue.shift();
+    if(cur.x===goal.x&&cur.y===goal.y){
+      const path=[]; let c=cur;
+      while(c){path.unshift({x:c.x,y:c.y});c=prev[c.y][c.x];}
+      return path;
+    }
+    const cell=maze[cur.y][cur.x];
+    const dirs=[{dx:0,dy:-1,wall:'top'},{dx:1,dy:0,wall:'right'},{dx:0,dy:1,wall:'bottom'},{dx:-1,dy:0,wall:'left'}];
+    for(const d of dirs){
+      if(cell[d.wall])continue;
+      const nx=cur.x+d.dx,ny=cur.y+d.dy;
+      if(nx<0||nx>=cols||ny<0||ny>=rows||visited[ny][nx])continue;
+      visited[ny][nx]=true; prev[ny][nx]=cur;
+      queue.push({x:nx,y:ny});
+    }
+  }
+  return [];
+}
+
+// draw maze
+function buildMazeCache() {
+  const off = document.createElement('canvas');
+  off.width = gameCanvas.width; off.height = gameCanvas.height;
+  const offCtx = off.getContext('2d');
+
+  // ヒントパス
+  if (showHint && hintPath.length > 1) {
+    offCtx.strokeStyle = 'rgba(251,191,36,0.25)';
+    offCtx.lineWidth = cellSize * 0.5;
+    offCtx.lineCap = 'round'; offCtx.lineJoin = 'round';
+    offCtx.beginPath();
+    hintPath.forEach((p, i) => {
+      const px = p.x*cellSize+cellSize/2, py = p.y*cellSize+cellSize/2;
+      i===0 ? offCtx.moveTo(px,py) : offCtx.lineTo(px,py);
+    });
+    offCtx.stroke(); offCtx.lineWidth = 1;
+  }
+
+  // 壁（shadowBlurを1回だけ）
+  offCtx.strokeStyle = 'rgba(103,6,118,0.85)';
+  offCtx.lineWidth = cellSize > 25 ? 2 : 1.5;
+  offCtx.shadowBlur = 3; offCtx.shadowColor = '#670676';
+  offCtx.beginPath();
   for (let y = 0; y < rows; y++) {
-    maze[y] = [];
     for (let x = 0; x < cols; x++) {
-      maze[y][x] = {
-        top: true,
-        right: true,
-        bottom: true,
-        left: true,
-        visited: false
-      };
+      const cell = maze[y][x], px = x*cellSize, py = y*cellSize;
+      if (cell.top)    { offCtx.moveTo(px,py);          offCtx.lineTo(px+cellSize,py); }
+      if (cell.right)  { offCtx.moveTo(px+cellSize,py); offCtx.lineTo(px+cellSize,py+cellSize); }
+      if (cell.bottom) { offCtx.moveTo(px,py+cellSize); offCtx.lineTo(px+cellSize,py+cellSize); }
+      if (cell.left)   { offCtx.moveTo(px,py);          offCtx.lineTo(px,py+cellSize); }
     }
   }
+  offCtx.stroke();
+  offCtx.shadowBlur = 0;
 
-  const stack = [];
-  let current = maze[0][0];
-  current.visited = true;
-  let cx = 0, cy = 0;
+  // ゴール
+  const gx = goal.x*cellSize, gy = goal.y*cellSize;
+  const gr = offCtx.createRadialGradient(gx+cellSize/2,gy+cellSize/2,1,gx+cellSize/2,gy+cellSize/2,cellSize/2);
+  gr.addColorStop(0,'rgba(168,85,247,0.8)'); gr.addColorStop(1,'rgba(103,6,118,0.2)');
+  offCtx.fillStyle = gr; offCtx.shadowBlur = 15; offCtx.shadowColor = '#a855f7';
+  offCtx.beginPath();
+  offCtx.roundRect(gx+3,gy+3,cellSize-6,cellSize-6,4);
+  offCtx.fill(); offCtx.shadowBlur = 0;
 
-  while (true) {
-    const neighbors = [];
-    
-    if (cy > 0 && !maze[cy - 1][cx].visited) neighbors.push({ x: cx, y: cy - 1, dir: 'top' });
-    if (cx < cols - 1 && !maze[cy][cx + 1].visited) neighbors.push({ x: cx + 1, y: cy, dir: 'right' });
-    if (cy < rows - 1 && !maze[cy + 1][cx].visited) neighbors.push({ x: cx, y: cy + 1, dir: 'bottom' });
-    if (cx > 0 && !maze[cy][cx - 1].visited) neighbors.push({ x: cx - 1, y: cy, dir: 'left' });
-
-    if (neighbors.length > 0) {
-      const next = neighbors[Math.floor(Math.random() * neighbors.length)];
-      stack.push({ x: cx, y: cy });
-
-      if (next.dir === 'top') {
-        maze[cy][cx].top = false;
-        maze[next.y][next.x].bottom = false;
-      } else if (next.dir === 'right') {
-        maze[cy][cx].right = false;
-        maze[next.y][next.x].left = false;
-      } else if (next.dir === 'bottom') {
-        maze[cy][cx].bottom = false;
-        maze[next.y][next.x].top = false;
-      } else if (next.dir === 'left') {
-        maze[cy][cx].left = false;
-        maze[next.y][next.x].right = false;
-      }
-
-      cx = next.x;
-      cy = next.y;
-      maze[cy][cx].visited = true;
-    } else if (stack.length > 0) {
-      const prev = stack.pop();
-      cx = prev.x;
-      cy = prev.y;
-    } else {
-      break;
-    }
-  }
-
-  player = { x: 0, y: 0 };
-  goal = { x: cols - 1, y: rows - 1 };
-  moves = 0;
-  startTime = Date.now();
-  document.getElementById('moves').textContent = '0';
-  document.getElementById('winMessage').style.display = 'none';
+  return off;
 }
 
 function drawMaze() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // 壁キャッシュがなければビルド
+  if (!mazeCache) mazeCache = buildMazeCache();
 
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
-      const cell = maze[y][x];
-      const px = x * cellSize;
-      const py = y * cellSize;
+  // キャッシュをコピー（壁・ゴールはここで終わり）
+  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+  ctx.drawImage(mazeCache, 0, 0);
 
-      ctx.strokeStyle = '#660675';
-      ctx.lineWidth = 2;
-      ctx.shadowBlur = 5;
-      ctx.shadowColor = '#660675';
-
-      if (cell.top) {
-        ctx.beginPath();
-        ctx.moveTo(px, py);
-        ctx.lineTo(px + cellSize, py);
-        ctx.stroke();
-      }
-      if (cell.right) {
-        ctx.beginPath();
-        ctx.moveTo(px + cellSize, py);
-        ctx.lineTo(px + cellSize, py + cellSize);
-        ctx.stroke();
-      }
-      if (cell.bottom) {
-        ctx.beginPath();
-        ctx.moveTo(px, py + cellSize);
-        ctx.lineTo(px + cellSize, py + cellSize);
-        ctx.stroke();
-      }
-      if (cell.left) {
-        ctx.beginPath();
-        ctx.moveTo(px, py);
-        ctx.lineTo(px, py + cellSize);
-        ctx.stroke();
-      }
-    }
-  }
-
-  ctx.shadowBlur = 0;
-
-  // Draw goal
-  ctx.fillStyle = '#660675';
-  ctx.shadowBlur = 20;
-  ctx.shadowColor = '#660675';
-  ctx.fillRect(goal.x * cellSize + 5, goal.y * cellSize + 5, cellSize - 10, cellSize - 10);
-
-  // Draw player
-  ctx.fillStyle = '#aa00dd';
-  ctx.shadowBlur = 30;
-  ctx.shadowColor = '#aa00dd';
+  // プレイヤーだけ毎回描画
+  const pr = Math.max(4, cellSize/3);
+  ctx.fillStyle = '#a855f7';
+  ctx.shadowBlur = 20; ctx.shadowColor = '#a855f7';
   ctx.beginPath();
-  ctx.arc(player.x * cellSize + cellSize / 2, player.y * cellSize + cellSize / 2, cellSize / 3, 0, Math.PI * 2);
+  ctx.arc(player.animX, player.animY, pr, 0, Math.PI*2);
   ctx.fill();
   ctx.shadowBlur = 0;
 }
+// ── Smooth animation ──
+function animatePlayer(targetX, targetY, callback) {
+  const startX=player.animX, startY=player.animY;
+  const dist=Math.sqrt((targetX-startX)**2+(targetY-startY)**2);
+  const duration=Math.max(60, dist*2);
+  let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    const prog=Math.min((ts-start)/duration,1);
+    const ease=prog<0.5?2*prog*prog:1-(-2*prog+2)**2/2;
+    player.animX=startX+(targetX-startX)*ease;
+    player.animY=startY+(targetY-startY)*ease;
+    drawMaze();
+    if(prog<1)requestAnimationFrame(step);
+    else{
+      player.animX=targetX; player.animY=targetY;
+      isAnimating=false;
+      if(callback)callback();
+      processQueue();
+    }
+  }
+  isAnimating=true;
+  requestAnimationFrame(step);
+}
 
-function movePlayer(dx, dy) {
-  const newX = player.x + dx;
-  const newY = player.y + dy;
+function processQueue(){
+  if(isAnimating||moveQueue.length===0)return;
+  const {dx,dy}=moveQueue.shift();
+  executeMove(dx,dy);
+}
 
-  if (newX < 0 || newX >= cols || newY < 0 || newY >= rows) return;
+function movePlayer(dx,dy){
+  moveQueue.push({dx,dy});
+  if(!isAnimating)processQueue();
+}
 
-  const cell = maze[player.y][player.x];
-  
-  if (dx === 1 && cell.right) return;
-  if (dx === -1 && cell.left) return;
-  if (dy === 1 && cell.bottom) return;
-  if (dy === -1 && cell.top) return;
-
-  player.x = newX;
-  player.y = newY;
+function executeMove(dx,dy){
+  const newX=player.x+dx, newY=player.y+dy;
+  if(newX<0||newX>=cols||newY<0||newY>=rows)return;
+  const cell=maze[player.y][player.x];
+  if(dx=== 1&&cell.right) return;
+  if(dx===-1&&cell.left)  return;
+  if(dy=== 1&&cell.bottom)return;
+  if(dy===-1&&cell.top)   return;
+  player.x=newX; player.y=newY;
   moves++;
-  document.getElementById('moves').textContent = moves;
-
-  anime({
-    targets: canvas,
-    scale: [1, 1.02, 1],
-    duration: 100
+  document.getElementById('moves').textContent=moves;
+  const tx=newX*cellSize+cellSize/2, ty=newY*cellSize+cellSize/2;
+  animatePlayer(tx, ty, ()=>{
+    drawMinimap();
+    if(player.x===goal.x&&player.y===goal.y)winGame();
   });
-
-  if (player.x === goal.x && player.y === goal.y) {
-    winGame();
-  }
-
-  drawMaze();
 }
 
-function winGame() {
+// ── Minimap ──
+function drawMinimap(){
+  const mw=minimapCanvas.width, mh=minimapCanvas.height;
+  const cs=Math.min(mw/cols, mh/rows);
+  mmCtx.fillStyle='rgba(0,0,0,0.9)';
+  mmCtx.fillRect(0,0,mw,mh);
+
+  // Hint on minimap
+  if(showHint&&hintPath.length>1){
+    mmCtx.strokeStyle='rgba(251,191,36,0.5)';
+    mmCtx.lineWidth=cs*0.6; mmCtx.lineCap='round'; mmCtx.lineJoin='round';
+    mmCtx.beginPath();
+    hintPath.forEach((p,i)=>{
+      const px=p.x*cs+cs/2, py=p.y*cs+cs/2;
+      i===0?mmCtx.moveTo(px,py):mmCtx.lineTo(px,py);
+    });
+    mmCtx.stroke(); mmCtx.lineWidth=1;
+  }
+
+  // Walls
+  mmCtx.strokeStyle='rgba(103,6,118,0.7)'; mmCtx.lineWidth=1;
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const cell=maze[y][x], px=x*cs, py=y*cs;
+      mmCtx.beginPath();
+      if(cell.top)   {mmCtx.moveTo(px,py);    mmCtx.lineTo(px+cs,py);}
+      if(cell.right) {mmCtx.moveTo(px+cs,py); mmCtx.lineTo(px+cs,py+cs);}
+      if(cell.bottom){mmCtx.moveTo(px,py+cs); mmCtx.lineTo(px+cs,py+cs);}
+      if(cell.left)  {mmCtx.moveTo(px,py);    mmCtx.lineTo(px,py+cs);}
+      mmCtx.stroke();
+    }
+  }
+  // Goal
+  mmCtx.fillStyle='rgba(168,85,247,0.8)';
+  mmCtx.fillRect(goal.x*cs+1,goal.y*cs+1,cs-2,cs-2);
+  // Player
+  mmCtx.fillStyle='#a855f7';
+  mmCtx.shadowBlur=4; mmCtx.shadowColor='#a855f7';
+  mmCtx.beginPath();
+  mmCtx.arc(player.x*cs+cs/2, player.y*cs+cs/2, Math.max(2,cs/2), 0, Math.PI*2);
+  mmCtx.fill(); mmCtx.shadowBlur=0;
+}
+
+// ── Highscores ──
+function getHighscores(){
+  try{return JSON.parse(localStorage.getItem('maze_hs')||'{}');}catch{return {};}
+}
+function saveHighscore(diff,time,mv){
+  const hs=getHighscores();
+  if(!hs[diff]||time<hs[diff].time||(time===hs[diff].time&&mv<hs[diff].moves)){
+    hs[diff]={time,moves:mv}; localStorage.setItem('maze_hs',JSON.stringify(hs)); return true;
+  }
+  return false;
+}
+function updateHighscoreUI(){
+  const hs=getHighscores();
+  const d=hs[currentDiff];
+  document.getElementById('bestTime').textContent  = d ? d.time+'s' : '--';
+  document.getElementById('bestMoves').textContent = d ? d.moves : '--';
+  const list=document.getElementById('hsList');
+  const diffs=['easy','normal','hard','extreme'];
+  list.innerHTML=diffs.map(k=>{
+    const v=hs[k];
+    return `<div class="hs-row"><span>${k.toUpperCase()}</span><span>${v?v.time+'s/'+v.moves+'mv':'--'}</span></div>`;
+  }).join('');
+}
+
+// ── Win ──
+function winGame(){
   clearInterval(timerInterval);
-  const finalTime = Math.floor((Date.now() - startTime) / 1000);
-  
-  document.getElementById('finalTime').textContent = finalTime;
-  document.getElementById('finalMoves').textContent = moves;
-  document.getElementById('winMessage').style.display = 'block';
-
-  anime({
-    targets: '#winMessage',
-    scale: [0, 1],
-    opacity: [0, 1],
-    duration: 500,
-    easing: 'easeOutElastic(1, .5)'
-  });
+  const finalTime=Math.floor((Date.now()-startTime)/1000);
+  const isRecord=saveHighscore(currentDiff,finalTime,moves);
+  document.getElementById('finalTime').textContent=finalTime;
+  document.getElementById('finalMoves').textContent=moves;
+  document.getElementById('winNewRecord').style.display=isRecord?'block':'none';
+  document.getElementById('winMessage').style.display='block';
+  updateHighscoreUI();
+  anime({targets:'#winMessage',scale:[0,1],opacity:[0,1],duration:500,easing:'easeOutElastic(1,.5)'});
 }
 
-function updateTimer() {
-  const elapsed = Math.floor((Date.now() - startTime) / 1000);
-  document.getElementById('time').textContent = elapsed;
+function updateTimer(){
+  document.getElementById('time').textContent=Math.floor((Date.now()-startTime)/1000);
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-    e.preventDefault();
-    movePlayer(0, -1);
-  } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-    e.preventDefault();
-    movePlayer(0, 1);
-  } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-    e.preventDefault();
-    movePlayer(-1, 0);
-  } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-    e.preventDefault();
-    movePlayer(1, 0);
+function startNewGame(){
+  clearInterval(timerInterval);
+  generateMaze(); drawMaze();
+  timerInterval=setInterval(updateTimer,1000);
+}
+
+// ── Hint toggle ──
+document.getElementById('hintBtn').addEventListener('click',()=>{
+  const btn=document.getElementById('hintBtn');
+  if(showHint){
+    showHint=false; hintPath=[];
+    btn.classList.remove('hint-active'); btn.textContent='💡 HINT';
+    if(hintTimer){clearTimeout(hintTimer);hintTimer=null;}
+  } else {
+    hintPath=computeHint(); showHint=true;
+    btn.classList.add('hint-active'); btn.textContent='💡 HIDE HINT';
+    hintTimer=setTimeout(()=>{showHint=false;hintPath=[];btn.classList.remove('hint-active');btn.textContent='💡 HINT';hintTimer=null;},5000);
   }
+  mazeCache = null;
+  drawMaze();
+  anime({targets:'#hintBtn',scale:[1,1.1,1],duration:200});
 });
 
-document.getElementById('resetBtn').addEventListener('click', () => {
-  player = { x: 0, y: 0 };
-  moves = 0;
-  startTime = Date.now();
-  document.getElementById('moves').textContent = '0';
-  document.getElementById('winMessage').style.display = 'none';
-  drawMaze();
+// ── Controls ──
+document.addEventListener('keydown',e=>{
+  if(['ArrowUp','w','W'].includes(e.key))   {e.preventDefault();movePlayer(0,-1);}
+  if(['ArrowDown','s','S'].includes(e.key)) {e.preventDefault();movePlayer(0,1);}
+  if(['ArrowLeft','a','A'].includes(e.key)) {e.preventDefault();movePlayer(-1,0);}
+  if(['ArrowRight','d','D'].includes(e.key)){e.preventDefault();movePlayer(1,0);}
+  if(e.key==='h'||e.key==='H') document.getElementById('hintBtn').click();
+});
 
-  anime({
-    targets: '#resetBtn',
-    rotate: [0, 360],
-    duration: 500,
-    easing: 'easeInOutQuad'
+// ── Touch / Swipe ──
+let touchStartX=0, touchStartY=0;
+gameCanvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;e.preventDefault();},{passive:false});
+gameCanvas.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const dy=e.changedTouches[0].clientY-touchStartY;
+  const abs=Math.max(Math.abs(dx),Math.abs(dy));
+  if(abs<10)return;
+  if(Math.abs(dx)>Math.abs(dy)){movePlayer(dx>0?1:-1,0);}
+  else{movePlayer(0,dy>0?1:-1);}
+  e.preventDefault();
+},{passive:false});
+
+// ── Buttons ──
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  clearInterval(timerInterval);
+  player={x:0,y:0,px:cellSize/2,py:cellSize/2,animX:cellSize/2,animY:cellSize/2};
+  moves=0; startTime=Date.now();
+  document.getElementById('moves').textContent='0';
+  document.getElementById('winMessage').style.display='none';
+  hintPath=[]; showHint=false; moveQueue=[]; isAnimating=false;
+  document.getElementById('hintBtn').classList.remove('hint-active');
+  document.getElementById('hintBtn').textContent='💡 HINT';
+  drawMaze();
+  timerInterval=setInterval(updateTimer,1000);
+  anime({targets:'#resetBtn',rotate:[0,360],duration:500,easing:'easeInOutQuad'});
+});
+document.getElementById('newMazeBtn').addEventListener('click',()=>{
+  startNewGame();
+  anime({targets:'#newMazeBtn',scale:[1,1.2,1],duration:300});
+});
+
+// ── Difficulty buttons ──
+document.querySelectorAll('.diff-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    setDifficulty(btn.dataset.diff);
+    startNewGame();
+    anime({targets:btn,scale:[1,1.15,1],duration:200});
   });
 });
 
-document.getElementById('newMazeBtn').addEventListener('click', () => {
-  generateMaze();
-  drawMaze();
-
-  anime({
-    targets: '#newMazeBtn',
-    scale: [1, 1.2, 1],
-    duration: 300
-  });
-});
-
+// ── Init ──
+setDifficulty('easy');
 generateMaze();
 drawMaze();
-timerInterval = setInterval(updateTimer, 1000);
+timerInterval=setInterval(updateTimer,1000);
+updateHighscoreUI();
 </script>
 </body>
 </html>

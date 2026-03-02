@@ -4,476 +4,373 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="images/icon.png" type="image/png">
-<title>???</title>
+<title>3D_VIEW</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg: #000000;
-    --surface: rgba(0, 0, 0, 0.9);
-    --border: #660675;
-    --accent: #660675;
-    --accent2: #aa00dd;
-    --text: #ffffff;
-    --text-dim: rgba(255,255,255,0.7);
-    --mono: 'Courier New', monospace;
-    --glow: rgba(102, 6, 117, 0.6);
-    --glow-strong: rgba(102, 6, 117, 1);
-  }
-
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-  }
-
-  #canvas-container {
-    position: fixed; inset: 0;
-    z-index: 0;
-  }
-
-  canvas { display: block; }
-
-  /* Pulse animation like MAZE */
-  @keyframes pulse {
-    0%, 100% {
-      box-shadow:
-        0 0 30px var(--glow),
-        inset 0 0 20px rgba(102, 6, 117, 0.2);
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
     }
-    50% {
-      box-shadow:
-        0 0 50px var(--glow-strong),
-        inset 0 0 30px rgba(102, 6, 117, 0.4);
+
+    #canvas-container {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
     }
-  }
+    canvas { display: block; }
 
-  @keyframes textGlow {
-    0%, 100% { text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); }
-    50% { text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent), 0 0 60px var(--accent); }
-  }
+    /* ===== TOP BAR ===== */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(103,6,118,0.3);
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 1.25rem; font-weight: bold; color: #670676;
+    }
+    .file-info {
+      font-size: 0.875rem; color: #9ca3af;
+      max-width: 400px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
 
-  /* Top bar */
-  #topbar {
-    position: fixed; top: 0; left: 0; right: 0;
-    height: 52px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(16px);
-    border-bottom: 2px solid var(--border);
-    box-shadow: 0 0 20px var(--glow);
-    z-index: 10;
-  }
+    /* ===== DROP OVERLAY ===== */
+    #drop-overlay {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      transition: opacity 0.4s ease;
+    }
+    #drop-overlay.hidden { opacity: 0; pointer-events: none; }
 
-  .logo {
-    font-family: var(--mono);
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
-    animation: textGlow 2s infinite;
-  }
+    .drop-bg { position: absolute; inset: 0; background: #000; }
 
-  .file-info {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.1em;
-    text-shadow: 0 0 10px var(--accent);
-  }
+    .grid-lines {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(103,6,118,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(103,6,118,0.08) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 20s linear infinite;
+    }
+    @keyframes gridScroll {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
 
-  /* Drop overlay */
-  #drop-overlay {
-    position: fixed; inset: 0;
-    z-index: 20;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 16px;
-    transition: opacity 0.4s ease;
-  }
+    .drop-zone {
+      position: relative;
+      width: 380px; height: 280px;
+      border: 1px solid rgba(103,6,118,0.3);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: linear-gradient(135deg, #111, #000);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(103,6,118,0.2);
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: #670676;
+      box-shadow: 0 8px 32px rgba(103,6,118,0.4);
+      transform: translateY(-4px) scale(1.01);
+    }
+    .drop-icon { font-size: 48px; }
+    .drop-title {
+      font-size: 18px; font-weight: bold;
+      background: linear-gradient(90deg, #670676, #a855f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .drop-sub { font-size: 12px; color: #9ca3af; }
 
-  #drop-overlay.hidden { opacity: 0; pointer-events: none; }
+    .format-badges { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; justify-content: center; }
+    .badge {
+      font-size: 11px; padding: 4px 10px; border-radius: 9999px;
+      background: rgba(103,6,118,0.2); color: #670676;
+      border: 1px solid rgba(103,6,118,0.3); font-weight: 600;
+    }
+    .badge.pink {
+      background: rgba(168,85,247,0.15); color: #a855f7;
+      border-color: rgba(168,85,247,0.3);
+    }
+    .badge.cyan {
+      background: rgba(6,182,212,0.15); color: #06b6d4;
+      border-color: rgba(6,182,212,0.3);
+    }
 
-  .drop-bg {
-    position: absolute; inset: 0;
-    background: #000000;
-  }
+    #file-input { display: none; }
 
-  /* Animated grid — matching MAZE background cubes feel */
-  .grid-lines {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(102,6,117,0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(102,6,117,0.08) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: gridScroll 20s linear infinite;
-  }
-  @keyframes gridScroll {
-    from { background-position: 0 0; }
-    to { background-position: 60px 60px; }
-  }
+    /* ===== CONTROLS ===== */
+    #controls {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+      border: 1px solid rgba(103,6,118,0.3);
+      border-radius: 9999px; padding: 8px 16px;
+      z-index: 10; transition: opacity 0.4s;
+      box-shadow: 0 8px 32px rgba(103,6,118,0.2);
+    }
+    #controls.hidden { opacity: 0; pointer-events: none; }
 
-  .drop-zone {
-    position: relative;
-    width: 380px; height: 280px;
-    border: 3px solid var(--border);
-    border-radius: 20px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    box-shadow:
-      0 0 30px var(--glow),
-      inset 0 0 20px rgba(102, 6, 117, 0.2);
-    animation: pulse 2s infinite;
-  }
+    .ctrl-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid rgba(103,6,118,0.3);
+      background: transparent; color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: all 0.3s; position: relative;
+    }
+    .ctrl-btn:hover {
+      background: rgba(103,6,118,0.3); border-color: #670676;
+      box-shadow: 0 0 20px rgba(103,6,118,0.5); transform: scale(1.05);
+    }
+    .ctrl-btn.active {
+      background: #670676; border-color: #670676;
+      box-shadow: 0 0 20px rgba(103,6,118,0.6);
+    }
+    /* Tooltip */
+    .ctrl-btn[title]:hover::after {
+      content: attr(title);
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9); color: #fff;
+      font-size: 10px; padding: 4px 8px; border-radius: 6px;
+      white-space: nowrap; pointer-events: none;
+      border: 1px solid rgba(103,6,118,0.4);
+    }
 
-  .drop-zone:hover, .drop-zone.dragover {
-    background: rgba(102, 6, 117, 0.1);
-    box-shadow: 0 0 50px var(--glow-strong), inset 0 0 30px rgba(102, 6, 117, 0.3);
-  }
+    .ctrl-divider { width: 1px; height: 20px; background: rgba(103,6,118,0.3); margin: 0 4px; }
+    .ctrl-label { font-size: 10px; color: #670676; font-weight: 600; padding: 0 4px; }
 
-  .drop-icon {
-    font-size: 48px;
-  }
+    /* BG toggle button — color swatch style */
+    #btn-bg { font-size: 10px; font-weight: bold; }
 
-  .drop-title {
-    font-family: var(--mono);
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
-  }
+    /* ===== INFO PANEL ===== */
+    #info-panel {
+      position: fixed; right: 20px; top: 72px; width: 190px;
+      background: linear-gradient(135deg, #111, #000);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(103,6,118,0.3); border-radius: 12px;
+      padding: 16px; z-index: 10; transition: opacity 0.4s;
+      box-shadow: 0 8px 32px rgba(103,6,118,0.2);
+    }
+    #info-panel.hidden { opacity: 0; pointer-events: none; }
 
-  .drop-sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-  }
+    .panel-title {
+      font-size: 10px; letter-spacing: 0.2em; color: #670676;
+      text-transform: uppercase; margin-bottom: 12px; font-weight: bold;
+    }
+    .info-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 6px 0; border-bottom: 1px solid rgba(103,6,118,0.2);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { font-size: 9px; color: #9ca3af; letter-spacing: 0.1em; text-transform: uppercase; }
+    .info-val { font-size: 13px; color: #670676; font-weight: bold; }
 
-  .format-badges {
-    display: flex; gap: 8px; margin-top: 4px;
-  }
-  .badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: rgba(102, 6, 117, 0.2);
-    color: var(--accent);
-    border: 1px solid var(--border);
-    letter-spacing: 0.1em;
-    text-shadow: 0 0 10px var(--accent);
-    box-shadow: 0 0 10px rgba(102, 6, 117, 0.4);
-  }
-  .badge.pink {
-    background: rgba(170, 0, 221, 0.15);
-    color: var(--accent2);
-    border-color: var(--accent2);
-    text-shadow: 0 0 10px var(--accent2);
-    box-shadow: 0 0 10px rgba(170, 0, 221, 0.4);
-  }
+    /* ===== ANIMATION PANEL ===== */
+    #anim-panel {
+      position: fixed; right: 20px; top: 72px; width: 190px;
+      background: linear-gradient(135deg, #111, #000);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(103,6,118,0.3); border-radius: 12px;
+      padding: 16px; z-index: 10; transition: opacity 0.4s;
+      box-shadow: 0 8px 32px rgba(103,6,118,0.2);
+      display: none;
+    }
+    #anim-panel.show { display: block; }
+    #anim-panel.hidden { opacity: 0; pointer-events: none; }
 
-  #file-input { display: none; }
+    .anim-btn-row { display: flex; gap: 6px; margin-bottom: 10px; }
+    .anim-btn {
+      flex: 1; padding: 6px 0; border-radius: 8px;
+      border: 1px solid rgba(103,6,118,0.3);
+      background: transparent; color: #fff;
+      font-size: 12px; cursor: pointer; transition: all 0.3s;
+    }
+    .anim-btn:hover { background: rgba(103,6,118,0.3); border-color: #670676; }
+    .anim-btn.active { background: #670676; border-color: #670676; }
 
-  /* Bottom controls */
-  #controls {
-    position: fixed; bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(16px);
-    border: 2px solid var(--border);
-    border-radius: 40px;
-    padding: 8px 16px;
-    z-index: 10;
-    transition: opacity 0.4s;
-    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.1);
-    animation: pulse 2s infinite;
-  }
+    .anim-clip-list { display: flex; flex-direction: column; gap: 4px; max-height: 140px; overflow-y: auto; }
+    .anim-clip {
+      padding: 5px 8px; border-radius: 6px; font-size: 10px;
+      background: rgba(103,6,118,0.1); border: 1px solid rgba(103,6,118,0.2);
+      color: #9ca3af; cursor: pointer; transition: all 0.2s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .anim-clip:hover { background: rgba(103,6,118,0.25); color: #fff; }
+    .anim-clip.active { background: rgba(103,6,118,0.4); color: #fff; border-color: #670676; }
 
-  #controls.hidden { opacity: 0; pointer-events: none; }
+    /* progress bar */
+    .anim-progress-wrap {
+      margin-top: 8px; height: 4px; border-radius: 2px;
+      background: rgba(103,6,118,0.2); overflow: hidden;
+    }
+    .anim-progress-bar {
+      height: 100%; width: 0%; background: #670676;
+      border-radius: 2px; transition: width 0.1s linear;
+    }
 
-  .ctrl-btn {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    font-family: var(--mono);
-    transition: background 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 8px rgba(102, 6, 117, 0.3);
-  }
-  .ctrl-btn:hover {
-    background: rgba(102, 6, 117, 0.3);
-    box-shadow: 0 0 20px var(--glow-strong);
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent);
-  }
-  .ctrl-btn.active {
-    background: var(--accent);
-    box-shadow: 0 0 25px var(--glow-strong);
-    color: #fff;
-  }
+    /* ===== LOADING ===== */
+    #loading {
+      position: fixed; inset: 0; z-index: 30;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      background: rgba(0,0,0,0.95); transition: opacity 0.4s;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
 
-  .ctrl-divider {
-    width: 1px; height: 20px;
-    background: var(--border);
-    box-shadow: 0 0 5px var(--glow);
-    margin: 0 4px;
-  }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 2px solid rgba(103,6,118,0.3); border-top-color: #670676;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      box-shadow: 0 0 20px rgba(103,6,118,0.4);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-  .ctrl-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    padding: 0 4px;
-    text-shadow: 0 0 10px var(--accent);
-  }
+    .loading-text {
+      font-size: 13px; letter-spacing: 0.2em; color: #670676; font-weight: 600;
+    }
+    .loading-filename {
+      font-size: 11px; color: #9ca3af; letter-spacing: 0.1em;
+      max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
 
-  /* Info panel */
-  #info-panel {
-    position: fixed; right: 20px; top: 72px;
-    width: 190px;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(12px);
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 16px;
-    z-index: 10;
-    transition: opacity 0.4s;
-    font-family: var(--mono);
-    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.2);
-    animation: pulse 2s infinite;
-  }
+    /* ===== HINT ===== */
+    #hint {
+      position: fixed; left: 20px; bottom: 20px;
+      font-size: 10px; color: #6b7280;
+      letter-spacing: 0.1em; line-height: 1.8;
+      z-index: 10; transition: opacity 0.4s;
+    }
+    #hint.hidden { opacity: 0; }
 
-  #info-panel.hidden { opacity: 0; pointer-events: none; }
+    /* ===== ROTATION PANEL ===== */
+    #rotation-panel {
+      position: fixed; left: 20px; top: 72px; width: 210px;
+      background: linear-gradient(135deg, #111, #000);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(103,6,118,0.3); border-radius: 12px;
+      padding: 16px; z-index: 10; transition: opacity 0.4s;
+      box-shadow: 0 8px 32px rgba(103,6,118,0.2);
+    }
+    #rotation-panel.hidden { opacity: 0; pointer-events: none; }
 
-  .panel-title {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    font-weight: bold;
-  }
+    .rot-panel-title {
+      font-size: 10px; letter-spacing: 0.2em; color: #670676;
+      text-transform: uppercase; margin-bottom: 12px; font-weight: bold;
+    }
+    .rot-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .rot-row:last-child { margin-bottom: 0; }
 
-  .info-row {
-    display: flex; justify-content: space-between;
-    align-items: baseline;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(102, 6, 117, 0.3);
-  }
-  .info-row:last-child { border-bottom: none; }
-  .info-key {
-    font-size: 9px;
-    color: rgba(255,255,255,0.5);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .info-val {
-    font-size: 13px;
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
-    font-weight: bold;
-  }
+    .rot-axis-label { font-size: 12px; font-weight: 700; width: 14px; text-align: center; flex-shrink: 0; }
+    .rot-axis-label.x { color: #ff5555; }
+    .rot-axis-label.y { color: #55ff88; }
+    .rot-axis-label.z { color: #5599ff; }
 
-  /* Loading spinner */
-  #loading {
-    position: fixed; inset: 0;
-    z-index: 30;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 16px;
-    background: rgba(0, 0, 0, 0.95);
-    transition: opacity 0.4s;
-  }
-  #loading.hidden { opacity: 0; pointer-events: none; }
+    .rot-btn-group { display: flex; gap: 4px; }
+    .rot-btn {
+      width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid rgba(103,6,118,0.3);
+      background: transparent; color: #fff;
+      cursor: pointer; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s; flex-shrink: 0;
+    }
+    .rot-btn:hover { background: rgba(103,6,118,0.3); border-color: #670676; box-shadow: 0 0 15px rgba(103,6,118,0.5); }
+    .rot-btn.spinning-cw, .rot-btn.spinning-ccw {
+      background: #670676; border-color: #670676; box-shadow: 0 0 15px rgba(103,6,118,0.6);
+    }
 
-  .spinner {
-    width: 48px; height: 48px;
-    border: 2px solid rgba(102, 6, 117, 0.3);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    box-shadow: 0 0 20px var(--glow);
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .rot-speed-wrap { flex: 1; display: flex; align-items: center; gap: 6px; }
+    .rot-speed {
+      -webkit-appearance: none; width: 100%; height: 3px;
+      border-radius: 2px; background: rgba(103,6,118,0.3);
+      outline: none; cursor: pointer; accent-color: #670676;
+    }
+    .rot-speed::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 12px; height: 12px;
+      border-radius: 50%; background: #670676; cursor: pointer;
+      box-shadow: 0 0 10px rgba(103,6,118,0.6);
+    }
 
-  .loading-text {
-    font-family: var(--mono);
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
-    animation: textGlow 1s infinite;
-  }
+    .rot-divider { height: 1px; background: rgba(103,6,118,0.3); margin: 10px 0; }
 
-  /* Hint */
-  #hint {
-    position: fixed; left: 20px; bottom: 20px;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: rgba(102, 6, 117, 0.7);
-    letter-spacing: 0.1em;
-    line-height: 1.8;
-    z-index: 10;
-    transition: opacity 0.4s;
-    text-shadow: 0 0 8px var(--accent);
-  }
-  #hint.hidden { opacity: 0; }
+    .rot-reset-btn {
+      width: 100%; padding: 8px; border-radius: 8px; border: none;
+      background: #670676; color: #fff;
+      font-size: 11px; letter-spacing: 0.1em; cursor: pointer;
+      transition: all 0.3s; text-transform: uppercase; font-weight: bold;
+      position: relative; overflow: hidden;
+    }
+    .rot-reset-btn::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transform: translate(-50%,-50%); transition: width 0.6s, height 0.6s;
+    }
+    .rot-reset-btn:hover::before { width: 300px; height: 300px; }
+    .rot-reset-btn:hover { background: rgba(103,6,118,0.8); box-shadow: 0 8px 32px rgba(103,6,118,0.4); transform: scale(1.03); }
+    .rot-reset-btn:active { transform: scale(0.97); }
 
-  /* Rotation panel */
-  #rotation-panel {
-    position: fixed; left: 20px; top: 72px;
-    width: 210px;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(12px);
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 16px;
-    z-index: 10;
-    transition: opacity 0.4s;
-    font-family: var(--mono);
-    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(102, 6, 117, 0.2);
-    animation: pulse 2s infinite;
-  }
-  #rotation-panel.hidden { opacity: 0; pointer-events: none; }
+    /* ===== TOAST ===== */
+    #toast-container {
+      position: fixed; top: 68px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 10px 20px; border-radius: 9999px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+      backdrop-filter: blur(10px);
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+      pointer-events: none;
+    }
+    .toast.error {
+      background: rgba(180,0,0,0.85); color: #fff;
+      border: 1px solid rgba(255,60,60,0.4);
+      box-shadow: 0 4px 20px rgba(180,0,0,0.4);
+    }
+    .toast.success {
+      background: rgba(103,6,118,0.85); color: #fff;
+      border: 1px solid rgba(168,85,247,0.4);
+      box-shadow: 0 4px 20px rgba(103,6,118,0.4);
+    }
+    .toast.info {
+      background: rgba(6,100,120,0.85); color: #fff;
+      border: 1px solid rgba(6,182,212,0.4);
+      box-shadow: 0 4px 20px rgba(6,182,212,0.4);
+    }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
 
-  .rot-panel-title {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    font-weight: bold;
-  }
+    /* ===== BG CYCLE indicator in topbar ===== */
+    .bg-dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; border: 1px solid rgba(255,255,255,0.4);
+      vertical-align: middle; margin-right: 2px;
+    }
 
-  .rot-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 10px;
-  }
-  .rot-row:last-child { margin-bottom: 0; }
-
-  .rot-axis-label {
-    font-size: 12px;
-    font-weight: 700;
-    width: 14px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .rot-axis-label.x { color: #ff5555; text-shadow: 0 0 10px #ff5555; }
-  .rot-axis-label.y { color: #55ff88; text-shadow: 0 0 10px #55ff88; }
-  .rot-axis-label.z { color: #5599ff; text-shadow: 0 0 10px #5599ff; }
-
-  .rot-btn-group {
-    display: flex; gap: 4px;
-  }
-  .rot-btn {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.15s, box-shadow 0.15s;
-    flex-shrink: 0;
-    box-shadow: 0 0 6px rgba(102, 6, 117, 0.3);
-  }
-  .rot-btn:hover {
-    background: rgba(102, 6, 117, 0.3);
-    box-shadow: 0 0 15px var(--glow-strong);
-  }
-  .rot-btn.spinning-cw, .rot-btn.spinning-ccw {
-    background: var(--accent);
-    box-shadow: 0 0 20px var(--glow-strong);
-    color: #fff;
-    text-shadow: 0 0 8px #fff;
-  }
-
-  .rot-speed-wrap {
-    flex: 1;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .rot-speed {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(102, 6, 117, 0.3);
-    outline: none;
-    cursor: pointer;
-  }
-  .rot-speed::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    box-shadow: 0 0 10px var(--glow-strong);
-  }
-
-  .rot-divider {
-    height: 1px;
-    background: rgba(102, 6, 117, 0.4);
-    margin: 10px 0;
-  }
-
-  .rot-reset-btn {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--accent);
-    color: #ffffff;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
-    text-transform: uppercase;
-    font-weight: bold;
-    box-shadow: 0 0 15px rgba(102, 6, 117, 0.5);
-  }
-  .rot-reset-btn:hover {
-    background: #8800aa;
-    box-shadow: 0 0 25px var(--glow-strong);
-    transform: scale(1.03);
-  }
-  .rot-reset-btn:active { transform: scale(0.97); }
-
-  /* Particles */
-  .particle {
-    position: fixed;
-    width: 4px; height: 4px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    box-shadow: 0 0 8px var(--accent);
-  }
+    /* ===== PARTICLES ===== */
+    .particle {
+      position: fixed; width: 2px; height: 2px;
+      background: #670676; border-radius: 50%;
+      pointer-events: none; z-index: 2;
+    }
 </style>
 </head>
 <body>
 
-<!-- Canvas -->
 <div id="canvas-container"></div>
 
 <!-- Top bar -->
@@ -494,32 +391,35 @@
       <span class="badge">GLB</span>
       <span class="badge">GLTF</span>
       <span class="badge pink">OBJ</span>
+      <span class="badge cyan">STL</span>
     </div>
   </label>
-  <input type="file" id="file-input" accept=".glb,.gltf,.obj">
+  <input type="file" id="file-input" accept=".glb,.gltf,.obj,.stl">
 </div>
 
 <!-- Loading -->
 <div id="loading" class="hidden">
   <div class="spinner"></div>
   <div class="loading-text">LOADING MODEL...</div>
+  <div class="loading-filename" id="loading-filename"></div>
 </div>
 
-<!-- Controls -->
+<!-- Bottom controls -->
 <div id="controls" class="hidden">
   <span class="ctrl-label">VIEW</span>
   <div class="ctrl-divider"></div>
-  <button class="ctrl-btn" id="btn-reset" title="リセット">⟳</button>
-  <button class="ctrl-btn" id="btn-wireframe" title="ワイヤーフレーム">⬡</button>
+  <button class="ctrl-btn" id="btn-reset"      title="カメラリセット">⟳</button>
+  <button class="ctrl-btn" id="btn-wireframe"  title="ワイヤーフレーム">⬡</button>
   <button class="ctrl-btn" id="btn-autorotate" title="自動回転">↻</button>
+  <button class="ctrl-btn" id="btn-bg"         title="背景色切り替え"><span class="bg-dot" id="bg-dot" style="background:#000"></span>BG</button>
+  <button class="ctrl-btn" id="btn-screenshot" title="スクリーンショット保存">📷</button>
   <div class="ctrl-divider"></div>
-  <button class="ctrl-btn" id="btn-open" title="別のファイルを開く">📂</button>
+  <button class="ctrl-btn" id="btn-open"       title="別のファイルを開く">📂</button>
 </div>
 
 <!-- Rotation panel -->
 <div id="rotation-panel" class="hidden">
   <div class="rot-panel-title">Rotation</div>
-
   <div class="rot-row">
     <span class="rot-axis-label x">X</span>
     <div class="rot-btn-group">
@@ -530,7 +430,6 @@
       <input type="range" class="rot-speed" id="rx-speed" min="1" max="10" value="3">
     </div>
   </div>
-
   <div class="rot-row">
     <span class="rot-axis-label y">Y</span>
     <div class="rot-btn-group">
@@ -541,7 +440,6 @@
       <input type="range" class="rot-speed" id="ry-speed" min="1" max="10" value="3">
     </div>
   </div>
-
   <div class="rot-row">
     <span class="rot-axis-label z">Z</span>
     <div class="rot-btn-group">
@@ -552,7 +450,6 @@
       <input type="range" class="rot-speed" id="rz-speed" min="1" max="10" value="3">
     </div>
   </div>
-
   <div class="rot-divider"></div>
   <button class="rot-reset-btn" id="rot-reset-all">回転をリセット</button>
 </div>
@@ -561,9 +458,23 @@
 <div id="info-panel" class="hidden">
   <div class="panel-title">Model Info</div>
   <div class="info-row"><span class="info-key">Vertices</span><span class="info-val" id="info-verts">—</span></div>
-  <div class="info-row"><span class="info-key">Faces</span><span class="info-val" id="info-faces">—</span></div>
-  <div class="info-row"><span class="info-key">Objects</span><span class="info-val" id="info-objs">—</span></div>
-  <div class="info-row"><span class="info-key">Format</span><span class="info-val" id="info-fmt">—</span></div>
+  <div class="info-row"><span class="info-key">Faces</span>   <span class="info-val" id="info-faces">—</span></div>
+  <div class="info-row"><span class="info-key">Objects</span> <span class="info-val" id="info-objs">—</span></div>
+  <div class="info-row"><span class="info-key">Format</span>  <span class="info-val" id="info-fmt">—</span></div>
+</div>
+
+<!-- Animation panel (右側、info-panelの下に表示) -->
+<div id="anim-panel" class="hidden">
+  <div class="panel-title">Animation</div>
+  <div class="anim-btn-row">
+    <button class="anim-btn" id="anim-play">▶</button>
+    <button class="anim-btn" id="anim-pause">⏸</button>
+    <button class="anim-btn" id="anim-stop">⏹</button>
+  </div>
+  <div class="anim-clip-list" id="anim-clip-list"></div>
+  <div class="anim-progress-wrap">
+    <div class="anim-progress-bar" id="anim-progress-bar"></div>
+  </div>
 </div>
 
 <!-- Hint -->
@@ -571,25 +482,39 @@
   左ドラッグ: 回転　右ドラッグ: 移動　スクロール: ズーム
 </div>
 
+<!-- Toast container -->
+<div id="toast-container"></div>
+
 <!-- Three.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const GLTF_LOADER_URL = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
 const OBJ_LOADER_URL  = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js';
+const STL_LOADER_URL  = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js';
 const ORBIT_URL       = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
 
 function loadScript(url) {
   return new Promise((res, rej) => {
     const s = document.createElement('script');
-    s.src = url; s.onload = res; s.onerror = rej;
+    s.src = url; s.onload = res; s.onerror = () => rej(new Error('Failed: ' + url));
     document.head.appendChild(s);
   });
 }
 
-// Scene setup
+// ===== Toast =====
+function showToast(msg, type = 'info', duration = 3000) {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), duration);
+}
+
+// ===== Scene =====
 const container = document.getElementById('canvas-container');
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -606,54 +531,56 @@ scene.fog = new THREE.FogExp2(0x000000, 0.03);
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 camera.position.set(0, 10, 4);
 
-// Lights — purple tinted like MAZE
-const ambient = new THREE.AmbientLight(0x660675, 0.5);
-scene.add(ambient);
+// Lights
+const ambient  = new THREE.AmbientLight(0x660675, 0.5); scene.add(ambient);
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.0); dirLight.position.set(5,8,5); dirLight.castShadow = true; scene.add(dirLight);
+const fillLight= new THREE.DirectionalLight(0x660675, 0.6); fillLight.position.set(-5,2,-5); scene.add(fillLight);
+const rimLight = new THREE.PointLight(0xaa00dd, 0.8, 20); rimLight.position.set(0,3,-5); scene.add(rimLight);
 
-const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-dirLight.position.set(5, 8, 5);
-dirLight.castShadow = true;
-scene.add(dirLight);
-
-const fillLight = new THREE.DirectionalLight(0x660675, 0.6);
-fillLight.position.set(-5, 2, -5);
-scene.add(fillLight);
-
-const rimLight = new THREE.PointLight(0xaa00dd, 0.8, 20);
-rimLight.position.set(0, 3, -5);
-scene.add(rimLight);
-
-// Grid — purple tinted
-const grid = new THREE.GridHelper(20, 40, 0x660675, 0x330037);
+const grid = new THREE.GridHelper(20, 40, 0x670676, 0x330037);
 grid.position.y = -0.01;
 scene.add(grid);
 
-// Particles
+// ===== Background Cycle =====
+const BG_PRESETS = [
+  { color: 0x000000, fog: 0x000000, label: '黒', dot: '#000' },
+  { color: 0x1a1a2e, fog: 0x1a1a2e, label: 'ダーク', dot: '#1a1a2e' },
+  { color: 0x2d2d2d, fog: 0x2d2d2d, label: 'グレー', dot: '#2d2d2d' },
+  { color: 0xeeeeee, fog: 0xeeeeee, label: '白',    dot: '#eee' },
+];
+let bgIndex = 0;
+
+document.getElementById('btn-bg').addEventListener('click', () => {
+  bgIndex = (bgIndex + 1) % BG_PRESETS.length;
+  const preset = BG_PRESETS[bgIndex];
+  scene.background = new THREE.Color(preset.color);
+  scene.fog.color.set(preset.fog);
+  document.getElementById('bg-dot').style.background = preset.dot;
+  showToast(`背景: ${preset.label}`, 'info', 1500);
+});
+
+// ===== Particles =====
 function createParticles() {
   for (let i = 0; i < 20; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * window.innerWidth + 'px';
-    p.style.top = Math.random() * window.innerHeight + 'px';
+    p.style.top  = Math.random() * window.innerHeight + 'px';
     document.body.appendChild(p);
     animateParticle(p);
   }
 }
-
 function animateParticle(p) {
   const duration = Math.random() * 4000 + 3000;
-  const startY = parseFloat(p.style.top);
   let start = null;
   function step(ts) {
     if (!start) start = ts;
     const progress = (ts - start) / duration;
     if (progress >= 1) {
-      p.style.top = Math.random() * window.innerHeight + 'px';
+      p.style.top  = Math.random() * window.innerHeight + 'px';
       p.style.left = Math.random() * window.innerWidth + 'px';
-      p.style.opacity = 0;
-      start = null;
-      requestAnimationFrame(step);
-      return;
+      p.style.opacity = 0; start = null;
+      requestAnimationFrame(step); return;
     }
     p.style.transform = `translateY(${-progress * 300}px)`;
     p.style.opacity = progress < 0.2 ? progress * 5 : progress > 0.8 ? (1 - progress) * 5 : 1;
@@ -661,82 +588,148 @@ function animateParticle(p) {
   }
   requestAnimationFrame(step);
 }
-
 createParticles();
 
-// State
-let controls, currentModel = null;
-let autoRotate = false;
-let wireframe = false;
-
+// ===== State =====
+let orbitControls, currentModel = null;
+let autoRotate = false, wireframe = false;
 const rotState = { x: 0, y: 0, z: 0 };
 
-async function init() {
-  await Promise.all([loadScript(ORBIT_URL), loadScript(GLTF_LOADER_URL), loadScript(OBJ_LOADER_URL)]);
+// Animation mixer
+let mixer = null, animClips = [], currentAction = null, animPaused = false;
+const clock = new THREE.Clock();
 
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.07;
-  controls.minDistance = 0.5;
-  controls.maxDistance = 100;
-  controls.target.set(0, 0, 0);
+// ===== Init =====
+async function init() {
+  try {
+    await Promise.all([
+      loadScript(ORBIT_URL),
+      loadScript(GLTF_LOADER_URL),
+      loadScript(OBJ_LOADER_URL),
+      loadScript(STL_LOADER_URL),
+    ]);
+  } catch(e) {
+    showToast('スクリプトの読み込みに失敗しました', 'error');
+    console.error(e);
+  }
+
+  orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+  orbitControls.enableDamping = true;
+  orbitControls.dampingFactor = 0.07;
+  orbitControls.minDistance = 0.5;
+  orbitControls.maxDistance = 100;
+  orbitControls.target.set(0, 0, 0);
 
   animate();
 }
 
+// ===== Animate loop =====
 function animate() {
   requestAnimationFrame(animate);
-  if (controls) controls.update();
+  if (orbitControls) orbitControls.update();
+
+  const delta = clock.getDelta();
+  if (mixer) {
+    mixer.update(delta);
+    updateAnimProgress();
+  }
+
   if (currentModel) {
     const s = 0.0015;
     if (rotState.x !== 0) currentModel.rotation.x += rotState.x * parseFloat(document.getElementById('rx-speed').value) * s;
     if (rotState.y !== 0) currentModel.rotation.y += rotState.y * parseFloat(document.getElementById('ry-speed').value) * s;
-    if (autoRotate) currentModel.rotation.y += 0.005;
+    if (autoRotate)       currentModel.rotation.y += 0.005;
     if (rotState.z !== 0) currentModel.rotation.z += rotState.z * parseFloat(document.getElementById('rz-speed').value) * s;
   }
+
   renderer.render(scene, camera);
 }
 
+function updateAnimProgress() {
+  if (!currentAction) return;
+  const clip = currentAction.getClip();
+  const pct = clip.duration > 0 ? (currentAction.time % clip.duration) / clip.duration * 100 : 0;
+  document.getElementById('anim-progress-bar').style.width = pct + '%';
+}
+
+// ===== Load model =====
 function loadModel(file) {
   const ext = file.name.split('.').pop().toLowerCase();
-  showLoading(true);
+  const supported = ['glb','gltf','obj','stl'];
+  if (!supported.includes(ext)) {
+    showToast(`非対応フォーマット: .${ext}`, 'error');
+    return;
+  }
 
-  if (currentModel) { scene.remove(currentModel); currentModel = null; }
+  showLoading(true, file.name);
+  cleanupModel();
 
   const url = URL.createObjectURL(file);
+
+  const onError = (err) => {
+    console.error(err);
+    showLoading(false);
+    URL.revokeObjectURL(url);
+    showToast(`読み込みエラー: ${file.name}`, 'error');
+  };
 
   if (ext === 'glb' || ext === 'gltf') {
     const loader = new THREE.GLTFLoader();
     loader.load(url, (gltf) => {
-      onModelLoaded(gltf.scene, file.name, ext.toUpperCase());
+      onModelLoaded(gltf.scene, file.name, ext.toUpperCase(), gltf.animations || []);
       URL.revokeObjectURL(url);
-    }, undefined, (err) => { console.error(err); showLoading(false); });
+    }, undefined, onError);
+
   } else if (ext === 'obj') {
     const loader = new THREE.OBJLoader();
     loader.load(url, (obj) => {
       obj.traverse(child => {
         if (child.isMesh) {
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0xcccccc, roughness: 0.5, metalness: 0.1
-          });
+          child.material = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.5, metalness: 0.1 });
         }
       });
-      onModelLoaded(obj, file.name, 'OBJ');
+      onModelLoaded(obj, file.name, 'OBJ', []);
       URL.revokeObjectURL(url);
-    }, undefined, (err) => { console.error(err); showLoading(false); });
+    }, undefined, onError);
+
+  } else if (ext === 'stl') {
+    const loader = new THREE.STLLoader();
+    loader.load(url, (geometry) => {
+      geometry.computeVertexNormals();
+      const mat  = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.5, metalness: 0.2 });
+      const mesh = new THREE.Mesh(geometry, mat);
+      const group = new THREE.Group();
+      group.add(mesh);
+      onModelLoaded(group, file.name, 'STL', []);
+      URL.revokeObjectURL(url);
+    }, undefined, onError);
   }
 }
 
-function onModelLoaded(model, filename, fmt) {
-  const box = new THREE.Box3().setFromObject(model);
+function cleanupModel() {
+  if (currentModel) {
+    scene.remove(currentModel);
+    currentModel = null;
+  }
+  if (mixer) {
+    mixer.stopAllAction();
+    mixer = null;
+  }
+  currentAction = null;
+  animClips = [];
+  animPaused = false;
+}
+
+function onModelLoaded(model, filename, fmt, animations) {
+  // Center & scale
+  const box    = new THREE.Box3().setFromObject(model);
   const center = box.getCenter(new THREE.Vector3());
-  const size = box.getSize(new THREE.Vector3());
+  const size   = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = 2.5 / maxDim;
+  const scale  = 2.5 / maxDim;
 
   model.position.sub(center.multiplyScalar(scale));
   model.scale.setScalar(scale);
-
   model.traverse(child => {
     if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; }
   });
@@ -747,9 +740,11 @@ function onModelLoaded(model, filename, fmt) {
   scene.add(pivot);
   currentModel = pivot;
 
+  // Camera
   camera.position.set(0, 10, 4);
-  if (controls) controls.target.set(0, 0.5, 0);
+  if (orbitControls) orbitControls.target.set(0, 0.5, 0);
 
+  // Stats
   let verts = 0, faces = 0, objs = 0;
   model.traverse(child => {
     if (child.isMesh) {
@@ -759,38 +754,145 @@ function onModelLoaded(model, filename, fmt) {
       else if (child.geometry.attributes.position) faces += child.geometry.attributes.position.count / 3;
     }
   });
-
   document.getElementById('info-verts').textContent = verts.toLocaleString();
   document.getElementById('info-faces').textContent = Math.round(faces).toLocaleString();
-  document.getElementById('info-objs').textContent = objs;
-  document.getElementById('info-fmt').textContent = fmt;
-  document.getElementById('file-name').textContent = filename;
+  document.getElementById('info-objs').textContent  = objs;
+  document.getElementById('info-fmt').textContent   = fmt;
+  document.getElementById('file-name').textContent  = filename;
+
+  // Animations
+  setupAnimations(model, animations);
 
   showLoading(false);
   showViewer(true);
+  showToast(`${filename} を読み込みました`, 'success');
 }
 
-function showLoading(show) {
+// ===== Animation setup =====
+function setupAnimations(model, animations) {
+  const animPanel    = document.getElementById('anim-panel');
+  const clipListEl   = document.getElementById('anim-clip-list');
+  clipListEl.innerHTML = '';
+
+  if (!animations || animations.length === 0) {
+    animPanel.classList.remove('show');
+    animPanel.classList.add('hidden');
+    // shift info panel back to top
+    document.getElementById('info-panel').style.top = '72px';
+    return;
+  }
+
+  animClips = animations;
+  mixer = new THREE.AnimationMixer(model);
+
+  // Build clip list UI
+  animations.forEach((clip, i) => {
+    const item = document.createElement('div');
+    item.className = 'anim-clip';
+    item.textContent = clip.name || `Animation ${i + 1}`;
+    item.dataset.index = i;
+    item.addEventListener('click', () => {
+      playClip(i);
+      document.querySelectorAll('.anim-clip').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+    });
+    clipListEl.appendChild(item);
+  });
+
+  // info panel goes to 72px, anim panel goes below it
+  document.getElementById('info-panel').style.top = '72px';
+  const infoPanelH = document.getElementById('info-panel').offsetHeight;
+  animPanel.style.top = (72 + infoPanelH + 12) + 'px';
+  animPanel.style.right = '20px';
+  animPanel.style.width = '190px';
+  animPanel.style.position = 'fixed';
+  animPanel.classList.remove('hidden');
+  animPanel.classList.add('show');
+
+  // Auto play first clip
+  playClip(0);
+  clipListEl.children[0]?.classList.add('active');
+}
+
+function playClip(index) {
+  if (!mixer || !animClips[index]) return;
+  if (currentAction) currentAction.stop();
+  currentAction = mixer.clipAction(animClips[index]);
+  currentAction.reset().play();
+  animPaused = false;
+  document.getElementById('anim-play').classList.add('active');
+  document.getElementById('anim-pause').classList.remove('active');
+}
+
+document.getElementById('anim-play').addEventListener('click', () => {
+  if (!currentAction) return;
+  if (animPaused) {
+    currentAction.paused = false;
+    animPaused = false;
+    document.getElementById('anim-play').classList.add('active');
+    document.getElementById('anim-pause').classList.remove('active');
+  }
+});
+
+document.getElementById('anim-pause').addEventListener('click', () => {
+  if (!currentAction) return;
+  currentAction.paused = true;
+  animPaused = true;
+  document.getElementById('anim-pause').classList.add('active');
+  document.getElementById('anim-play').classList.remove('active');
+});
+
+document.getElementById('anim-stop').addEventListener('click', () => {
+  if (!currentAction) return;
+  currentAction.stop();
+  currentAction = null;
+  animPaused = false;
+  document.getElementById('anim-play').classList.remove('active');
+  document.getElementById('anim-pause').classList.remove('active');
+  document.getElementById('anim-progress-bar').style.width = '0%';
+  document.querySelectorAll('.anim-clip').forEach(el => el.classList.remove('active'));
+});
+
+// ===== Screenshot =====
+document.getElementById('btn-screenshot').addEventListener('click', () => {
+  // render one frame first to ensure buffer is current
+  renderer.render(scene, camera);
+  renderer.domElement.toBlob((blob) => {
+    if (!blob) { showToast('スクリーンショット失敗', 'error'); return; }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `3dview_${Date.now()}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('スクリーンショットを保存しました 📷', 'success');
+  }, 'image/png');
+});
+
+// ===== Visibility helpers =====
+function showLoading(show, filename = '') {
   document.getElementById('loading').classList.toggle('hidden', !show);
+  document.getElementById('loading-filename').textContent = filename;
 }
 
 function showViewer(show) {
-  document.getElementById('drop-overlay').classList.toggle('hidden', show);
-  document.getElementById('controls').classList.toggle('hidden', !show);
-  document.getElementById('info-panel').classList.toggle('hidden', !show);
-  document.getElementById('rotation-panel').classList.toggle('hidden', !show);
-  document.getElementById('hint').classList.toggle('hidden', !show);
+  document.getElementById('drop-overlay').classList.toggle('hidden',  show);
+  document.getElementById('controls').classList.toggle('hidden',      !show);
+  document.getElementById('info-panel').classList.toggle('hidden',    !show);
+  document.getElementById('rotation-panel').classList.toggle('hidden',!show);
+  document.getElementById('hint').classList.toggle('hidden',          !show);
 }
 
+// ===== Control buttons =====
 document.getElementById('btn-reset').addEventListener('click', () => {
   if (!currentModel) return;
   camera.position.set(0, 10, 4);
-  if (controls) controls.target.set(0, 0.5, 0);
+  if (orbitControls) orbitControls.target.set(0, 0.5, 0);
   currentModel.rotation.set(0, 0, 0);
   rotState.x = rotState.y = rotState.z = 0;
   ['rx-ccw','rx-cw','ry-ccw','ry-cw','rz-ccw','rz-cw'].forEach(id => {
     document.getElementById(id).classList.remove('spinning-cw','spinning-ccw');
   });
+  showToast('カメラをリセットしました', 'info', 1500);
 });
 
 document.getElementById('btn-wireframe').addEventListener('click', (e) => {
@@ -800,62 +902,61 @@ document.getElementById('btn-wireframe').addEventListener('click', (e) => {
   currentModel.traverse(child => {
     if (child.isMesh) child.material.wireframe = wireframe;
   });
+  showToast(wireframe ? 'ワイヤーフレーム ON' : 'ワイヤーフレーム OFF', 'info', 1500);
 });
 
 document.getElementById('btn-autorotate').addEventListener('click', (e) => {
   autoRotate = !autoRotate;
   e.currentTarget.classList.toggle('active', autoRotate);
+  showToast(autoRotate ? '自動回転 ON' : '自動回転 OFF', 'info', 1500);
 });
 
 document.getElementById('btn-open').addEventListener('click', () => {
   document.getElementById('file-input').click();
 });
 
-document.getElementById('rotation-panel').addEventListener('pointerdown', e => e.stopPropagation());
-document.getElementById('rotation-panel').addEventListener('mousedown',   e => e.stopPropagation());
-document.getElementById('rotation-panel').addEventListener('touchstart',  e => e.stopPropagation());
+// ===== Rotation panel – prevent orbit controls conflict =====
+['rotation-panel'].forEach(id => {
+  const el = document.getElementById(id);
+  ['pointerdown','mousedown','touchstart'].forEach(ev => el.addEventListener(ev, e => e.stopPropagation()));
+});
 
 function setupAxisBtn(axis, dir, btnId) {
-  const btn = document.getElementById(btnId);
-  btn.addEventListener('click', () => {
+  document.getElementById(btnId).addEventListener('click', () => {
     const wasActive = rotState[axis] === dir;
     rotState[axis] = wasActive ? 0 : dir;
     document.getElementById(`r${axis}-ccw`).classList.toggle('spinning-ccw', rotState[axis] === -1);
-    document.getElementById(`r${axis}-cw`).classList.toggle('spinning-cw',  rotState[axis] === 1);
+    document.getElementById(`r${axis}-cw`).classList.toggle('spinning-cw',  rotState[axis] ===  1);
   });
 }
-
-setupAxisBtn('x', -1, 'rx-ccw');
-setupAxisBtn('x',  1, 'rx-cw');
-setupAxisBtn('y', -1, 'ry-ccw');
-setupAxisBtn('y',  1, 'ry-cw');
-setupAxisBtn('z', -1, 'rz-ccw');
-setupAxisBtn('z',  1, 'rz-cw');
+setupAxisBtn('x',-1,'rx-ccw'); setupAxisBtn('x', 1,'rx-cw');
+setupAxisBtn('y',-1,'ry-ccw'); setupAxisBtn('y', 1,'ry-cw');
+setupAxisBtn('z',-1,'rz-ccw'); setupAxisBtn('z', 1,'rz-cw');
 
 document.getElementById('rot-reset-all').addEventListener('click', () => {
   rotState.x = rotState.y = rotState.z = 0;
   ['rx-ccw','rx-cw','ry-ccw','ry-cw','rz-ccw','rz-cw'].forEach(id => {
     document.getElementById(id).classList.remove('spinning-cw','spinning-ccw');
   });
-  if (currentModel) currentModel.rotation.set(0, 0, 0);
+  if (currentModel) currentModel.rotation.set(0,0,0);
 });
 
+// ===== File input / drag & drop =====
 document.getElementById('file-input').addEventListener('change', (e) => {
   if (e.target.files[0]) loadModel(e.target.files[0]);
 });
 
 const dropZone = document.getElementById('drop-zone');
-const body = document.body;
-
-body.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-body.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-body.addEventListener('drop', (e) => {
+document.body.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+document.body.addEventListener('dragleave', ()  => dropZone.classList.remove('dragover'));
+document.body.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
   const file = e.dataTransfer.files[0];
   if (file) loadModel(file);
 });
 
+// ===== Resize =====
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
